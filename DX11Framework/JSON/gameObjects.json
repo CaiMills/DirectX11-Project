@@ -1,0 +1,20 @@
+{
+  "GameObjects": 
+  [
+    {
+      "FilePath": "Models\\Test Models\\Made In 3ds Max\\star.obj",
+      "Specular": "Crate_SPEC.dds",
+      "Color": "Crate_COLOR.dds",
+      "StartPos": [ 0.0, 0.0, 4.0 ],
+      "StartScale": 1.0
+    },
+    {
+      "FilePath": "Models\\Test Models\\Made In Blender\\donut.obj",
+      "Specular": "asphalt_SPEC.dds",
+      "Color": "asphalt_COLOR.dds",
+      "StartPos": [ 0.0, 0.0, 0.0 ],
+      "StartScale": 2.2
+    }
+  ],
+  "version": "1.1"
+}
