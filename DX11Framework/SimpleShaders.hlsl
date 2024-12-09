@@ -67,6 +67,7 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float3 reflectedDir = normalize(reflect(-lightDir, input.normal));
     float specIntensity = saturate(dot(vertexToCamera, reflectedDir));
     specIntensity = specIntensity * pow(specIntensity, specPower);
+    
     //diffuse
     float4 diffuseAmount = saturate(dot(input.normal, normalisedLightDir));
     

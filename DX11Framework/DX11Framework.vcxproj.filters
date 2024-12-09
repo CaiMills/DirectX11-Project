@@ -88,5 +88,8 @@
     <None Include="SimpleShaders.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="SkyboxShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

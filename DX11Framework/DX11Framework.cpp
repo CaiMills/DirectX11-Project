@@ -10,6 +10,7 @@ GameObject donut;
 GameObject star;
 
 //Line line;
+Cube skybox;
 Cube cube;
 Pyramid pyramid;
 
@@ -225,6 +226,24 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     
     ID3DBlob* vsBlob;
 
+    //skybox vertex shader
+    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+
+    hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShaderSkybox);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+
+    //other
     hr =  D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -234,7 +253,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     }
 
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
-
     if (FAILED(hr))
     {
         return hr;
@@ -257,6 +275,22 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     ID3DBlob* psBlob;
 
+    //skybox pixel shader
+    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+
+    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShaderSkybox);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    //other
     hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -279,8 +313,11 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     //line.VertexData(_device);
 
+    skybox.VertexData(_device);
+    skybox.IndexData(_device, true);
+
     cube.VertexData(_device);
-    cube.IndexData(_device);
+    cube.IndexData(_device, false);
 
     pyramid.VertexData(_device);
     pyramid.IndexData(_device);
@@ -339,6 +376,18 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
 
+    //Skybox
+    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    dsDescSkybox.DepthEnable = true;
+    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_depthStencilSkybox);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     //Constant Buffer
     D3D11_BUFFER_DESC constantBufferDesc = {};
     constantBufferDesc.ByteWidth = sizeof(ConstantBuffer);
@@ -381,21 +430,53 @@ HRESULT DX11Framework::InitRunTimeData()
     camera[2].SetUp(XMFLOAT3(0, 1, 0));
 
     //textures
+    // 
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    _hasSpecularMap = 0;
+    _hasTexture = 0;
+
+
     //crate
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_SPEC.dds", nullptr, &_crateTexture);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     _hasSpecularMap = 1;
     _hasTexture = 1;
 
     starOBJData = OBJLoader::Load("Models\\Test Models\\Made in 3ds Max\\star.obj", _device);
 
+    skybox.SetShaderResource(_crateTexture);
     star.SetMeshData(starOBJData); //pass the meshData into the GameObject Class
     star.SetShaderResource(_crateTexture); //pass the texture into the GameObject Class
     cube.SetShaderResource(_crateTexture);
 
     //asphalt
     hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_SPEC.dds", nullptr, &_asphaltTexture);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_COLOR.dds", nullptr, &_asphaltTexture);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     _hasSpecularMap = 1;
     _hasTexture = 1;
 
@@ -519,8 +600,9 @@ DX11Framework::~DX11Framework()
     if (_wireframeState) { _wireframeState->Release(); }
     if (_fillState) { _fillState->Release(); }
     if (_vertexShader) { _vertexShader->Release(); }
-    if (_inputLayout) { _inputLayout->Release(); }
+    if (_vertexShaderSkybox) { _vertexShaderSkybox->Release(); }
     if (_pixelShader) { _pixelShader->Release(); }
+    if (_inputLayout) { _inputLayout->Release(); }
     if (_constantBuffer) { _constantBuffer->Release(); }
     if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
     if (_depthStencilView) { _depthStencilView->Release(); }
@@ -616,6 +698,7 @@ void DX11Framework::Update()
 
     //Defines the objects world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity() * XMMatrixRotationX(simpleCount));
+    XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(75, 75, 75));
     XMStoreFloat4x4(&_cubeWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(0, 0, 3) * XMMatrixRotationY(simpleCount));
     XMStoreFloat4x4(&_lineWorldMatrix, XMMatrixIdentity() * XMMatrixTranslation(0, 0, 0));
     XMStoreFloat4x4(&_pyramidWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.25, 0.25, 0.25) * XMMatrixTranslation(0, 0, 4.25) * XMMatrixRotationY(simpleCount));
@@ -659,9 +742,27 @@ void DX11Framework::Draw()
     //Write constant buffer data onto GPU
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
-    //Vertex Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
+
+#pragma region Skybox
+
+    _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
+
+    //Remap to update data
+    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+
+    //Load new world information
+    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_skyboxMatrix));
+
+    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+    _immediateContext->Unmap(_constantBuffer, 0);
+
+    skybox.Draw(_immediateContext, _constantBuffer);
+
+#pragma endregion
+
+    _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
 
 #pragma region Line
     /// <summary>
@@ -678,10 +779,8 @@ void DX11Framework::Draw()
 
 #pragma region Cube
 
-    //Remap to update data
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
-    //Load new world information
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));

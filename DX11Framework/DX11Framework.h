@@ -53,14 +53,18 @@ class DX11Framework
 
 	ID3D11InputLayout* _inputLayout;
 	ID3D11VertexShader* _vertexShader;
+	ID3D11VertexShader* _vertexShaderSkybox;
 	ID3D11PixelShader* _pixelShader;
+	ID3D11PixelShader* _pixelShaderSkybox;
 
 	ID3D11Buffer* _constantBuffer;
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
+	ID3D11DepthStencilState* _depthStencilSkybox;
 
 	//World
 	XMFLOAT4X4 _worldMatrix;
+	XMFLOAT4X4 _skyboxMatrix;
 	XMFLOAT4X4 _cubeWorldMatrix;
 	XMFLOAT4X4 _lineWorldMatrix;
 	XMFLOAT4X4 _pyramidWorldMatrix;
@@ -91,6 +95,7 @@ class DX11Framework
 	int _hasSpecularMap;
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _texture;
+	ID3D11ShaderResourceView* _skyboxTexture;
 	ID3D11ShaderResourceView* _crateTexture;
 	ID3D11ShaderResourceView* _asphaltTexture;
 

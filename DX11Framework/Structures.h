@@ -27,3 +27,8 @@ struct MeshData
 	UINT VBOffset;
 	UINT IndexCount;
 };
+
+class Structures
+{
+
+};
