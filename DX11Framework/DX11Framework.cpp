@@ -437,23 +437,6 @@ HRESULT DX11Framework::InitRunTimeData()
         return hr;
     }
 
-    _hasSpecularMap = 0;
-    _hasTexture = 0;
-
-
-    //crate
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_SPEC.dds", nullptr, &_crateTexture);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
     _hasSpecularMap = 1;
     _hasTexture = 1;
 
@@ -461,29 +444,13 @@ HRESULT DX11Framework::InitRunTimeData()
 
     skybox.SetShaderResource(_crateTexture);
     star.SetMeshData(starOBJData); //pass the meshData into the GameObject Class
-    star.SetShaderResource(_crateTexture); //pass the texture into the GameObject Class
-    cube.SetShaderResource(_crateTexture);
 
-    //asphalt
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_SPEC.dds", nullptr, &_asphaltTexture);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_COLOR.dds", nullptr, &_asphaltTexture);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    _hasSpecularMap = 1;
-    _hasTexture = 1;
+    star.CreateTexture(_device, L"Textures\\Crate_COLOR.dds", star);
 
     donutOBJData = OBJLoader::Load("Models\\Test Models\\Made in Blender\\donut.obj", _device, false);
-
+    donut.CreateTexture(_device, L"Textures\\asphalt_SPEC.dds", donut);
+    donut.CreateTexture(_device, L"Textures\\asphalt_COLOR.dds", donut);
     donut.SetMeshData(donutOBJData);
-    donut.SetShaderResource(_asphaltTexture);
     
     if (FAILED(hr))
     {
@@ -742,12 +709,11 @@ void DX11Framework::Draw()
     //Write constant buffer data onto GPU
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
-    _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
-    _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
-
 #pragma region Skybox
 
+    //Vertex Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
+    //_immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
 
     //Remap to update data
     _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
@@ -763,6 +729,7 @@ void DX11Framework::Draw()
 #pragma endregion
 
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
+    _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
 #pragma region Line
     /// <summary>

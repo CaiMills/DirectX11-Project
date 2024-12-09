@@ -69,6 +69,15 @@ void GameObject::JSONLoad(ID3D11Device* _device)
     }
 }
 
+void GameObject::CreateTexture(ID3D11Device* _device, const wchar_t* filePath, GameObject gameObject)
+{
+    ID3D11ShaderResourceView* _texture;
+
+    CreateDDSTextureFromFile(_device, filePath, nullptr, &_texture);
+
+    SetShaderResource(_texture);
+}
+
 void GameObject::Draw(GameObject gameObject, ID3D11DeviceContext* _immediateContext, ID3D11Buffer* _constantBuffer)
 {
     //A majority of the draw code need for the game object class (some I couldnt move to this class due to _cbData or something simular)

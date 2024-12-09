@@ -24,6 +24,8 @@ public:
 
 	void JSONLoad(ID3D11Device* _device);
 
+	void CreateTexture(ID3D11Device* _device, const wchar_t* filePath, GameObject gameObject);
+
 	void Draw(GameObject gameObject, ID3D11DeviceContext* _immediateContext, ID3D11Buffer* _constantBuffer);
 };
 
