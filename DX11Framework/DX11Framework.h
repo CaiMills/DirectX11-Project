@@ -1,39 +1,12 @@
 #pragma once
 #include "GameObject.h"
 #include "Camera.h"
+#include <vector>
 
 //#include <wrl.h>
 
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
-
-struct ConstantBuffer
-{
-	//16bit
-	XMMATRIX Projection;
-	XMMATRIX View;
-	XMMATRIX World;
-
-	//16bit
-	XMFLOAT4 diffuseLight;
-	XMFLOAT4 diffuseMaterial;
-	XMFLOAT4 ambientLight;
-	XMFLOAT4 ambientMaterial;
-
-	//16bit
-	XMFLOAT4 specularLight;
-	XMFLOAT4 specularMaterial;
-	XMFLOAT3 cameraPosition;
-	float specPower;
-
-	//4bit
-	XMFLOAT3 lightDir;
-	float count;
-
-	//Texture
-	int hasTexture;
-	int hasSpecularMap;
-};
 
 class DX11Framework
 {
@@ -101,9 +74,10 @@ class DX11Framework
 
 	HWND _windowHandle;
 
-	//Mesh Data
-	MeshData starOBJData;
+	//GameObjects
+	//GameObject* _gameObject = new GameObject[10];
 	MeshData donutOBJData;
+	MeshData starOBJData;
 
 	//Camera
 	Camera* camera = new Camera[3];
@@ -120,6 +94,7 @@ class DX11Framework
 
 
 public:
+	std::vector<gameObjectData> objects; //Creates a list for all gameobjects
 	ConstantBuffer _cbData;
 
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
@@ -133,6 +108,7 @@ public:
 	void Keybinds();
 	~DX11Framework();
 	void LoadLightingData();
+	void LoadGameObjects();
 	void Update();
 	void Draw();
 };

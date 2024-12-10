@@ -3,17 +3,19 @@
   [
     {
       "FilePath": "Models\\Test Models\\Made In 3ds Max\\star.obj",
-      "Specular": "Crate_SPEC.dds",
-      "Color": "Crate_COLOR.dds",
-      "StartPos": [ 0.0, 0.0, 4.0 ],
-      "StartScale": 1.0
+      "Specular": "Textures\\Crate_SPEC.dds",
+      "Color": "Textures\\Crate_COLOR.dds",
+      "StartScale": [ 1.0, 1.0, 1.0 ],
+      "StartRot": [ 1.0, 1.0, 1.0 ],
+      "StartPos": [ 0.0, 0.0, 4.0 ]
     },
     {
       "FilePath": "Models\\Test Models\\Made In Blender\\donut.obj",
-      "Specular": "asphalt_SPEC.dds",
-      "Color": "asphalt_COLOR.dds",
-      "StartPos": [ 0.0, 0.0, 0.0 ],
-      "StartScale": 2.2
+      "Specular": "Textures\\asphalt_SPEC.dds",
+      "Color": "Textures\\asphalt_COLOR.dds",
+      "StartScale": [ 2.2, 2.2, 2.2 ],
+      "StartRot": [ 1.0, 1.0, 1.0 ],
+      "StartPos": [ 0.0, 0.0, 0.0 ]
     }
   ],
   "version": "1.1"

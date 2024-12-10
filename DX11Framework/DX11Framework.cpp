@@ -4,15 +4,14 @@
 #include "Pyramid.h"
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
-
-GameObject gameObject;
-GameObject donut;
-GameObject star;
-
-//Line line;
-Cube skybox;
-Cube cube;
-Pyramid pyramid;
+GameObject* _gameObject;
+//GameObject* donut;
+//GameObject star;
+//
+////Line line;
+//Cube skybox;
+//Cube cube;
+//Pyramid pyramid;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -313,14 +312,14 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     //line.VertexData(_device);
 
-    skybox.VertexData(_device);
-    skybox.IndexData(_device, true);
+    //skybox.VertexData(_device);
+    //skybox.IndexData(_device, true);
 
-    cube.VertexData(_device);
-    cube.IndexData(_device, false);
+    //cube.VertexData(_device);
+    //cube.IndexData(_device, false);
 
-    pyramid.VertexData(_device);
-    pyramid.IndexData(_device);
+    //pyramid.VertexData(_device);
+    //pyramid.IndexData(_device);
 
     return S_OK;
 }
@@ -429,35 +428,29 @@ HRESULT DX11Framework::InitRunTimeData()
     camera[2].SetAt(XMFLOAT3(0, 0, 0));
     camera[2].SetUp(XMFLOAT3(0, 1, 0));
 
-    //textures
-    // 
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
+    LoadGameObjects();
+
+    //Textures
+    //hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
+    //hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_SPEC.dds", nullptr, &_crateTexture);
+    //hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
+
+    //_hasSpecularMap = 1;
+    //_hasTexture = 1;
+
+    //Meshes
+    /*donutOBJData = OBJLoader::Load("Models\\Test Models\\Made in Blender\\donut.obj", _device, false);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_SPEC.dds", nullptr, &_asphaltTexture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_COLOR.dds", nullptr, &_asphaltTexture);
+    donut->SetMeshData(donutOBJData);
+    donut->SetShaderResource(_asphaltTexture);
+
+    starOBJData = OBJLoader::Load("Models\\Test Models\\Made in 3ds Max\\star.obj", _device);*/
+
     if (FAILED(hr))
     {
         return hr;
     }
-
-    _hasSpecularMap = 1;
-    _hasTexture = 1;
-
-    starOBJData = OBJLoader::Load("Models\\Test Models\\Made in 3ds Max\\star.obj", _device);
-
-    skybox.SetShaderResource(_crateTexture);
-    star.SetMeshData(starOBJData); //pass the meshData into the GameObject Class
-
-    star.CreateTexture(_device, L"Textures\\Crate_COLOR.dds", star);
-
-    donutOBJData = OBJLoader::Load("Models\\Test Models\\Made in Blender\\donut.obj", _device, false);
-    donut.CreateTexture(_device, L"Textures\\asphalt_SPEC.dds", donut);
-    donut.CreateTexture(_device, L"Textures\\asphalt_COLOR.dds", donut);
-    donut.SetMeshData(donutOBJData);
-    
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    return S_OK;
 }
 
 void DX11Framework::Keybinds()
@@ -591,11 +584,9 @@ void DX11Framework::LoadLightingData()
         std::cerr << "Error: file could not be opened." << std::endl;
         return;
     }
-    //this is causing me an error
+
     jFile = json::parse(fileOpen);
-
     std::string v = jFile["version"].get<std::string>();
-
     json& fileData = jFile["Lighting"]; //← gets an array
     int size = fileData.size();
 
@@ -638,6 +629,46 @@ void DX11Framework::LoadLightingData()
     fileOpen.close();
 }
 
+void DX11Framework::LoadGameObjects()
+{
+    json jFile; //Json Parser
+
+    std::ifstream fileOpen("JSON/gameObjects.json");
+
+    //validates to see if the file has been opened
+    if (!fileOpen.is_open() || fileOpen.fail())
+    {
+        std::cerr << "Error: file could not be opened." << std::endl;
+        return;
+    }
+
+    jFile = json::parse(fileOpen);
+
+    std::string v = jFile["version"].get<std::string>();
+    json& fileData = jFile["GameObjects"]; //← gets an array
+    int size = fileData.size();
+
+    for (unsigned int i = 0; i < size; i++)
+    {
+        gameObjectData g;
+        json& gameObjectDesc = fileData.at(i);
+        g.objFilePath = gameObjectDesc["FilePath"];
+        g.specularTexture = gameObjectDesc["Specular"];
+        g.colorTexture = gameObjectDesc["Color"];
+        g.startScale.x = gameObjectDesc["StartScale"][0];
+        g.startScale.y = gameObjectDesc["StartScale"][1];
+        g.startScale.z = gameObjectDesc["StartScale"][2];
+        g.startRot.x = gameObjectDesc["StartRot"][0];
+        g.startRot.y = gameObjectDesc["StartRot"][1];
+        g.startRot.z = gameObjectDesc["StartRot"][2];
+        g.startPos.x = gameObjectDesc["StartPos"][0];
+        g.startPos.y = gameObjectDesc["StartPos"][1];
+        g.startPos.z = gameObjectDesc["StartPos"][2];
+
+        objects.push_back(g); //Adds the gameobject to the list
+    }
+}
+
 void DX11Framework::Update()
 {
     //Sets the view and projection to the currently active camera
@@ -665,33 +696,32 @@ void DX11Framework::Update()
 
     //Defines the objects world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity() * XMMatrixRotationX(simpleCount));
-    XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(75, 75, 75));
+    /*XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(75, 75, 75));
     XMStoreFloat4x4(&_cubeWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(0, 0, 3) * XMMatrixRotationY(simpleCount));
     XMStoreFloat4x4(&_lineWorldMatrix, XMMatrixIdentity() * XMMatrixTranslation(0, 0, 0));
     XMStoreFloat4x4(&_pyramidWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.25, 0.25, 0.25) * XMMatrixTranslation(0, 0, 4.25) * XMMatrixRotationY(simpleCount));
     XMStoreFloat4x4(&_starOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(1, 1, 1) * XMMatrixTranslation(0, 0, 4) * (XMMatrixRotationX(simpleCount) * XMMatrixRotationY(simpleCount)));
-    XMStoreFloat4x4(&_donutOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(2.2, 2.2, 2.2) * (XMMatrixRotationY(fastCount) * XMMatrixRotationX(fastCount)));
+    XMStoreFloat4x4(&_donutOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(2.2, 2.2, 2.2) * (XMMatrixRotationY(fastCount) * XMMatrixRotationX(fastCount)));*/
 
-    star.SetWorldMatrix(_starOBJWorldMatrix); //pass the world matrix into the GameObject Class
-    donut.SetWorldMatrix(_donutOBJWorldMatrix);
-
-    LoadLightingData();
-
-    //Specular
-    _cbData.cameraPosition = camera[0].GetEye();
-    _cbData.specPower = 10;
+    //star.SetWorldMatrix(_starOBJWorldMatrix); //pass the world matrix into the GameObject Class
+    //donut->SetWorldMatrix(_donutOBJWorldMatrix);
 
     //Lighting
+    LoadLightingData();
+    _cbData.cameraPosition = camera[0].GetEye();
+    _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
-
-    //Texture
     _cbData.hasTexture = _hasTexture;
     _cbData.hasSpecularMap = _hasSpecularMap;
-
-    //Other
     _cbData.count = simpleCount;
 
     Keybinds();
+
+    // Update objects
+    //for (int i = 0; i < objects.size(); i++)
+    {
+        //gameObject->Update(deltaTime);
+    }
 }
 
 void DX11Framework::Draw()
@@ -701,97 +731,41 @@ void DX11Framework::Draw()
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
-  
 
-    //Store this frames data in constant buffer struct
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
-#pragma region Skybox
-
-    //Vertex Shader, Set Shader
-    _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
-    //_immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
-
-    //Remap to update data
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    //Load new world information
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_skyboxMatrix));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    skybox.Draw(_immediateContext, _constantBuffer);
-
-#pragma endregion
-
+    //Vertex and Pixel Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
-#pragma region Line
-    /// <summary>
-    /// NOTE: Line no longer works as Color has been removed for Normal
-    /// </summary>
-
-        /*
-        //Load new world information
-        _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_lineWorldMatrix));
-
-        line.Draw(_immediateContext, _constantBuffer);
-        */
-#pragma endregion
-
-#pragma region Cube
-
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
+    //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+    
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource; //Write constant buffer data onto GPU
 
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
+    for (int i = 0; i < objects.size(); i++)
+    {
+        GameObject* _gameObject = new GameObject;
+        _gameObject->SetMeshData(OBJLoader::Load(objects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
 
-    cube.Draw(_immediateContext, _constantBuffer);
+        //CreateDDSTextureFromFile(_device, objects.at(i).specularTexture, nullptr, &_texture);
+        //CreateDDSTextureFromFile(_device, objects.at(i).colorTexture, nullptr, &_texture);
+        //gameObject->SetShaderResource(_texture);
 
-#pragma endregion
+        _gameObject->SetScale(XMFLOAT3(objects.at(i).startScale.x, objects.at(i).startScale.y, objects.at(i).startScale.z));
+        _gameObject->SetRotation(XMFLOAT3(objects.at(i).startRot.x, objects.at(i).startRot.y, objects.at(i).startRot.z));
+        _gameObject->SetPosition(XMFLOAT3(objects.at(i).startPos.x, objects.at(i).startPos.y, objects.at(i).startPos.y));
 
-#pragma region Pyramid
+        _gameObject->SetGameObject(_gameObject);
 
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+        _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_pyramidWorldMatrix));
+        _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
+        memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+        _immediateContext->Unmap(_constantBuffer, 0);
 
-    //pyramid.Draw(_immediateContext, _constantBuffer);
-
-#pragma endregion
-
-#pragma region Obj
-    //donut
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(donut.GetWorldMatrix()));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    donut.Draw(donut, _immediateContext, _constantBuffer);
-
-    //star
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(star.GetWorldMatrix()));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    donut.Draw(star, _immediateContext, _constantBuffer);
-#pragma endregion
-
+        _gameObject->Draw(_immediateContext);
+    }
+    
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
 }

@@ -1,18 +1,25 @@
 #pragma once
-#include "DataFileLoader.h"
+#include "Structures.h"
 #include "OBJLoader.h"
 #include "DDSTextureLoader.h"
 
 class GameObject
 {
 private:
+	GameObject* _gameObject = nullptr;
 	ID3D11ShaderResourceView* _texture = nullptr;
 	MeshData _meshData;
-	DirectX::XMFLOAT4X4 _world;
+
+	XMFLOAT3 _position;
+	XMFLOAT3 _rotation;
+	XMFLOAT3 _scale;
+	XMFLOAT4X4 _world;
 
 public:
 	GameObject();
 	~GameObject();
+
+	void SetGameObject(GameObject* gameObject) { _gameObject = gameObject; }
 
 	void SetMeshData(MeshData in) { _meshData = in; }
 	void SetShaderResource(ID3D11ShaderResourceView* in) { _texture = in; }
@@ -20,12 +27,21 @@ public:
 
 	MeshData* GetMeshData() { return &_meshData; }
 	ID3D11ShaderResourceView** GetShaderResource() { return &_texture; }
-	XMFLOAT4X4* GetWorldMatrix() { return &_world; }
+	bool HasTexture() const { return _texture ? true : false; }
 
-	void JSONLoad(ID3D11Device* _device);
+	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
+	void SetPosition(XMFLOAT3 position) { _position = position; }
+	void SetScale(XMFLOAT3 scale) { _scale = scale; }
+	void SetRotation(XMFLOAT3 rotation) { _rotation = rotation; }
 
-	void CreateTexture(ID3D11Device* _device, const wchar_t* filePath, GameObject gameObject);
+	XMFLOAT3 GetPosition() const { return _position; }
+	XMFLOAT3 GetScale() const { return _scale; }
+	XMFLOAT3 GetRotation() const { return _rotation; }
 
-	void Draw(GameObject gameObject, ID3D11DeviceContext* _immediateContext, ID3D11Buffer* _constantBuffer);
+	void LoadGameObjectData(ID3D11Device* _device);
+
+	void Update(float deltaTime);
+
+	void Draw(ID3D11DeviceContext* _immediateContext);
 };
 
