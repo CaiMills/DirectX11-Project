@@ -4,7 +4,7 @@
 #include "Pyramid.h"
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
-GameObject* _gameObject;
+GameObject* _gameObject = new GameObject[10];
 //GameObject* donut;
 //GameObject star;
 //
@@ -665,7 +665,7 @@ void DX11Framework::LoadGameObjects()
         g.startPos.y = gameObjectDesc["StartPos"][1];
         g.startPos.z = gameObjectDesc["StartPos"][2];
 
-        objects.push_back(g); //Adds the gameobject to the list
+        gameobjects.push_back(g); //Adds the gameobject to the list
     }
 }
 
@@ -717,11 +717,16 @@ void DX11Framework::Update()
 
     Keybinds();
 
-    // Update objects
-    //for (int i = 0; i < objects.size(); i++)
+    //Update objects
+    for (int i = 0; i < gameobjects.size(); i++)
     {
-        //gameObject->Update(deltaTime);
+        _gameObject[i].Update(deltaTime);
     }
+}
+
+std::wstring StringToWString(const std::string& str) {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(str);
 }
 
 void DX11Framework::Draw()
@@ -741,29 +746,25 @@ void DX11Framework::Draw()
     
     D3D11_MAPPED_SUBRESOURCE mappedSubresource; //Write constant buffer data onto GPU
 
-    for (int i = 0; i < objects.size(); i++)
+    for (int i = 0; i < gameobjects.size(); i++)
     {
-        GameObject* _gameObject = new GameObject;
-        _gameObject->SetMeshData(OBJLoader::Load(objects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+        _gameObject[i].SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
 
-        //CreateDDSTextureFromFile(_device, objects.at(i).specularTexture, nullptr, &_texture);
-        //CreateDDSTextureFromFile(_device, objects.at(i).colorTexture, nullptr, &_texture);
-        //gameObject->SetShaderResource(_texture);
+        _gameObject[i].SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
+        _gameObject[i].SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
+        _gameObject[i].SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
 
-        _gameObject->SetScale(XMFLOAT3(objects.at(i).startScale.x, objects.at(i).startScale.y, objects.at(i).startScale.z));
-        _gameObject->SetRotation(XMFLOAT3(objects.at(i).startRot.x, objects.at(i).startRot.y, objects.at(i).startRot.z));
-        _gameObject->SetPosition(XMFLOAT3(objects.at(i).startPos.x, objects.at(i).startPos.y, objects.at(i).startPos.y));
-
-        _gameObject->SetGameObject(_gameObject);
+        _gameObject[i].SetGameObject(_gameObject);
 
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
+        //_cbData.World = XMMatrixTranspose(_gameObject->GetWorldMatrix());
         _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
 
-        _gameObject->Draw(_immediateContext);
+        _gameObject[i].Draw(_immediateContext);
     }
     
     //Present Backbuffer to screen

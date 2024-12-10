@@ -94,7 +94,7 @@ class DX11Framework
 
 
 public:
-	std::vector<gameObjectData> objects; //Creates a list for all gameobjects
+	std::vector<gameObjectData> gameobjects; //Creates a list for all gameobjects
 	ConstantBuffer _cbData;
 
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);

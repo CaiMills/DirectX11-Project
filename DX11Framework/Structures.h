@@ -7,6 +7,8 @@
 #include "JSON\json.hpp"
 #include "vector"
 #include <string>
+#include <locale>
+#include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
 
 using namespace DirectX;
 

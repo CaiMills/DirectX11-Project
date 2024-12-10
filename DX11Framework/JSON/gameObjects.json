@@ -6,7 +6,7 @@
       "Specular": "Textures\\Crate_SPEC.dds",
       "Color": "Textures\\Crate_COLOR.dds",
       "StartScale": [ 1.0, 1.0, 1.0 ],
-      "StartRot": [ 1.0, 1.0, 1.0 ],
+      "StartRot": [ 1.0, 1.0, 2.0 ],
       "StartPos": [ 0.0, 0.0, 4.0 ]
     },
     {
