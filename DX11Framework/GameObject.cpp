@@ -22,16 +22,7 @@ void GameObject::Update(float deltaTime)
     XMMATRIX rotation = XMMatrixRotationX(_rotation.x) * XMMatrixRotationY(_rotation.y) * XMMatrixRotationZ(_rotation.z);
     XMMATRIX translation = XMMatrixTranslation(_position.x, _position.y, _position.z);
 
-    XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * rotation * translation);
-}
-
-void GameObject::CreateTexture(ID3D11Device* _device, const wchar_t* filePath)
-{
-    ID3D11ShaderResourceView* _texture;
-
-    CreateDDSTextureFromFile(_device, filePath, nullptr, &_texture);
-
-    SetShaderResource(_texture);
+    XMStoreFloat4x4(&_world, scale * rotation * translation);
 }
 
 void GameObject::Draw(ID3D11DeviceContext* _immediateContext)

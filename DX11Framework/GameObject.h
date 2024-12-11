@@ -24,9 +24,10 @@ public:
 
 	MeshData* GetMeshData() { return &_meshData; }
 	ID3D11ShaderResourceView** GetShaderResource() { return &_texture; }
-	bool HasTexture() const { return _texture ? true : false; }
+	//bool HasTexture() const { return _texture ? true : false; }
 
 	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
+
 	void SetScale(XMFLOAT3 scale) { _scale = scale; }
 	void SetRotation(XMFLOAT3 rotation) { _rotation = rotation; }
 	void SetPosition(XMFLOAT3 position) { _position = position; }
@@ -38,8 +39,6 @@ public:
 	void LoadGameObjectData(ID3D11Device* _device);
 
 	void Update(float deltaTime);
-
-	void CreateTexture(ID3D11Device* _device, const wchar_t* filePath);
 
 	void Draw(ID3D11DeviceContext* _immediateContext);
 };

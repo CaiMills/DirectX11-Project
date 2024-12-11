@@ -37,12 +37,6 @@ class DX11Framework
 
 	//World
 	XMFLOAT4X4 _worldMatrix;
-	XMFLOAT4X4 _skyboxMatrix;
-	XMFLOAT4X4 _cubeWorldMatrix;
-	XMFLOAT4X4 _lineWorldMatrix;
-	XMFLOAT4X4 _pyramidWorldMatrix;
-	XMFLOAT4X4 _starOBJWorldMatrix;
-	XMFLOAT4X4 _donutOBJWorldMatrix;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
 
@@ -74,12 +68,10 @@ class DX11Framework
 	HWND _windowHandle;
 
 	//GameObjects
-	//GameObject* _gameObject = new GameObject[10];
-	MeshData donutOBJData;
-	MeshData starOBJData;
+	GameObject* _gameObject = new GameObject[10];
 
 	//Camera
-	Camera* camera = new Camera[3];
+	Camera* _camera = new Camera[3];
 	XMFLOAT4X4 _view;
 	XMFLOAT4X4 _projection;
 	int camNumber;

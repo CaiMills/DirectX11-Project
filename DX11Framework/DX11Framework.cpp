@@ -5,14 +5,6 @@
 #include <atlstr.h> // to use CString.
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
-GameObject* _gameObject = new GameObject[10];
-//GameObject* donut;
-//GameObject star;
-//
-////Line line;
-//Cube skybox;
-//Cube cube;
-//Pyramid pyramid;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -414,39 +406,22 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera Settings - This is where they are initalised
     camNumber = 0;
 
-    _view = camera[0].GetView();
-    _projection = camera[0].GetProjection();
+    _view = _camera[0].GetView();
+    _projection = _camera[0].GetProjection();
 
-    camera[0].SetEye(XMFLOAT3(0, 0, -6.1));
-    camera[0].SetAt(XMFLOAT3(0, 0, 0));
-    camera[0].SetUp(XMFLOAT3(0, 1, 0));
+    _camera[0].SetEye(XMFLOAT3(0, 0, -6.1));
+    _camera[0].SetAt(XMFLOAT3(0, 0, 0));
+    _camera[0].SetUp(XMFLOAT3(0, 1, 0));
 
-    camera[1].SetEye(XMFLOAT3(0, 0, -20.1));
-    camera[1].SetAt(XMFLOAT3(0, 0, 0));
-    camera[1].SetUp(XMFLOAT3(0, 1, 0));
+    _camera[1].SetEye(XMFLOAT3(0, 0, -20.1));
+    _camera[1].SetAt(XMFLOAT3(0, 0, 0));
+    _camera[1].SetUp(XMFLOAT3(0, 1, 0));
 
-    camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
-    camera[2].SetAt(XMFLOAT3(0, 0, 0));
-    camera[2].SetUp(XMFLOAT3(0, 1, 0));
+    _camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
+    _camera[2].SetAt(XMFLOAT3(0, 0, 0));
+    _camera[2].SetUp(XMFLOAT3(0, 1, 0));
 
     LoadGameObjects();
-
-    //Textures
-    //hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
-    //hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_SPEC.dds", nullptr, &_crateTexture);
-    //hr = CreateDDSTextureFromFile(_device, L"Textures\\Crate_COLOR.dds", nullptr, &_crateTexture);
-
-    //_hasSpecularMap = 1;
-    //_hasTexture = 1;
-
-    //Meshes
-    /*donutOBJData = OBJLoader::Load("Models\\Test Models\\Made in Blender\\donut.obj", _device, false);
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_SPEC.dds", nullptr, &_asphaltTexture);
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\asphalt_COLOR.dds", nullptr, &_asphaltTexture);
-    donut->SetMeshData(donutOBJData);
-    donut->SetShaderResource(_asphaltTexture);
-
-    starOBJData = OBJLoader::Load("Models\\Test Models\\Made in 3ds Max\\star.obj", _device);*/
 
     if (FAILED(hr))
     {
@@ -493,50 +468,50 @@ void DX11Framework::Keybinds()
         //W - Fowards
         if (GetAsyncKeyState(0x57) & 0X0001)
         {
-            _eyeMovement = camera[2].GetEye();
+            _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, 1.0f);
             _vector = XMLoadFloat3(&_eyeMovement);
             _operation = XMLoadFloat3(&_operator);
             _eyeResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_eyeMovement, _eyeResult);
 
-            _lookAt = camera[2].GetAt();
+            _lookAt = _camera[2].GetAt();
             _operator = XMFLOAT3(0, 0, 1.0f);
             _vector = XMLoadFloat3(&_lookAt);
             _operation = XMLoadFloat3(&_operator);
             _lookAtResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_lookAt, _lookAtResult);
 
-            _View = camera[2].GetView();
-            _Projection = camera[2].GetProjection();
+            _View = _camera[2].GetView();
+            _Projection = _camera[2].GetProjection();
 
-            camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
-            camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
+            _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
+            _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
             return;
         }
 
         //S - Backwards
         if (GetAsyncKeyState(0x53) & 0X0001)
         {
-            _eyeMovement = camera[2].GetEye();
+            _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, -1.0f);
             _vector = XMLoadFloat3(&_eyeMovement);
             _operation = XMLoadFloat3(&_operator);
             _eyeResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_eyeMovement, _eyeResult);
 
-            _lookAt = camera[2].GetAt();
+            _lookAt = _camera[2].GetAt();
             _operator = XMFLOAT3(0, 0, -1.0f);
             _vector = XMLoadFloat3(&_lookAt);
             _operation = XMLoadFloat3(&_operator);
             _lookAtResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_lookAt, _lookAtResult);
 
-            _View = camera[2].GetView();
-            _Projection = camera[2].GetProjection();
+            _View = _camera[2].GetView();
+            _Projection = _camera[2].GetProjection();
 
-            camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
-            camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
+            _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
+            _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
             return;
         }
     }
@@ -544,9 +519,9 @@ void DX11Framework::Keybinds()
     //Resets the FreeCam settings if FreeCam isnt active
     else if (camNumber != 2)
     {
-        camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
-        camera[2].SetAt(XMFLOAT3(0, 0, 0));
-        camera[2].SetUp(XMFLOAT3(0, 1, 0));
+        _camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
+        _camera[2].SetAt(XMFLOAT3(0, 0, 0));
+        _camera[2].SetUp(XMFLOAT3(0, 1, 0));
     }
 }
 
@@ -628,6 +603,30 @@ void DX11Framework::LoadLightingData()
     }
     
     fileOpen.close();
+
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        //mesh
+        _gameObject[i].SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+
+        //transform
+        _gameObject[i].SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
+        _gameObject[i].SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
+        _gameObject[i].SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
+
+        //texture
+        ID3D11ShaderResourceView* _texture;
+        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
+
+        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
+        _gameObject[i].SetShaderResource(_texture);
+
+        //this is temporary, need to make this conditional
+        _hasTexture = 1;
+        _hasSpecularMap = 1;
+    }
 }
 
 void DX11Framework::LoadGameObjects()
@@ -673,14 +672,14 @@ void DX11Framework::LoadGameObjects()
 void DX11Framework::Update()
 {
     //Sets the view and projection to the currently active camera
-    _view = camera[camNumber].GetView();
-    _projection = camera[camNumber].GetProjection();
+    _view = _camera[camNumber].GetView();
+    _projection = _camera[camNumber].GetProjection();
 
     _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_view));
     _cbData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&_projection));
 
     //Cameras
-    camera[camNumber].Update();
+    _camera[camNumber].Update();
 
     //Static initializes this value only once    
     static ULONGLONG frameStart = GetTickCount64();
@@ -695,21 +694,12 @@ void DX11Framework::Update()
     static float fastCount = 0.0f;
     fastCount += (deltaTime * 2);
 
-    //Defines the objects world position
+    //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
-    /*XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(75, 75, 75));
-    XMStoreFloat4x4(&_cubeWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(0, 0, 3) * XMMatrixRotationY(simpleCount));
-    XMStoreFloat4x4(&_lineWorldMatrix, XMMatrixIdentity() * XMMatrixTranslation(0, 0, 0));
-    XMStoreFloat4x4(&_pyramidWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.25, 0.25, 0.25) * XMMatrixTranslation(0, 0, 4.25) * XMMatrixRotationY(simpleCount));
-    XMStoreFloat4x4(&_starOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(1, 1, 1) * XMMatrixTranslation(0, 0, 4) * (XMMatrixRotationX(simpleCount) * XMMatrixRotationY(simpleCount)));
-    XMStoreFloat4x4(&_donutOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(2.2, 2.2, 2.2) * (XMMatrixRotationY(fastCount) * XMMatrixRotationX(fastCount)));*/
-
-    //star.SetWorldMatrix(_starOBJWorldMatrix); //pass the world matrix into the GameObject Class
-    //donut->SetWorldMatrix(_donutOBJWorldMatrix);
 
     //Lighting
     LoadLightingData();
-    _cbData.cameraPosition = camera[0].GetEye();
+    _cbData.cameraPosition = _camera[0].GetEye();
     _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
     _cbData.hasTexture = _hasTexture;
@@ -723,11 +713,6 @@ void DX11Framework::Update()
     {
         _gameObject[i].Update(deltaTime);
     }
-}
-
-std::wstring StringToWString(const std::string& str) {
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(str);
 }
 
 void DX11Framework::Draw()
@@ -749,27 +734,8 @@ void DX11Framework::Draw()
 
     for (int i = 0; i < gameobjects.size(); i++)
     {
-        //mesh
-        _gameObject[i].SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
-
-        //transform
-        _gameObject[i].SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
-        _gameObject[i].SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
-        _gameObject[i].SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
-
-        //texture
-        //ID3D11ShaderResourceView* _texture;
-        std::wstring string = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
-        //HRESULT HR = CreateDDSTextureFromFile(_device, string.c_str(), nullptr, &_texture);
-        //_gameObject[i].SetShaderResource(_texture);
-
-        _gameObject[i].CreateTexture(_device, L"Textures\\Crate_COLOR.dds");
-
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-        //_cbData.World = XMMatrixTranspose(_gameObject->GetWorldMatrix());
         _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
-
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
 
