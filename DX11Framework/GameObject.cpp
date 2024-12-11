@@ -3,10 +3,6 @@
 GameObject::GameObject()
 {
     _texture = nullptr;
-
-    _position = XMFLOAT3();
-    _rotation = XMFLOAT3();
-    _scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 }
 
 GameObject::~GameObject()
@@ -23,22 +19,20 @@ void GameObject::Update(float deltaTime)
 {
     // Calculate world matrix
     XMMATRIX scale = XMMatrixScaling(_scale.x, _scale.y, _scale.z);
-    XMMATRIX rotation = XMMatrixRotationX(GetRotation().x) * XMMatrixRotationY(GetRotation().y) * XMMatrixRotationZ(GetRotation().z);
+    XMMATRIX rotation = XMMatrixRotationX(_rotation.x) * XMMatrixRotationY(_rotation.y) * XMMatrixRotationZ(_rotation.z);
     XMMATRIX translation = XMMatrixTranslation(_position.x, _position.y, _position.z);
 
-    XMStoreFloat4x4(&_world, scale * rotation * translation);
-
-    XMStoreFloat4x4(&_world, this->GetWorldMatrix() * this->GetWorldMatrix());
+    XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * rotation * translation);
 }
 
-/*void GameObject::CreateTexture(ID3D11Device* _device, const wchar_t* filePath, GameObject gameObject)
+void GameObject::CreateTexture(ID3D11Device* _device, const wchar_t* filePath)
 {
     ID3D11ShaderResourceView* _texture;
 
     CreateDDSTextureFromFile(_device, filePath, nullptr, &_texture);
 
     SetShaderResource(_texture);
-}*/
+}
 
 void GameObject::Draw(ID3D11DeviceContext* _immediateContext)
 {

@@ -2,6 +2,7 @@
 #include "Line.h"
 #include "Cube.h"
 #include "Pyramid.h"
+#include <atlstr.h> // to use CString.
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 GameObject* _gameObject = new GameObject[10];
@@ -695,7 +696,7 @@ void DX11Framework::Update()
     fastCount += (deltaTime * 2);
 
     //Defines the objects world position
-    XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity() * XMMatrixRotationX(simpleCount));
+    XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
     /*XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(75, 75, 75));
     XMStoreFloat4x4(&_cubeWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(0, 0, 3) * XMMatrixRotationY(simpleCount));
     XMStoreFloat4x4(&_lineWorldMatrix, XMMatrixIdentity() * XMMatrixTranslation(0, 0, 0));
@@ -748,18 +749,26 @@ void DX11Framework::Draw()
 
     for (int i = 0; i < gameobjects.size(); i++)
     {
+        //mesh
         _gameObject[i].SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
 
+        //transform
         _gameObject[i].SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
         _gameObject[i].SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
         _gameObject[i].SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
 
-        _gameObject[i].SetGameObject(_gameObject);
+        //texture
+        //ID3D11ShaderResourceView* _texture;
+        std::wstring string = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        //HRESULT HR = CreateDDSTextureFromFile(_device, string.c_str(), nullptr, &_texture);
+        //_gameObject[i].SetShaderResource(_texture);
+
+        _gameObject[i].CreateTexture(_device, L"Textures\\Crate_COLOR.dds");
 
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
 
         //_cbData.World = XMMatrixTranspose(_gameObject->GetWorldMatrix());
-        _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+        _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
 
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
