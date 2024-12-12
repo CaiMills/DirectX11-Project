@@ -3,9 +3,41 @@
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include <iostream>
+#include "JSON\json.hpp"
+#include "vector"
 #include <string>
+#include <locale>
+#include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
 
 using namespace DirectX;
+
+struct ConstantBuffer
+{
+	//16bit
+	XMMATRIX Projection;
+	XMMATRIX View;
+	XMMATRIX World;
+
+	//16bit
+	XMFLOAT4 diffuseLight;
+	XMFLOAT4 diffuseMaterial;
+	XMFLOAT4 ambientLight;
+	XMFLOAT4 ambientMaterial;
+
+	//16bit
+	XMFLOAT4 specularLight;
+	XMFLOAT4 specularMaterial;
+	XMFLOAT3 cameraPosition;
+	float specPower;
+
+	//3bit
+	XMFLOAT3 lightDir;
+
+	//Texture
+	int hasTexture;
+	int hasSpecularMap;
+};
 
 struct SimpleVertex
 {
@@ -28,7 +60,23 @@ struct MeshData
 	UINT IndexCount;
 };
 
-class Structures
-{
+//Mask namespace for shorthand
+using json = nlohmann::json;
 
+struct lightingData
+{
+	std::string lightFile;
+	XMFLOAT4 light;
+	XMFLOAT4 material;
 };
+
+struct gameObjectData
+{
+	std::string objFilePath;
+	std::string specularTexture;
+	std::string colorTexture;
+	XMFLOAT3 startScale;
+	XMFLOAT3 startRot;
+	XMFLOAT3 startPos;
+};
+

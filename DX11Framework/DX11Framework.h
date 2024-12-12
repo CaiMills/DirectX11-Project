@@ -1,39 +1,12 @@
 #pragma once
 #include "GameObject.h"
 #include "Camera.h"
+#include <vector>
 
 //#include <wrl.h>
 
 using namespace DirectX;
 //using Microsoft::WRL::ComPtr;
-
-struct ConstantBuffer
-{
-	//16bit
-	XMMATRIX Projection;
-	XMMATRIX View;
-	XMMATRIX World;
-
-	//16bit
-	XMFLOAT4 diffuseLight;
-	XMFLOAT4 diffuseMaterial;
-	XMFLOAT4 ambientLight;
-	XMFLOAT4 ambientMaterial;
-
-	//16bit
-	XMFLOAT4 specularLight;
-	XMFLOAT4 specularMaterial;
-	XMFLOAT3 cameraPosition;
-	float specPower;
-
-	//4bit
-	XMFLOAT3 lightDir;
-	float count;
-
-	//Texture
-	int hasTexture;
-	int hasSpecularMap;
-};
 
 class DX11Framework
 {
@@ -64,12 +37,6 @@ class DX11Framework
 
 	//World
 	XMFLOAT4X4 _worldMatrix;
-	XMFLOAT4X4 _skyboxMatrix;
-	XMFLOAT4X4 _cubeWorldMatrix;
-	XMFLOAT4X4 _lineWorldMatrix;
-	XMFLOAT4X4 _pyramidWorldMatrix;
-	XMFLOAT4X4 _starOBJWorldMatrix;
-	XMFLOAT4X4 _donutOBJWorldMatrix;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
 
@@ -94,19 +61,15 @@ class DX11Framework
 	int _hasTexture;
 	int _hasSpecularMap;
 	ID3D11SamplerState* _bilinearSamplerState;
-	ID3D11ShaderResourceView* _texture;
 	ID3D11ShaderResourceView* _skyboxTexture;
-	ID3D11ShaderResourceView* _crateTexture;
-	ID3D11ShaderResourceView* _asphaltTexture;
 
 	HWND _windowHandle;
 
-	//Mesh Data
-	MeshData starOBJData;
-	MeshData donutOBJData;
+	//GameObjects
+	GameObject* _gameObject = new GameObject[10];
 
 	//Camera
-	Camera* camera = new Camera[3];
+	Camera* _camera = new Camera[3];
 	XMFLOAT4X4 _view;
 	XMFLOAT4X4 _projection;
 	int camNumber;
@@ -120,6 +83,7 @@ class DX11Framework
 
 
 public:
+	std::vector<gameObjectData> gameobjects; //Creates a list for all gameobjects
 	ConstantBuffer _cbData;
 
 	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
@@ -133,6 +97,7 @@ public:
 	void Keybinds();
 	~DX11Framework();
 	void LoadLightingData();
+	void LoadGameObjects();
 	void Update();
 	void Draw();
 };

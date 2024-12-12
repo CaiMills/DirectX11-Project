@@ -20,9 +20,8 @@ cbuffer ConstantBuffer : register(b0)
     float3 cameraPosition;
     float specPower;
     
-    //4bit
+    //3bit
     float3 lightDir;
-    float count;
     
     //textures
     uint hasTexture;
@@ -41,8 +40,6 @@ struct VS_Out
 VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoord : TEXCOORD)
 {   
     VS_Out output = (VS_Out)0;
-   
-    //Position.y += sin(count);
     
     float4 Pos4 = float4(Position, 1.0f);
     output.position = mul(Pos4, World);

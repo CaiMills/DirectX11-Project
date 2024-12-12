@@ -2,17 +2,9 @@
 #include "Line.h"
 #include "Cube.h"
 #include "Pyramid.h"
+#include <atlstr.h> // to use CString.
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
-
-GameObject gameObject;
-GameObject donut;
-GameObject star;
-
-//Line line;
-Cube skybox;
-Cube cube;
-Pyramid pyramid;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -313,14 +305,14 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 
     //line.VertexData(_device);
 
-    skybox.VertexData(_device);
-    skybox.IndexData(_device, true);
+    //skybox.VertexData(_device);
+    //skybox.IndexData(_device, true);
 
-    cube.VertexData(_device);
-    cube.IndexData(_device, false);
+    //cube.VertexData(_device);
+    //cube.IndexData(_device, false);
 
-    pyramid.VertexData(_device);
-    pyramid.IndexData(_device);
+    //pyramid.VertexData(_device);
+    //pyramid.IndexData(_device);
 
     return S_OK;
 }
@@ -414,50 +406,27 @@ HRESULT DX11Framework::InitRunTimeData()
     //Camera Settings - This is where they are initalised
     camNumber = 0;
 
-    _view = camera[0].GetView();
-    _projection = camera[0].GetProjection();
+    _view = _camera[0].GetView();
+    _projection = _camera[0].GetProjection();
 
-    camera[0].SetEye(XMFLOAT3(0, 0, -6.1));
-    camera[0].SetAt(XMFLOAT3(0, 0, 0));
-    camera[0].SetUp(XMFLOAT3(0, 1, 0));
+    _camera[0].SetEye(XMFLOAT3(0, 0, -6.1));
+    _camera[0].SetAt(XMFLOAT3(0, 0, 0));
+    _camera[0].SetUp(XMFLOAT3(0, 1, 0));
 
-    camera[1].SetEye(XMFLOAT3(0, 0, -20.1));
-    camera[1].SetAt(XMFLOAT3(0, 0, 0));
-    camera[1].SetUp(XMFLOAT3(0, 1, 0));
+    _camera[1].SetEye(XMFLOAT3(0, 0, -20.1));
+    _camera[1].SetAt(XMFLOAT3(0, 0, 0));
+    _camera[1].SetUp(XMFLOAT3(0, 1, 0));
 
-    camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
-    camera[2].SetAt(XMFLOAT3(0, 0, 0));
-    camera[2].SetUp(XMFLOAT3(0, 1, 0));
+    _camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
+    _camera[2].SetAt(XMFLOAT3(0, 0, 0));
+    _camera[2].SetUp(XMFLOAT3(0, 1, 0));
 
-    //textures
-    // 
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
+    LoadGameObjects();
+
     if (FAILED(hr))
     {
         return hr;
     }
-
-    _hasSpecularMap = 1;
-    _hasTexture = 1;
-
-    starOBJData = OBJLoader::Load("Models\\Test Models\\Made in 3ds Max\\star.obj", _device);
-
-    skybox.SetShaderResource(_crateTexture);
-    star.SetMeshData(starOBJData); //pass the meshData into the GameObject Class
-
-    star.CreateTexture(_device, L"Textures\\Crate_COLOR.dds", star);
-
-    donutOBJData = OBJLoader::Load("Models\\Test Models\\Made in Blender\\donut.obj", _device, false);
-    donut.CreateTexture(_device, L"Textures\\asphalt_SPEC.dds", donut);
-    donut.CreateTexture(_device, L"Textures\\asphalt_COLOR.dds", donut);
-    donut.SetMeshData(donutOBJData);
-    
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    return S_OK;
 }
 
 void DX11Framework::Keybinds()
@@ -499,50 +468,50 @@ void DX11Framework::Keybinds()
         //W - Fowards
         if (GetAsyncKeyState(0x57) & 0X0001)
         {
-            _eyeMovement = camera[2].GetEye();
+            _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, 1.0f);
             _vector = XMLoadFloat3(&_eyeMovement);
             _operation = XMLoadFloat3(&_operator);
             _eyeResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_eyeMovement, _eyeResult);
 
-            _lookAt = camera[2].GetAt();
+            _lookAt = _camera[2].GetAt();
             _operator = XMFLOAT3(0, 0, 1.0f);
             _vector = XMLoadFloat3(&_lookAt);
             _operation = XMLoadFloat3(&_operator);
             _lookAtResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_lookAt, _lookAtResult);
 
-            _View = camera[2].GetView();
-            _Projection = camera[2].GetProjection();
+            _View = _camera[2].GetView();
+            _Projection = _camera[2].GetProjection();
 
-            camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
-            camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
+            _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
+            _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
             return;
         }
 
         //S - Backwards
         if (GetAsyncKeyState(0x53) & 0X0001)
         {
-            _eyeMovement = camera[2].GetEye();
+            _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, -1.0f);
             _vector = XMLoadFloat3(&_eyeMovement);
             _operation = XMLoadFloat3(&_operator);
             _eyeResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_eyeMovement, _eyeResult);
 
-            _lookAt = camera[2].GetAt();
+            _lookAt = _camera[2].GetAt();
             _operator = XMFLOAT3(0, 0, -1.0f);
             _vector = XMLoadFloat3(&_lookAt);
             _operation = XMLoadFloat3(&_operator);
             _lookAtResult = XMVectorAdd(_vector, _operation);
             XMStoreFloat3(&_lookAt, _lookAtResult);
 
-            _View = camera[2].GetView();
-            _Projection = camera[2].GetProjection();
+            _View = _camera[2].GetView();
+            _Projection = _camera[2].GetProjection();
 
-            camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
-            camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
+            _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
+            _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
             return;
         }
     }
@@ -550,9 +519,9 @@ void DX11Framework::Keybinds()
     //Resets the FreeCam settings if FreeCam isnt active
     else if (camNumber != 2)
     {
-        camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
-        camera[2].SetAt(XMFLOAT3(0, 0, 0));
-        camera[2].SetUp(XMFLOAT3(0, 1, 0));
+        _camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
+        _camera[2].SetAt(XMFLOAT3(0, 0, 0));
+        _camera[2].SetUp(XMFLOAT3(0, 1, 0));
     }
 }
 
@@ -591,11 +560,9 @@ void DX11Framework::LoadLightingData()
         std::cerr << "Error: file could not be opened." << std::endl;
         return;
     }
-    //this is causing me an error
+
     jFile = json::parse(fileOpen);
-
     std::string v = jFile["version"].get<std::string>();
-
     json& fileData = jFile["Lighting"]; //← gets an array
     int size = fileData.size();
 
@@ -638,17 +605,83 @@ void DX11Framework::LoadLightingData()
     fileOpen.close();
 }
 
+void DX11Framework::LoadGameObjects()
+{
+    json jFile; //Json Parser
+
+    std::ifstream fileOpen("JSON/gameObjects.json");
+
+    //validates to see if the file has been opened
+    if (!fileOpen.is_open() || fileOpen.fail())
+    {
+        std::cerr << "Error: file could not be opened." << std::endl;
+        return;
+    }
+
+    jFile = json::parse(fileOpen);
+
+    std::string v = jFile["version"].get<std::string>();
+    json& fileData = jFile["GameObjects"]; //← gets an array
+    int size = fileData.size();
+
+    for (unsigned int i = 0; i < size; i++)
+    {
+        gameObjectData g;
+        json& gameObjectDesc = fileData.at(i);
+        g.objFilePath = gameObjectDesc["FilePath"];
+        g.specularTexture = gameObjectDesc["Specular"];
+        g.colorTexture = gameObjectDesc["Color"];
+        g.startScale.x = gameObjectDesc["StartScale"][0];
+        g.startScale.y = gameObjectDesc["StartScale"][1];
+        g.startScale.z = gameObjectDesc["StartScale"][2];
+        g.startRot.x = gameObjectDesc["StartRot"][0];
+        g.startRot.y = gameObjectDesc["StartRot"][1];
+        g.startRot.z = gameObjectDesc["StartRot"][2];
+        g.startPos.x = gameObjectDesc["StartPos"][0];
+        g.startPos.y = gameObjectDesc["StartPos"][1];
+        g.startPos.z = gameObjectDesc["StartPos"][2];
+
+        gameobjects.push_back(g); //Adds the gameobject to the list
+    }
+
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        //mesh
+        Appearance* _appearance = new Appearance();
+        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+
+        //texture
+        ID3D11ShaderResourceView* _texture;
+        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
+
+        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
+        _appearance->SetTexture(_texture);
+
+        _gameObject[i].SetAppearance(_appearance);
+
+        _hasTexture = 1.0f;
+        _hasSpecularMap = 1.0f;
+
+        //transform
+        _gameObject[i].GetTransform()->SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
+        _gameObject[i].GetTransform()->SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
+        _gameObject[i].GetTransform()->SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
+    }
+}
+
 void DX11Framework::Update()
 {
     //Sets the view and projection to the currently active camera
-    _view = camera[camNumber].GetView();
-    _projection = camera[camNumber].GetProjection();
+    _view = _camera[camNumber].GetView();
+    _projection = _camera[camNumber].GetProjection();
 
     _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_view));
     _cbData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&_projection));
 
     //Cameras
-    camera[camNumber].Update();
+    _camera[camNumber].Update();
 
     //Static initializes this value only once    
     static ULONGLONG frameStart = GetTickCount64();
@@ -657,39 +690,22 @@ void DX11Framework::Update()
     float deltaTime = (frameNow - frameStart) / 1000.0f;
     frameStart = frameNow;
 
-    static float simpleCount = 0.0f;
-    simpleCount += deltaTime;
+    //Defines the world position
+    XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
 
-    static float fastCount = 0.0f;
-    fastCount += (deltaTime * 2);
-
-    //Defines the objects world position
-    XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity() * XMMatrixRotationX(simpleCount));
-    XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(75, 75, 75));
-    XMStoreFloat4x4(&_cubeWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(0, 0, 3) * XMMatrixRotationY(simpleCount));
-    XMStoreFloat4x4(&_lineWorldMatrix, XMMatrixIdentity() * XMMatrixTranslation(0, 0, 0));
-    XMStoreFloat4x4(&_pyramidWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(0.25, 0.25, 0.25) * XMMatrixTranslation(0, 0, 4.25) * XMMatrixRotationY(simpleCount));
-    XMStoreFloat4x4(&_starOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(1, 1, 1) * XMMatrixTranslation(0, 0, 4) * (XMMatrixRotationX(simpleCount) * XMMatrixRotationY(simpleCount)));
-    XMStoreFloat4x4(&_donutOBJWorldMatrix, XMMatrixIdentity() * XMMatrixScaling(2.2, 2.2, 2.2) * (XMMatrixRotationY(fastCount) * XMMatrixRotationX(fastCount)));
-
-    star.SetWorldMatrix(_starOBJWorldMatrix); //pass the world matrix into the GameObject Class
-    donut.SetWorldMatrix(_donutOBJWorldMatrix);
-
-    LoadLightingData();
-
-    //Specular
-    _cbData.cameraPosition = camera[0].GetEye();
-    _cbData.specPower = 10;
+    //Update objects
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        _gameObject[i].Update(deltaTime);
+    }
 
     //Lighting
+    LoadLightingData();
+    _cbData.cameraPosition = _camera[0].GetEye();
+    _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
-
-    //Texture
     _cbData.hasTexture = _hasTexture;
     _cbData.hasSpecularMap = _hasSpecularMap;
-
-    //Other
-    _cbData.count = simpleCount;
 
     Keybinds();
 }
@@ -701,97 +717,38 @@ void DX11Framework::Draw()
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
-  
 
-    //Store this frames data in constant buffer struct
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
-#pragma region Skybox
-
-    //Vertex Shader, Set Shader
-    _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
-    //_immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
-
-    //Remap to update data
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    //Load new world information
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_skyboxMatrix));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    skybox.Draw(_immediateContext, _constantBuffer);
-
-#pragma endregion
-
+    //Vertex and Pixel Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
-#pragma region Line
-    /// <summary>
-    /// NOTE: Line no longer works as Color has been removed for Normal
-    /// </summary>
-
-        /*
-        //Load new world information
-        _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_lineWorldMatrix));
-
-        line.Draw(_immediateContext, _constantBuffer);
-        */
-#pragma endregion
-
-#pragma region Cube
-
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
+    //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+    
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource; //Write constant buffer data onto GPU
 
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        // Set texture
+        if (_gameObject[i].GetAppearance()->HasTexture())
+        {
+            _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
+            _cbData.hasTexture = 1.0f;
+            _cbData.hasSpecularMap = 1.0f;
+        }
+        else
+        {
+            _cbData.hasTexture = 0.0f;
+            _cbData.hasSpecularMap = 0.0f;
+        }
+        _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
+        _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+        memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+        _immediateContext->Unmap(_constantBuffer, 0);
 
-    cube.Draw(_immediateContext, _constantBuffer);
-
-#pragma endregion
-
-#pragma region Pyramid
-
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_pyramidWorldMatrix));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    //pyramid.Draw(_immediateContext, _constantBuffer);
-
-#pragma endregion
-
-#pragma region Obj
-    //donut
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(donut.GetWorldMatrix()));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    donut.Draw(donut, _immediateContext, _constantBuffer);
-
-    //star
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(star.GetWorldMatrix()));
-
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
-
-    donut.Draw(star, _immediateContext, _constantBuffer);
-#pragma endregion
-
+        _gameObject[i].Draw(_immediateContext);
+    }
+    
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);
 }
