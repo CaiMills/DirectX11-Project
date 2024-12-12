@@ -7,4 +7,7 @@ Appearance::Appearance()
 
 Appearance::~Appearance()
 {
+	_texture = nullptr;
+	_meshData.IndexBuffer = nullptr;
+	_meshData.VertexBuffer = nullptr;
 }

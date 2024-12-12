@@ -31,9 +31,8 @@ struct ConstantBuffer
 	XMFLOAT3 cameraPosition;
 	float specPower;
 
-	//4bit
+	//3bit
 	XMFLOAT3 lightDir;
-	float count;
 
 	//Texture
 	int hasTexture;

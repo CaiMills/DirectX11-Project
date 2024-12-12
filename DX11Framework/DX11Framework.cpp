@@ -690,14 +690,14 @@ void DX11Framework::Update()
     float deltaTime = (frameNow - frameStart) / 1000.0f;
     frameStart = frameNow;
 
-    static float simpleCount = 0.0f;
-    simpleCount += deltaTime;
-
-    static float fastCount = 0.0f;
-    fastCount += (deltaTime * 2);
-
     //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
+
+    //Update objects
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        _gameObject[i].Update(deltaTime);
+    }
 
     //Lighting
     LoadLightingData();
@@ -706,15 +706,8 @@ void DX11Framework::Update()
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
     _cbData.hasTexture = _hasTexture;
     _cbData.hasSpecularMap = _hasSpecularMap;
-    _cbData.count = simpleCount;
 
     Keybinds();
-
-    //Update objects
-    for (int i = 0; i < gameobjects.size(); i++)
-    {
-        _gameObject[i].Update(deltaTime);
-    }
 }
 
 void DX11Framework::Draw()
@@ -741,15 +734,15 @@ void DX11Framework::Draw()
         {
             _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
             _cbData.hasTexture = 1.0f;
+            _cbData.hasSpecularMap = 1.0f;
         }
         else
         {
             _cbData.hasTexture = 0.0f;
+            _cbData.hasSpecularMap = 0.0f;
         }
-        //Do the same for specular at some point
-
-        _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
+        _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
 

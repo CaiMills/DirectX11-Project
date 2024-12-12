@@ -145,6 +145,7 @@
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="JSON\gameObjects.json" />
     <None Include="SimpleShaders.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
@@ -164,7 +165,6 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DX11Framework.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="JSON\json.hpp" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="Pyramid.h" />

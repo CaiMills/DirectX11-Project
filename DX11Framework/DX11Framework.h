@@ -62,8 +62,6 @@ class DX11Framework
 	int _hasSpecularMap;
 	ID3D11SamplerState* _bilinearSamplerState;
 	ID3D11ShaderResourceView* _skyboxTexture;
-	ID3D11ShaderResourceView* _crateTexture;
-	ID3D11ShaderResourceView* _asphaltTexture;
 
 	HWND _windowHandle;
 
