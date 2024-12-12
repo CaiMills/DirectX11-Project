@@ -603,30 +603,6 @@ void DX11Framework::LoadLightingData()
     }
     
     fileOpen.close();
-
-    for (int i = 0; i < gameobjects.size(); i++)
-    {
-        //mesh
-        _gameObject[i].SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
-
-        //transform
-        _gameObject[i].SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
-        _gameObject[i].SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
-        _gameObject[i].SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
-
-        //texture
-        ID3D11ShaderResourceView* _texture;
-        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
-        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
-
-        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
-        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
-        _gameObject[i].SetShaderResource(_texture);
-
-        //this is temporary, need to make this conditional
-        _hasTexture = 1;
-        _hasSpecularMap = 1;
-    }
 }
 
 void DX11Framework::LoadGameObjects()
@@ -666,6 +642,32 @@ void DX11Framework::LoadGameObjects()
         g.startPos.z = gameObjectDesc["StartPos"][2];
 
         gameobjects.push_back(g); //Adds the gameobject to the list
+    }
+
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        //mesh
+        Appearance* _appearance = new Appearance();
+        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+
+        //texture
+        ID3D11ShaderResourceView* _texture;
+        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
+
+        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
+        _appearance->SetTexture(_texture);
+
+        _gameObject[i].SetAppearance(_appearance);
+
+        _hasTexture = 1.0f;
+        _hasSpecularMap = 1.0f;
+
+        //transform
+        _gameObject[i].SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
+        _gameObject[i].SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
+        _gameObject[i].SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
     }
 }
 
@@ -734,6 +736,18 @@ void DX11Framework::Draw()
 
     for (int i = 0; i < gameobjects.size(); i++)
     {
+        // Set texture
+        //if (_gameObject[i].GetAppearance()->HasTexture())
+        //{
+        //    _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
+        //    _cbData.hasTexture = 1.0f;
+        //}
+        //else
+        //{
+        //    _cbData.hasTexture = 0.0f;
+        //}
+
+
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));

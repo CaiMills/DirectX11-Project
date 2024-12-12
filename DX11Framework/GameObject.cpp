@@ -2,15 +2,10 @@
 
 GameObject::GameObject()
 {
-    _texture = nullptr;
+
 }
 
 GameObject::~GameObject()
-{
-
-}
-
-void GameObject::LoadGameObjectData(ID3D11Device* _device)
 {
 
 }
@@ -28,13 +23,13 @@ void GameObject::Update(float deltaTime)
 void GameObject::Draw(ID3D11DeviceContext* _immediateContext)
 {
     //A majority of the draw code need for the game object class (some I couldnt move to this class due to _cbData or something simular)
-	if (_meshData.VertexBuffer != nullptr && _meshData.IndexBuffer != nullptr)
+	if (_appearance->GetMeshData()->VertexBuffer != nullptr && _appearance->GetMeshData()->IndexBuffer != nullptr)
 	{
-		_immediateContext->PSSetShaderResources(0, 1, GetShaderResource());
+		_immediateContext->PSSetShaderResources(0, 1, _appearance->GetTexture());
 
-		_immediateContext->IASetVertexBuffers(0, 1, &GetMeshData()->VertexBuffer, &GetMeshData()->VBStride, &GetMeshData()->VBOffset);
-		_immediateContext->IASetIndexBuffer(GetMeshData()->IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+		_immediateContext->IASetVertexBuffers(0, 1, &_appearance->GetMeshData()->VertexBuffer, &_appearance->GetMeshData()->VBStride, &_appearance->GetMeshData()->VBOffset);
+		_immediateContext->IASetIndexBuffer(_appearance->GetMeshData()->IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-		_immediateContext->DrawIndexed(GetMeshData()->IndexCount, 0, 0);
+		_immediateContext->DrawIndexed(_appearance->GetMeshData()->IndexCount, 0, 0);
 	}
 }
