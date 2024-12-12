@@ -19,6 +19,6 @@ public:
 	MeshData* GetMeshData() { return &_meshData; }
 	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
 
-	//bool HasTexture() const { return _texture ? true : false; }
+	bool HasTexture() const { return _texture ? true : false; }
 };
 

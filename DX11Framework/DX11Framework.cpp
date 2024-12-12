@@ -737,16 +737,15 @@ void DX11Framework::Draw()
     for (int i = 0; i < gameobjects.size(); i++)
     {
         // Set texture
-        //if (_gameObject[i].GetAppearance()->HasTexture())
-        //{
-        //    _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
-        //    _cbData.hasTexture = 1.0f;
-        //}
-        //else
-        //{
-        //    _cbData.hasTexture = 0.0f;
-        //}
-
+        if (_gameObject[i].GetAppearance()->HasTexture())
+        {
+            _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
+            _cbData.hasTexture = 1.0f;
+        }
+        else
+        {
+            _cbData.hasTexture = 0.0f;
+        }
 
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
