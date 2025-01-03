@@ -6,6 +6,8 @@
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 
+Cube _skybox;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     PAINTSTRUCT ps;
@@ -303,16 +305,8 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 {
     HRESULT hr = S_OK;
 
-    //line.VertexData(_device);
-
-    //skybox.VertexData(_device);
-    //skybox.IndexData(_device, true);
-
-    //cube.VertexData(_device);
-    //cube.IndexData(_device, false);
-
-    //pyramid.VertexData(_device);
-    //pyramid.IndexData(_device);
+    _skybox.VertexData(_device);
+    _skybox.IndexData(_device, true);
 
     return S_OK;
 }
@@ -421,6 +415,11 @@ HRESULT DX11Framework::InitRunTimeData()
     _camera[2].SetAt(XMFLOAT3(0, 0, 0));
     _camera[2].SetUp(XMFLOAT3(0, 1, 0));
 
+    //Skybox
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
+    _skybox.SetTexture(_skyboxTexture);
+
+    //Game Objects
     LoadGameObjects();
 
     if (FAILED(hr))
@@ -727,6 +726,10 @@ void DX11Framework::Draw()
     
     D3D11_MAPPED_SUBRESOURCE mappedSubresource; //Write constant buffer data onto GPU
 
+    //Loads Skybox
+    _skybox.Draw(_immediateContext);
+
+    //Loads Game Objects
     for (int i = 0; i < gameobjects.size(); i++)
     {
         // Set texture

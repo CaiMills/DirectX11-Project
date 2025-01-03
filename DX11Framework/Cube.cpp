@@ -154,13 +154,13 @@ void Cube::VertexData(ID3D11Device* _device)
     _device->CreateBuffer(&cubeVertexBufferDesc, &cubeVertexData, &_cubeVertexBuffer);
 }
 
-void Cube::Draw(ID3D11DeviceContext* _immediateContext, ID3D11Buffer* _constantBuffer)
+void Cube::Draw(ID3D11DeviceContext* _immediateContext)
 {
     //Set object variables and draw
     UINT stride = { sizeof(SimpleVertex) };
     UINT offset = 0;
 
-    _immediateContext->PSSetShaderResources(0, 1, GetShaderResource());
+    _immediateContext->PSSetShaderResources(0, 1, GetTexture());
 
     //Loads the buffer information for the cube
     _immediateContext->IASetVertexBuffers(0, 1, &_cubeVertexBuffer, &stride, &offset);

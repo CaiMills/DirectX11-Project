@@ -18,7 +18,6 @@ public:
 	Transform* GetTransform() { return _transform; }
 
 	void SetAppearance(Appearance* in) { _appearance = in; }
-	void SetTransform(Transform* in) { _transform = in; }
 
 	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
 
