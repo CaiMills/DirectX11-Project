@@ -6,8 +6,8 @@
 class GameObject
 {
 private:
-	Appearance* _appearance;
-	Transform* _transform = new Transform();
+	Appearance* _appearance = nullptr;
+	Transform* _transform = nullptr;
 	XMFLOAT4X4 _world;
 
 public:

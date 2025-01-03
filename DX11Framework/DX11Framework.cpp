@@ -668,9 +668,9 @@ void DX11Framework::LoadGameObjects()
         _hasSpecularMap = 1.0f;
 
         //transform
-        _gameObject[i].GetTransform()->SetScale(XMFLOAT3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
-        _gameObject[i].GetTransform()->SetRotation(XMFLOAT3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
-        _gameObject[i].GetTransform()->SetPosition(XMFLOAT3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
+        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
+        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
+        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
     }
 }
 
@@ -761,7 +761,6 @@ void DX11Framework::Draw()
     _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
 
-    //Loads Skybox
     _skybox.Draw(_immediateContext);
     
     //Present Backbuffer to screen

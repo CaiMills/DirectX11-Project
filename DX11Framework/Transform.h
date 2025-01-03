@@ -4,23 +4,24 @@
 class Transform
 {
 private:
-	XMFLOAT3 _position = XMFLOAT3();
-	XMFLOAT3 _rotation = XMFLOAT3();
-	XMFLOAT3 _scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	Vector3 _position;
+	Vector3 _rotation;
+	Vector3 _scale;
 
 public:
 	Transform();
 	~Transform();
 
-	//XMFLOAT4X4 GetWorld() const { return _world; }
+	// Setters and Getters for position/rotation/scale
+	void SetPosition(Vector3 position) { _position = position; }
+	Vector3 GetPosition() const { return _position; }
 
+	void SetScale(Vector3 scale) { _scale = scale; }
+	Vector3 GetScale() const { return _scale; }
 
-	void SetScale(XMFLOAT3 scale) { _scale = scale; }
-	void SetRotation(XMFLOAT3 rotation) { _rotation = rotation; }
-	void SetPosition(XMFLOAT3 position) { _position = position; }
+	void SetRotation(Vector3 rotation) { _rotation = rotation; }
+	Vector3 GetRotation() const { return _rotation; }
 
-	XMFLOAT3 GetPosition() const { return _position; }
-	XMFLOAT3 GetScale() const { return _scale; }
-	XMFLOAT3 GetRotation() const { return _rotation; }
+	void Move(Vector3 direction);
 };
 

@@ -9,6 +9,8 @@
 #include <string>
 #include <locale>
 #include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
+#include "Vector3.h"
+#include <cstring>
 
 using namespace DirectX;
 
