@@ -13,6 +13,8 @@ class DX11Framework
 	int _WindowWidth = 1280;
 	int _WindowHeight = 768;
 
+	HWND _windowHandle;
+
 	ID3D11DeviceContext* _immediateContext = nullptr;
 	ID3D11Device* _device;
 	IDXGIDevice* _dxgiDevice = nullptr;
@@ -26,14 +28,11 @@ class DX11Framework
 
 	ID3D11InputLayout* _inputLayout;
 	ID3D11VertexShader* _vertexShader;
-	ID3D11VertexShader* _vertexShaderSkybox;
 	ID3D11PixelShader* _pixelShader;
-	ID3D11PixelShader* _pixelShaderSkybox;
 
 	ID3D11Buffer* _constantBuffer;
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
-	ID3D11DepthStencilState* _depthStencilSkybox;
 
 	//World
 	XMFLOAT4X4 _worldMatrix;
@@ -61,9 +60,13 @@ class DX11Framework
 	int _hasTexture;
 	int _hasSpecularMap;
 	ID3D11SamplerState* _bilinearSamplerState;
-	ID3D11ShaderResourceView* _skyboxTexture;
 
-	HWND _windowHandle;
+	//Skybox
+	ID3D11VertexShader* _vertexShaderSkybox;
+	ID3D11PixelShader* _pixelShaderSkybox;
+	ID3D11DepthStencilState* _depthStencilSkybox;
+	XMFLOAT4X4 _skyboxMatrix;
+	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
 	GameObject* _gameObject = new GameObject[10];
@@ -80,7 +83,6 @@ class DX11Framework
 	XMVECTOR _eyeResult;
 	XMFLOAT3 _lookAt;
 	XMVECTOR _lookAtResult;
-
 
 public:
 	std::vector<gameObjectData> gameobjects; //Creates a list for all gameobjects

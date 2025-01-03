@@ -31,8 +31,8 @@ cbuffer ConstantBuffer : register(b0)
 struct VS_Out
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
     float3 posW : POSITION0;
+    float4 color : COLOR;
     float3 normal : NORMAL;
     float2 texCoord : TEXCOORD;
 };

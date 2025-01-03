@@ -237,7 +237,7 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    //other
+    //other shader
     hr =  D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -362,18 +362,6 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
 
-    //Skybox
-    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
-    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    dsDescSkybox.DepthEnable = true;
-    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_depthStencilSkybox);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
     //Constant Buffer
     D3D11_BUFFER_DESC constantBufferDesc = {};
     constantBufferDesc.ByteWidth = sizeof(ConstantBuffer);
@@ -389,6 +377,18 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
+
+    //Skybox
+    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    dsDescSkybox.DepthEnable = true;
+    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_depthStencilSkybox);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
 
     return S_OK;
 }
@@ -537,6 +537,7 @@ DX11Framework::~DX11Framework()
     if (_vertexShader) { _vertexShader->Release(); }
     if (_vertexShaderSkybox) { _vertexShaderSkybox->Release(); }
     if (_pixelShader) { _pixelShader->Release(); }
+    if (_pixelShaderSkybox) { _pixelShaderSkybox->Release(); }
     if (_inputLayout) { _inputLayout->Release(); }
     if (_constantBuffer) { _constantBuffer->Release(); }
     if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
@@ -604,6 +605,9 @@ void DX11Framework::LoadLightingData()
     fileOpen.close();
 }
 
+/// <summary>
+/// A json loader that specifically loads the Game Object data
+/// </summary>
 void DX11Framework::LoadGameObjects()
 {
     json jFile; //Json Parser
@@ -691,6 +695,7 @@ void DX11Framework::Update()
 
     //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(3, 3, 3));
 
     //Update objects
     for (int i = 0; i < gameobjects.size(); i++)
@@ -724,10 +729,8 @@ void DX11Framework::Draw()
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
     
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource; //Write constant buffer data onto GPU
-
-    //Loads Skybox
-    _skybox.Draw(_immediateContext);
+    //Write constant buffer data onto GPU
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
     //Loads Game Objects
     for (int i = 0; i < gameobjects.size(); i++)
@@ -751,6 +754,15 @@ void DX11Framework::Draw()
 
         _gameObject[i].Draw(_immediateContext);
     }
+    //Changes the Stencil State to the Skybox one
+    _immediateContext->OMSetDepthStencilState(_depthStencilSkybox, 0);
+
+    //Vertex and Pixel Shader, Set Shader
+    _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
+    _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
+
+    //Loads Skybox
+    _skybox.Draw(_immediateContext);
     
     //Present Backbuffer to screen
     _swapChain->Present(0, 0);

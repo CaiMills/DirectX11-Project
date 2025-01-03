@@ -14,7 +14,7 @@ GameObject::~GameObject()
 void GameObject::Update(float deltaTime)
 {
 	static float rotationAngle = 0.0f; // Initialize once
-	rotationAngle += (deltaTime * 2); // Adjust rotation speed as needed
+	rotationAngle += (deltaTime * 1.0f); // Adjust rotation speed as needed
 
     // Calculate world matrix
 	XMMATRIX scale = XMMatrixScaling(GetTransform()->GetScale().x, GetTransform()->GetScale().y, GetTransform()->GetScale().z);
