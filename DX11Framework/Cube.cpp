@@ -2,12 +2,14 @@
 
 Cube::Cube()
 {
-
+    _transform = new Transform();
 }
 
 Cube::~Cube()
 {
-
+    _transform = nullptr;
+    _cubeIndexBuffer = nullptr;
+    _cubeVertexBuffer = nullptr;
 }
 
 void Cube::IndexData(ID3D11Device* _device, bool inverted)

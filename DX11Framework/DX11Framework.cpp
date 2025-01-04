@@ -695,7 +695,8 @@ void DX11Framework::Update()
 
     //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
-    XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(3, 3, 3));
+
+    _skybox._transform->SetPosition(Vector3(5, 0, 0));
 
     //Update objects
     for (int i = 0; i < gameobjects.size(); i++)
@@ -760,6 +761,8 @@ void DX11Framework::Draw()
     //Vertex and Pixel Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
+
+    _cbData.World = XMMatrixTranspose(_skybox.GetWorldMatrix());
 
     _skybox.Draw(_immediateContext);
     

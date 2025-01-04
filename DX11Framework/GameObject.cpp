@@ -14,14 +14,13 @@ GameObject::~GameObject()
 void GameObject::Update(float deltaTime)
 {
 	static float rotationAngle = 0.0f; // Initialize once
-	rotationAngle += (deltaTime * 1.0f); // Adjust rotation speed as needed
 
-    // Calculate world matrix
-	XMMATRIX scale = XMMatrixScaling(GetTransform()->GetScale().x, GetTransform()->GetScale().y, GetTransform()->GetScale().z);
-	XMMATRIX rotation = XMMatrixRotationX(rotationAngle) * XMMatrixRotationY(rotationAngle) * XMMatrixRotationZ(GetTransform()->GetRotation().z);
-	XMMATRIX translation = XMMatrixTranslation(GetTransform()->GetPosition().x, GetTransform()->GetPosition().y, GetTransform()->GetPosition().z);
+	// Calculate world matrix
+	XMMATRIX scale = XMMatrixScaling(_transform->GetScale().x, _transform->GetScale().y, _transform->GetScale().z);
+	XMMATRIX rotation = XMMatrixRotationX((rotationAngle += deltaTime * _transform->GetRotation().x)) * XMMatrixRotationY((rotationAngle += deltaTime * _transform->GetRotation().y)) * XMMatrixRotationZ((rotationAngle += deltaTime * _transform->GetRotation().z));
+	XMMATRIX translation = XMMatrixTranslation(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 
-	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * rotation * translation);
+	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale  * translation);
 }
 
 void GameObject::Draw(ID3D11DeviceContext* _immediateContext)
