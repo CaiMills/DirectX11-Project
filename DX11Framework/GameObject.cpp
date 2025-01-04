@@ -3,25 +3,23 @@
 GameObject::GameObject()
 {
 	_transform = new Transform();
+	_physicsModel = new PhysicsModel(_transform);
 }
 
 GameObject::~GameObject()
 {
 	_appearance = nullptr;
 	_transform = nullptr;
+	_physicsModel = nullptr;
 }
 
 void GameObject::Update(float deltaTime)
 {
-	static float rotationAngle = 0.0f; // Initialize once
-	rotationAngle += (deltaTime * 1.0f); // Adjust rotation speed as needed
-
-    // Calculate world matrix
-	XMMATRIX scale = XMMatrixScaling(GetTransform()->GetScale().x, GetTransform()->GetScale().y, GetTransform()->GetScale().z);
-	XMMATRIX rotation = XMMatrixRotationX(rotationAngle) * XMMatrixRotationY(rotationAngle) * XMMatrixRotationZ(GetTransform()->GetRotation().z);
-	XMMATRIX translation = XMMatrixTranslation(GetTransform()->GetPosition().x, GetTransform()->GetPosition().y, GetTransform()->GetPosition().z);
-
-	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * rotation * translation);
+	if (_transform != nullptr)
+	{
+		_physicsModel->Update(deltaTime);
+		_transform->Update(deltaTime);
+	}
 }
 
 void GameObject::Draw(ID3D11DeviceContext* _immediateContext)

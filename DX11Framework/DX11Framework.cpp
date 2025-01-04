@@ -252,6 +252,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
@@ -442,20 +444,82 @@ void DX11Framework::Keybinds()
         _immediateContext->RSSetState(_wireframeState);
     }
 
+    // Move gameobjects
+    //W - Backwards
+    if (GetAsyncKeyState(0x57) & 0X0001)
+    {
+        _gameObject[1].GetTransform()->Move(Vector3(0, 0, -0.1f));
+    }
+    //S - Fowards
+    if (GetAsyncKeyState(0x53) & 0X0001)
+    {
+        _gameObject[1].GetTransform()->Move(Vector3(0, 0, 0.1f));
+    }
+    //A - Left
+    if (GetAsyncKeyState(0x41) & 0X0001)
+    {
+        _gameObject[1].GetTransform()->Move(Vector3(-0.1f, 0, 0));
+    }
+    //D - Right
+    if (GetAsyncKeyState(0x44) & 0X0001)
+    {
+        _gameObject[1].GetTransform()->Move(Vector3(0.1f, 0, 0));
+    }
+    //E - Down
+    if (GetAsyncKeyState(0x45) & 0X0001)
+    {
+        _gameObject[1].GetTransform()->Move(Vector3(0, -0.1f, 0));
+    }
+    //Q - Up
+    if (GetAsyncKeyState(0x51) & 0X0001)
+    {
+        _gameObject[1].GetTransform()->Move(Vector3(0, 0.1f, 0));
+    }
+    //I - Fowards Constant Velocity
+    if (GetAsyncKeyState(0x49) & 0X0001)
+    {
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
+    }
+    //K - Backwards Constant Velocity
+    if (GetAsyncKeyState(0x4B) & 0X0001)
+    {
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
+    }
+    //J - Left Constant Velocity
+    if (GetAsyncKeyState(0x4A) & 0X0001)
+    {
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
+    }
+    //L - Right Constant Velocity
+    if (GetAsyncKeyState(0x4C) & 0X0001)
+    {
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+    }
+    //O - Down Constant Velocity
+    if (GetAsyncKeyState(0x4F) & 0X0001)
+    {
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
+    }
+    //U - Up Constant Velocity
+    if (GetAsyncKeyState(0x55) & 0X0001)
+    {
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
+    }
+
     //Switch Cameras
-    //Cam 0 - Basic Static Cam
+    //1 - Basic Static Cam
     if (GetAsyncKeyState(0x31) & 0x0001)
     {
         camNumber = 0;
     }
 
-    //Cam 1 - Basic Static Cam 2
+    //2 - Basic Static Cam 2
     if (GetAsyncKeyState(0x32) & 0x0001)
     {
         camNumber = 1;
     }
 
-    //Cam 2 - FreeCam
+    //3 - FreeCam
     if (GetAsyncKeyState(0x33) & 0x0001)
     {
         camNumber = 2;
@@ -464,8 +528,8 @@ void DX11Framework::Keybinds()
     if (camNumber == 2)
     {
         //FreeCam Movement
-        //W - Fowards
-        if (GetAsyncKeyState(0x57) & 0X0001)
+        //Up Arrow - Fowards
+        if (GetAsyncKeyState(0x26) & 0X0001)
         {
             _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, 1.0f);
@@ -489,8 +553,8 @@ void DX11Framework::Keybinds()
             return;
         }
 
-        //S - Backwards
-        if (GetAsyncKeyState(0x53) & 0X0001)
+        //Down Arrow - Backwards
+        if (GetAsyncKeyState(0x28) & 0X0001)
         {
             _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, -1.0f);
@@ -695,7 +759,8 @@ void DX11Framework::Update()
 
     //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
-    XMStoreFloat4x4(&_skyboxMatrix, XMMatrixIdentity() * XMMatrixScaling(3, 3, 3));
+
+    _skybox._transform->SetPosition(Vector3(5, 0, 0));
 
     //Update objects
     for (int i = 0; i < gameobjects.size(); i++)
@@ -718,6 +783,10 @@ void DX11Framework::Draw()
 {    
     //Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
+
+        //Write constant buffer data onto GPU
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
@@ -728,9 +797,6 @@ void DX11Framework::Draw()
 
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-    
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
     //Loads Game Objects
     for (int i = 0; i < gameobjects.size(); i++)
@@ -747,7 +813,7 @@ void DX11Framework::Draw()
             _cbData.hasTexture = 0.0f;
             _cbData.hasSpecularMap = 0.0f;
         }
-        _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
+        _cbData.World = XMMatrixTranspose(_gameObject[i].GetTransform()->GetWorldMatrix());
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
@@ -760,6 +826,8 @@ void DX11Framework::Draw()
     //Vertex and Pixel Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
+
+    _cbData.World = XMMatrixTranspose(_skybox.GetWorldMatrix());
 
     _skybox.Draw(_immediateContext);
     
