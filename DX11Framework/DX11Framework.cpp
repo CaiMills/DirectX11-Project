@@ -823,6 +823,9 @@ void DX11Framework::Draw()
     _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
 
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+    _immediateContext->Unmap(_constantBuffer, 0);
 
     _skybox.Draw(_immediateContext);
     
