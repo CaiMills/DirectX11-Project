@@ -252,6 +252,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
@@ -781,6 +783,10 @@ void DX11Framework::Draw()
 {    
     //Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
+
+        //Write constant buffer data onto GPU
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
@@ -791,9 +797,6 @@ void DX11Framework::Draw()
 
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-    
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
     //Loads Game Objects
     for (int i = 0; i < gameobjects.size(); i++)

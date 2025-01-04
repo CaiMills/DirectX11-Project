@@ -51,7 +51,9 @@ SkyboxVS_Out VS_main(float3 Position : SV_POSITION, float2 TexCoord : TEXCOORD)
     return output;
 }
 
-SkyboxVS_Out PS_main(SkyboxVS_Out input) : SV_TARGET
+float4 PS_main(SkyboxVS_Out input) : SV_TARGET
 {
-    return input;
+    float4 texColor = skybox.Sample(bilinearSampler, input.texCoord);
+
+    return texColor;
 }
