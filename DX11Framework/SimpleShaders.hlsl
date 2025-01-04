@@ -31,7 +31,6 @@ cbuffer ConstantBuffer : register(b0)
 struct VS_Out
 {
     float4 position : SV_POSITION;
-    float3 posW : POSITION0;
     float4 color : COLOR;
     float3 normal : NORMAL;
     float2 texCoord : TEXCOORD;
@@ -41,11 +40,10 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoo
 {   
     VS_Out output = (VS_Out)0;
     
-    float4 Pos4 = float4(Position, 1.0f);
-    output.position = mul(Pos4, World);
+    output.position = float4(Position, 1.0f);
+    output.position = mul(output.position, World);
     output.position = mul(output.position, View);
     output.position = mul(output.position, Projection);
-    output.posW = mul(Pos4, World);
     
     output.normal = normalize(mul(float4(Normal, 1), World));
     output.texCoord = TexCoord;
@@ -60,7 +58,7 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float3 normalisedLightDir = normalize(lightDir);
 
     //specular
-    float3 vertexToCamera = normalize(cameraPosition - input.posW);
+    float3 vertexToCamera = normalize(cameraPosition - input.position.xyz);
     float3 reflectedDir = normalize(reflect(-lightDir, input.normal));
     float specIntensity = saturate(dot(vertexToCamera, reflectedDir));
     specIntensity = specIntensity * pow(specIntensity, specPower);

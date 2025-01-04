@@ -418,7 +418,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _camera[2].SetUp(XMFLOAT3(0, 1, 0));
 
     //Skybox
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\skybox.dds", nullptr, &_skyboxTexture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\purpleSkybox.dds", nullptr, &_skyboxTexture);
     _skybox.SetTexture(_skyboxTexture);
 
     //Game Objects

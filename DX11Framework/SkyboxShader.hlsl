@@ -39,7 +39,6 @@ SkyboxVS_Out VS_main(float3 Position : POSITION, float2 TexCoord : TEXCOORD)
     SkyboxVS_Out output = (SkyboxVS_Out) 0;
     
     output.position = normalize(mul(float4(Position, 1), World).xyww);
-
     output.texCoord = Position;
     
     return output;
