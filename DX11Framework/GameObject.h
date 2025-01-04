@@ -10,7 +10,6 @@ private:
 	Appearance* _appearance = nullptr;
 	Transform* _transform = nullptr;
 	PhysicsModel* _physicsModel = nullptr;
-	XMFLOAT4X4 _world;
 
 public:
 	GameObject();
@@ -19,7 +18,6 @@ public:
 	Appearance* GetAppearance() { return _appearance; }
 	Transform* GetTransform() { return _transform; }
 	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }
-	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
 
 	void SetAppearance(Appearance* in) { _appearance = in; }
 

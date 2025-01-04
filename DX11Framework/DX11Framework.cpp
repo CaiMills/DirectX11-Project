@@ -810,7 +810,7 @@ void DX11Framework::Draw()
             _cbData.hasTexture = 0.0f;
             _cbData.hasSpecularMap = 0.0f;
         }
-        _cbData.World = XMMatrixTranspose(_gameObject[i].GetWorldMatrix());
+        _cbData.World = XMMatrixTranspose(_gameObject[i].GetTransform()->GetWorldMatrix());
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);

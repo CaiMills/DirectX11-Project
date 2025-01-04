@@ -7,6 +7,7 @@ private:
 	Vector3 _position;
 	Vector3 _rotation;
 	Vector3 _scale;
+	XMFLOAT4X4 _world;
 
 public:
 	Transform();
@@ -22,6 +23,9 @@ public:
 	void SetRotation(Vector3 rotation) { _rotation = rotation; }
 	Vector3 GetRotation() const { return _rotation; }
 
+	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
+
+	void Update(float deltaTime);
 	void Move(Vector3 direction);
 };
 
