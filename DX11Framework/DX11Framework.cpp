@@ -696,17 +696,17 @@ void DX11Framework::LoadGameObjects()
         gameObjectData g;
         json& gameObjectDesc = fileData.at(i);
         g.objFilePath = gameObjectDesc["FilePath"];
-        g.specularTexture = gameObjectDesc["Specular"];
         g.colorTexture = gameObjectDesc["Color"];
-        g.startScale.x = gameObjectDesc["StartScale"][0];
-        g.startScale.y = gameObjectDesc["StartScale"][1];
-        g.startScale.z = gameObjectDesc["StartScale"][2];
-        g.startRot.x = gameObjectDesc["StartRot"][0];
-        g.startRot.y = gameObjectDesc["StartRot"][1];
-        g.startRot.z = gameObjectDesc["StartRot"][2];
-        g.startPos.x = gameObjectDesc["StartPos"][0];
-        g.startPos.y = gameObjectDesc["StartPos"][1];
-        g.startPos.z = gameObjectDesc["StartPos"][2];
+        g.specularTexture = gameObjectDesc["Specular"];
+        g.scale.x = gameObjectDesc["Scale"][0];
+        g.scale.y = gameObjectDesc["Scale"][1];
+        g.scale.z = gameObjectDesc["Scale"][2];
+        g.rotation.x = gameObjectDesc["Rotation"][0];
+        g.rotation.y = gameObjectDesc["Rotation"][1];
+        g.rotation.z = gameObjectDesc["Rotation"][2];
+        g.position.x = gameObjectDesc["Position"][0];
+        g.position.y = gameObjectDesc["Position"][1];
+        g.position.z = gameObjectDesc["Position"][2];
 
         gameobjects.push_back(g); //Adds the gameobject to the list
     }
@@ -724,17 +724,14 @@ void DX11Framework::LoadGameObjects()
 
         std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
-        _appearance->SetTexture(_texture);
 
+        _appearance->SetTexture(_texture);
         _gameObject[i].SetAppearance(_appearance);
 
-        _hasTexture = 1.0f;
-        _hasSpecularMap = 1.0f;
-
         //transform
-        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).startScale.x, gameobjects.at(i).startScale.y, gameobjects.at(i).startScale.z));
-        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).startRot.x, gameobjects.at(i).startRot.y, gameobjects.at(i).startRot.z));
-        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).startPos.x, gameobjects.at(i).startPos.y, gameobjects.at(i).startPos.y));
+        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).scale.x, gameobjects.at(i).scale.y, gameobjects.at(i).scale.z));
+        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).rotation.x, gameobjects.at(i).rotation.y, gameobjects.at(i).rotation.z));
+        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).position.x, gameobjects.at(i).position.y, gameobjects.at(i).position.z));
     }
 }
 
@@ -760,14 +757,6 @@ void DX11Framework::Update()
     //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
 
-    _skybox._transform->SetPosition(Vector3(5, 0, 0));
-
-    //Update objects
-    for (int i = 0; i < gameobjects.size(); i++)
-    {
-        _gameObject[i].Update(deltaTime);
-    }
-
     //Lighting
     LoadLightingData();
     _cbData.cameraPosition = _camera[0].GetEye();
@@ -775,6 +764,12 @@ void DX11Framework::Update()
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
     _cbData.hasTexture = _hasTexture;
     _cbData.hasSpecularMap = _hasSpecularMap;
+
+    //Update objects
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        _gameObject[i].Update(deltaTime);
+    }
 
     Keybinds();
 }
@@ -827,7 +822,7 @@ void DX11Framework::Draw()
     _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
 
-    _cbData.World = XMMatrixTranspose(_skybox.GetWorldMatrix());
+    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
     _skybox.Draw(_immediateContext);
     

@@ -77,8 +77,8 @@ struct gameObjectData
 	std::string objFilePath;
 	std::string specularTexture;
 	std::string colorTexture;
-	XMFLOAT3 startScale;
-	XMFLOAT3 startRot;
-	XMFLOAT3 startPos;
+	XMFLOAT3 scale;
+	XMFLOAT3 rotation;
+	XMFLOAT3 position;
 };
 

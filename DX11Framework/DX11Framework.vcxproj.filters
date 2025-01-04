@@ -109,5 +109,8 @@
     <None Include="JSON\gameObjects.json">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="JSON\lighting.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
