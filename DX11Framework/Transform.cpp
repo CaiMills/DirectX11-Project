@@ -18,10 +18,10 @@ void Transform::Update(float deltaTime)
 
 	// Calculate world matrix
 	XMMATRIX scale = XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z);
-	XMMATRIX rotation = XMMatrixRotationX((rotationAngle += (deltaTime * GetRotation().x))) * XMMatrixRotationY((rotationAngle += deltaTime * GetRotation().y)) * XMMatrixRotationZ((rotationAngle += deltaTime * GetRotation().z));
-	XMMATRIX translation = XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
+	XMMATRIX rotation = XMMatrixRotationX(GetRotation().x) * XMMatrixRotationY(GetRotation().y) * XMMatrixRotationZ(GetRotation().z);
+	XMMATRIX position = XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
 
-	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * rotation * translation);
+	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * rotation * position);
 }
 
 void Transform::Move(Vector3 direction)

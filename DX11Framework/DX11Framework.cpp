@@ -432,6 +432,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
 void DX11Framework::Keybinds()
 {
+#pragma region ChangeStates
     //Sets it to fill state on F1 press 
     if (GetAsyncKeyState(VK_F1) & 0x0001)
     {
@@ -443,93 +444,129 @@ void DX11Framework::Keybinds()
     {
         _immediateContext->RSSetState(_wireframeState);
     }
+#pragma endregion
 
-    // Move gameobjects
-    //W - Backwards
-    if (GetAsyncKeyState(0x57) & 0X0001)
+#pragma region GOMovementControls
+    //NUMPAD 8 - Fowards
+    if (GetAsyncKeyState(0x68) & 0X0001)
     {
-        _gameObject[1].GetTransform()->Move(Vector3(0, 0, -0.1f));
-    }
-    //S - Fowards
-    if (GetAsyncKeyState(0x53) & 0X0001)
-    {
+        _gameObject[0].GetTransform()->Move(Vector3(0, 0, 0.1f));
         _gameObject[1].GetTransform()->Move(Vector3(0, 0, 0.1f));
     }
-    //A - Left
-    if (GetAsyncKeyState(0x41) & 0X0001)
+    //NUMPAD 2 - Backwards
+    if (GetAsyncKeyState(0x62) & 0X0001)
     {
+        _gameObject[0].GetTransform()->Move(Vector3(0, 0, -0.1f));
+        _gameObject[1].GetTransform()->Move(Vector3(0, 0, -0.1f));
+    }
+    //NUMPAD 4 - Left
+    if (GetAsyncKeyState(0x64) & 0X0001)
+    {
+        _gameObject[0].GetTransform()->Move(Vector3(-0.1f, 0, 0));
         _gameObject[1].GetTransform()->Move(Vector3(-0.1f, 0, 0));
     }
-    //D - Right
-    if (GetAsyncKeyState(0x44) & 0X0001)
+    //NUMPAD 6 - Right
+    if (GetAsyncKeyState(0x66) & 0X0001)
     {
+        _gameObject[0].GetTransform()->Move(Vector3(0.1f, 0, 0));
         _gameObject[1].GetTransform()->Move(Vector3(0.1f, 0, 0));
     }
-    //E - Down
-    if (GetAsyncKeyState(0x45) & 0X0001)
+    //NUMPAD 9 - Up
+    if (GetAsyncKeyState(0x69) & 0X0001)
     {
-        _gameObject[1].GetTransform()->Move(Vector3(0, -0.1f, 0));
-    }
-    //Q - Up
-    if (GetAsyncKeyState(0x51) & 0X0001)
-    {
+        _gameObject[0].GetTransform()->Move(Vector3(0, 0.1f, 0));
         _gameObject[1].GetTransform()->Move(Vector3(0, 0.1f, 0));
     }
-    //I - Fowards Constant Velocity
-    if (GetAsyncKeyState(0x49) & 0X0001)
+    //NUMPAD 3 - Down
+    if (GetAsyncKeyState(0x63) & 0X0001)
     {
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
+        _gameObject[0].GetTransform()->Move(Vector3(0, -0.1f, 0));
+        _gameObject[1].GetTransform()->Move(Vector3(0, -0.1f, 0));
     }
-    //K - Backwards Constant Velocity
-    if (GetAsyncKeyState(0x4B) & 0X0001)
-    {
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
-    }
-    //J - Left Constant Velocity
-    if (GetAsyncKeyState(0x4A) & 0X0001)
-    {
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
-    }
-    //L - Right Constant Velocity
-    if (GetAsyncKeyState(0x4C) & 0X0001)
-    {
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-    }
-    //O - Down Constant Velocity
-    if (GetAsyncKeyState(0x4F) & 0X0001)
-    {
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
-    }
-    //U - Up Constant Velocity
-    if (GetAsyncKeyState(0x55) & 0X0001)
-    {
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
-    }
+#pragma endregion
 
+#pragma region GOVelocityControls
+    //UP ARROW - Fowards Constant Velocity
+    if (GetAsyncKeyState(0x26) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
+    }
+    //DOWN ARROW - Backwards Constant Velocity
+    if (GetAsyncKeyState(0x28) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
+    }
+    //LEFT ARROW - Left Constant Velocity
+    if (GetAsyncKeyState(0x25) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
+    }
+    //RIGHT ARROW - Right Constant Velocity
+    if (GetAsyncKeyState(0x27) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+    }
+    //PAGE UP - Up Constant Velocity
+    if (GetAsyncKeyState(0x22) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
+    }
+    //PAGE DOWN - Down Constant Velocity
+    if (GetAsyncKeyState(0x21) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), false);
+    }
+#pragma endregion
+
+#pragma region GeneralGOControls
+    //END / NUMPAD 1 - Rotation Right
+    if (GetAsyncKeyState(0x23) & 0X0001 || GetAsyncKeyState(0x67) & 0X0001)
+    {
+        //NEED TO ADD
+    }
+    //HOME / NUMPAD 7 - Rotation Left
+    if (GetAsyncKeyState(0x24) & 0X0001 || GetAsyncKeyState(0x61) & 0X0001)
+    {
+        //NEED TO ADD
+    }
+    //INSERT / NUMPAD 0 - Stop All Velocity
+    if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
+    {
+        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
+        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
+    }
+#pragma endregion
+
+#pragma region CameraSwitching
     //Switch Cameras
-    //1 - Basic Static Cam
+    //1 - Basic Static Camera
     if (GetAsyncKeyState(0x31) & 0x0001)
     {
         camNumber = 0;
     }
-
-    //2 - Basic Static Cam 2
+    //2 - Basic Static Camera 2
     if (GetAsyncKeyState(0x32) & 0x0001)
     {
         camNumber = 1;
     }
-
     //3 - FreeCam
     if (GetAsyncKeyState(0x33) & 0x0001)
     {
         camNumber = 2;
     }
+#pragma endregion
 
+#pragma region FreeCamMovement
     if (camNumber == 2)
     {
-        //FreeCam Movement
-        //Up Arrow - Fowards
-        if (GetAsyncKeyState(0x26) & 0X0001)
+        //W - Fowards
+        if (GetAsyncKeyState(0x57) & 0X0001)
         {
             _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, 1.0f);
@@ -552,9 +589,8 @@ void DX11Framework::Keybinds()
             _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
             return;
         }
-
-        //Down Arrow - Backwards
-        if (GetAsyncKeyState(0x28) & 0X0001)
+        //S - Backwards
+        if (GetAsyncKeyState(0x53) & 0X0001)
         {
             _eyeMovement = _camera[2].GetEye();
             _operator = XMFLOAT3(0, 0, -1.0f);
@@ -576,9 +612,18 @@ void DX11Framework::Keybinds()
             _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
             _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
             return;
+        }
+        //A - Left
+        if (GetAsyncKeyState(0x41) & 0X0001)
+        {
+            //NEED TO ADD
+        }
+        //D - Left
+        if (GetAsyncKeyState(0x44) & 0X0001)
+        {
+            //NEED TO ADD
         }
     }
-
     //Resets the FreeCam settings if FreeCam isnt active
     else if (camNumber != 2)
     {
@@ -586,10 +631,12 @@ void DX11Framework::Keybinds()
         _camera[2].SetAt(XMFLOAT3(0, 0, 0));
         _camera[2].SetUp(XMFLOAT3(0, 1, 0));
     }
+#pragma endregion
 }
 
 DX11Framework::~DX11Framework()
 {
+    //need to delete gameobjects and cameras
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
     if (_dxgiDevice) { _dxgiDevice->Release(); }
