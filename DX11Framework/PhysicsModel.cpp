@@ -3,18 +3,55 @@
 PhysicsModel::PhysicsModel(Transform* transform)
 {
 	_transform = transform;
-	_isAccelerate = false;
+	_mass = 1.0f;
+	_simulateGravity = true;
+
+	_velocity = Vector3();
+	_acceleration = Vector3();
+	_constVelocity = false;
+	_constAccelerate = false;
+}
+
+PhysicsModel::~PhysicsModel()
+{
+	_transform = nullptr;
+	_mass = 0.0f;
+
+	_velocity = Vector3();
+	_acceleration = Vector3();
+	_constVelocity = false;
+	_constAccelerate = false;
+}
+
+Vector3 PhysicsModel::GravityForce()
+{
+	float gravity = 9.81f * _mass;
+	return Vector3(0, gravity, 0);
 }
 
 void PhysicsModel::Update(float deltaTime)
 {
 	Vector3 position = _transform->GetPosition();
 
-	if (_isAccelerate)
+	if (_simulateGravity)
+	{
+		_netForce += GravityForce();
+	}
+	if (_constVelocity)
+	{
+		position += _velocity * deltaTime;
+	}
+	if (_constAccelerate)
 	{
 		_velocity += _acceleration * deltaTime;
+		position += _velocity * deltaTime;
 	}
 
+	_acceleration += _netForce / _mass;
+	_velocity += _acceleration * deltaTime;
 	position += _velocity * deltaTime;
+	_netForce = Vector3();
+	_acceleration = Vector3();
+
 	_transform->SetPosition(position);
 }
