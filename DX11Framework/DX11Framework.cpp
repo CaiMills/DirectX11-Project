@@ -1,12 +1,10 @@
 ﻿#include "DX11Framework.h"
-#include "Line.h"
-#include "Cube.h"
-#include "Pyramid.h"
+#include "Geometry.h"
 #include <atlstr.h> // to use CString.
 
 //#define RETURNFAIL(x) if(FAILED(x)) return x;
 
-Cube _skybox;
+Geometry _skybox;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -307,8 +305,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 {
     HRESULT hr = S_OK;
 
-    _skybox.VertexData(_device);
-    _skybox.IndexData(_device, true);
+    _skybox.CubeData(_device, true);
 
     return S_OK;
 }

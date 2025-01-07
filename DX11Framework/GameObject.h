@@ -7,7 +7,7 @@
 class GameObject
 {
 private:
-	Appearance* _appearance = nullptr;
+	Appearance* _appearance;
 	Transform* _transform = nullptr;
 	PhysicsModel* _physicsModel = nullptr;
 

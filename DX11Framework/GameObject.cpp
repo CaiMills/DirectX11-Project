@@ -2,6 +2,7 @@
 
 GameObject::GameObject()
 {
+	_appearance = nullptr;
 	_transform = new Transform();
 	_physicsModel = new PhysicsModel(_transform);
 }

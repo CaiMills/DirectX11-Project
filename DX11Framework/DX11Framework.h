@@ -10,8 +10,13 @@ using namespace DirectX;
 
 class DX11Framework
 {
-	int _WindowWidth = 1280;
-	int _WindowHeight = 768;
+	//2K
+	int _WindowWidth = 2560;
+	int _WindowHeight = 1440;
+
+	//1080p
+	//int _WindowWidth = 1920;
+	//int _WindowHeight = 1080;
 
 	HWND _windowHandle;
 
