@@ -20,9 +20,12 @@ Geometry::~Geometry()
 
 void Geometry::CubeData(ID3D11Device* _device, bool inverted)
 {
+    D3D11_BUFFER_DESC bufferDesc = {};
+    D3D11_SUBRESOURCE_DATA InitData;
+
     if (_isInverted)
     {
-        WORD CubeIndexData[] =
+        WORD CubeIndices[] =
         {
             //top face
             22, 21, 20,
@@ -49,21 +52,23 @@ void Geometry::CubeData(ID3D11Device* _device, bool inverted)
             16, 19, 18,
         };
 
-        D3D11_BUFFER_DESC cubeIndexBufferDesc = {};
+        //Cube Index Initialization
         //ByteWidth gets the length of the indices and reserves the correct amount of data for it to be loaded
-        cubeIndexBufferDesc.ByteWidth = sizeof(CubeIndexData);
+        bufferDesc.ByteWidth = sizeof(SimpleVertex);
         //immutable means unchangable, meaning that this data cant be altered during runtime
-        cubeIndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
         //this tells the GPU that its specifically an index buffer, and so it uses the correct specifications for indicies
-        cubeIndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bufferDesc.CPUAccessFlags = 0;
 
-        D3D11_SUBRESOURCE_DATA cubeIndexData = { CubeIndexData };
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = CubeIndices;
 
-        _device->CreateBuffer(&cubeIndexBufferDesc, &cubeIndexData, &_indexBuffer);
+        _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
     }
     else if (!_isInverted)
     {
-        WORD CubeIndexData[] =
+        WORD CubeIndices[] =
         {
             //top face
             20, 21, 22,
@@ -90,22 +95,21 @@ void Geometry::CubeData(ID3D11Device* _device, bool inverted)
             18, 19, 16,
         };
 
-        D3D11_BUFFER_DESC cubeIndexBufferDesc = {};
-        //ByteWidth gets the length of the indices and reserves the correct amount of data for it to be loaded
-        cubeIndexBufferDesc.ByteWidth = sizeof(CubeIndexData);
-        //immutable means unchangable, meaning that this data cant be altered during runtime
-        cubeIndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        //this tells the GPU that its specifically an index buffer, and so it uses the correct specifications for indicies
-        cubeIndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        //Cube Index Initialization
+        bufferDesc.ByteWidth = sizeof(SimpleVertex);
+        bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bufferDesc.CPUAccessFlags = 0;
 
-        D3D11_SUBRESOURCE_DATA cubeIndexData = { CubeIndexData };
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = CubeIndices;
 
-        _device->CreateBuffer(&cubeIndexBufferDesc, &cubeIndexData, &_indexBuffer);
+        _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    SimpleVertex CubeVertexData[] =
+    SimpleVertex CubeVertices[] =
     {
         //top face
         //Position                           //Normal                           //Texture Coords
@@ -151,21 +155,26 @@ void Geometry::CubeData(ID3D11Device* _device, bool inverted)
     };
 
     //Cube Vertex Initialization
-    D3D11_BUFFER_DESC cubeVertexBufferDesc = {};
-    cubeVertexBufferDesc.ByteWidth = sizeof(CubeVertexData);
-    cubeVertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    cubeVertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(SimpleVertex) * 24;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA cubeVertexData = { CubeVertexData };
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = CubeVertices;
 
-    _device->CreateBuffer(&cubeVertexBufferDesc, &cubeVertexData, &_vertexBuffer);
+    _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
     _noOfIndices = 36;
 }
 
 void Geometry::PyramidData(ID3D11Device* _device)
 {
-    WORD PyramidIndexData[] =
+    D3D11_BUFFER_DESC bufferDesc = {};
+    D3D11_SUBRESOURCE_DATA InitData;
+
+    WORD PyramidIndices[] =
     {
         //Indices
         //front
@@ -185,21 +194,20 @@ void Geometry::PyramidData(ID3D11Device* _device)
         2, 4, 3,
     };
 
-    D3D11_BUFFER_DESC pyramidIndexBufferDesc = {};
-    //ByteWidth gets the length of the indices and reserves the correct amount of data for it to be loaded
-    pyramidIndexBufferDesc.ByteWidth = sizeof(PyramidIndexData);
-    //immutable means unchangable, meaning that this data cant be altered during runtime
-    pyramidIndexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    //this tells the GPU that its specifically an index buffer, and so it uses the correct specifications for indicies
-    pyramidIndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    //Pyramid Index Initialization
+    bufferDesc.ByteWidth = sizeof(SimpleVertex);
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA pyramidIndexData = { PyramidIndexData };
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = PyramidIndices;
 
-    _device->CreateBuffer(&pyramidIndexBufferDesc, &pyramidIndexData, &_indexBuffer);
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    SimpleVertex PyramidVertexData[] =
+    SimpleVertex PyramidVertices[] =
     {
         //front
         //Position                           //Normal                           
@@ -214,20 +222,61 @@ void Geometry::PyramidData(ID3D11Device* _device)
     };
 
     //Pyramid Vertex Initialization
-    D3D11_BUFFER_DESC pyramidVertexBufferDesc = {};
-    pyramidVertexBufferDesc.ByteWidth = sizeof(PyramidVertexData);
-    pyramidVertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    pyramidVertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.ByteWidth = sizeof(SimpleVertex);
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
 
-    D3D11_SUBRESOURCE_DATA pyramidVertexData = { PyramidVertexData };
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = PyramidVertices;
 
-    _device->CreateBuffer(&pyramidVertexBufferDesc, &pyramidVertexData, &_vertexBuffer);
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
     _noOfIndices = 18;
 }
 
 void Geometry::PlaneData(ID3D11Device* _device)
 {
+    D3D11_BUFFER_DESC bufferDesc = {};
+    D3D11_SUBRESOURCE_DATA InitData;
+
+    WORD PlaneIndices[] =
+    {
+        0, 3, 1,
+        3, 2, 1,
+    };
+
+    //Plane Index Initialization
+    bufferDesc.ByteWidth = sizeof(SimpleVertex);
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = PlaneIndices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+
+    SimpleVertex PlaneVertices[] =
+    {
+        { XMFLOAT3(-1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 5.0f) },
+        { XMFLOAT3(1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(5.0f, 5.0f) },
+        { XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(5.0f, 0.0f) },
+        { XMFLOAT3(-1.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+    };
+
+    //Plane Vertex Initialization
+    bufferDesc.ByteWidth = sizeof(SimpleVertex);
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = PlaneVertices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+
+    _noOfIndices = 6;
 }
 
 void Geometry::Draw(ID3D11DeviceContext* _immediateContext)
