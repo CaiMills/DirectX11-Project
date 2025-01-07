@@ -18,13 +18,13 @@ public:
 	GameObject();
 	~GameObject();
 
+	void SetAppearance(Appearance* appearance) { _appearance = appearance; }
+	void SetType(string type) { _type = type; }
+
 	string GetType() const { return _type; }
 	Appearance* GetAppearance() { return _appearance; }
 	Transform* GetTransform() { return _transform; }
 	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }
-
-	void SetAppearance(Appearance* appearance) { _appearance = appearance; }
-	void SetType(string type) { _type = type; }
 
 	void Update(float deltaTime);
 	void Draw(ID3D11DeviceContext* _immediateContext);

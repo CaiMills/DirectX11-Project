@@ -61,7 +61,7 @@ HRESULT DX11Framework::Initialise(HINSTANCE hInstance, int nShowCmd)
 
 HRESULT DX11Framework::CreateWindowHandle(HINSTANCE hInstance, int nCmdShow)
 {
-    const wchar_t* windowName  = L"DX11Framework";
+    const wchar_t* windowName  = L"Direct X11 Project";
 
     WNDCLASSW wndClass;
     wndClass.style = 0;
@@ -199,7 +199,7 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     
     ID3DBlob* vsBlob;
 
-    //skybox vertex shader
+    //Skybox Vertex Shader
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -216,7 +216,7 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    //other shader
+    //Primary Vertex Shader
     hr =  D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -228,6 +228,34 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
     if (FAILED(hr))
     {
+        return hr;
+    }
+
+    ID3DBlob* psBlob;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Skybox Pixel Shader
+    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+
+    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShaderSkybox);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    //Primary Pixel Shader
+    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
         return hr;
     }
 
@@ -246,38 +274,11 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    ID3DBlob* psBlob;
-
-    //skybox pixel shader
-    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-
-    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShaderSkybox);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    //other
-    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
 
     vsBlob->Release();
     psBlob->Release();
+    errorBlob->Release();
 
     return hr;
 }
@@ -299,31 +300,33 @@ HRESULT DX11Framework::InitPipelineVariables()
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _immediateContext->IASetInputLayout(_inputLayout);
 
-    //Rasterizer
-    D3D11_RASTERIZER_DESC fillDesc = {};
-    fillDesc.FillMode = D3D11_FILL_SOLID;
-    fillDesc.CullMode = D3D11_CULL_BACK;
+    // Rasterizer
+    D3D11_RASTERIZER_DESC cmdesc;
+    ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
+    cmdesc.FillMode = D3D11_FILL_WIREFRAME;
+    cmdesc.CullMode = D3D11_CULL_NONE;
+    hr = _device->CreateRasterizerState(&cmdesc, &_wireframeState);
 
-    hr = _device->CreateRasterizerState(&fillDesc, &_fillState);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
+    cmdesc.FillMode = D3D11_FILL_SOLID;
+    cmdesc.CullMode = D3D11_CULL_BACK;
+    cmdesc.FrontCounterClockwise = true;
+    hr = _device->CreateRasterizerState(&cmdesc, &_fillState);
 
-    //Wireframe
-    D3D11_RASTERIZER_DESC wireframeDesc = {};
-    wireframeDesc.FillMode = D3D11_FILL_WIREFRAME;
-    wireframeDesc.CullMode = D3D11_CULL_NONE;
+    cmdesc.FrontCounterClockwise = false;
+    hr = _device->CreateRasterizerState(&cmdesc, &_fillState);
 
-    hr = _device->CreateRasterizerState(&wireframeDesc, &_wireframeState);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    _immediateContext->RSSetState(_fillState);
 
-    //Viewport Values
-    D3D11_VIEWPORT _viewport = Camera().GetViewPort();
-    _immediateContext->RSSetViewports(1, &_viewport);
+    D3D11_DEPTH_STENCIL_DESC dssDesc;
+    ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+    dssDesc.DepthEnable = true;
+    dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+    _device->CreateDepthStencilState(&dssDesc, &_DSLessEqual);
+
+    _immediateContext->OMSetDepthStencilState(_DSLessEqual, 0);
 
     //Bilinear Sampler
     D3D11_SAMPLER_DESC bilinearSampledesc = {};
@@ -340,7 +343,12 @@ HRESULT DX11Framework::InitPipelineVariables()
         return hr;
     }
 
-    _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
+    return S_OK;
+}
+
+HRESULT DX11Framework::InitRunTimeData()
+{
+    HRESULT hr = S_OK;
 
     //Constant Buffer
     D3D11_BUFFER_DESC constantBufferDesc = {};
@@ -350,13 +358,13 @@ HRESULT DX11Framework::InitPipelineVariables()
     constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
     hr = _device->CreateBuffer(&constantBufferDesc, nullptr, &_constantBuffer);
-    if (FAILED(hr)) 
-    { 
-        return hr; 
+    if (FAILED(hr))
+    {
+        return hr;
     }
 
-    _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
-    _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
+    _viewport = { 0.0f, 0.0f, (float)_WindowWidth, (float)_WindowHeight, 0.0f, 1.0f };
+    _immediateContext->RSSetViewports(1, &_viewport);
 
     //Skybox
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
@@ -370,40 +378,22 @@ HRESULT DX11Framework::InitPipelineVariables()
         return hr;
     }
 
-    return S_OK;
-}
+    // Setup Camera
+    XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, -6.1f);
+    XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
-HRESULT DX11Framework::InitRunTimeData()
-{
-    HRESULT hr = S_OK;
+    _camera = new Camera(eye, at, up, (float)_WindowWidth, (float)_WindowHeight, 0.01f, 200.0f);
 
+    //Lighting
+    InitLighting();
 
-
-    //Camera Settings - This is where they are initalised
-    camNumber = 0;
-
-    _view = _camera[0].GetView();
-    _projection = _camera[0].GetProjection();
-
-    _camera[0].SetEye(XMFLOAT3(0, 0, -6.1));
-    _camera[0].SetAt(XMFLOAT3(0, 0, 0));
-    _camera[0].SetUp(XMFLOAT3(0, 1, 0));
-
-    _camera[1].SetEye(XMFLOAT3(0, 0, -20.1));
-    _camera[1].SetAt(XMFLOAT3(0, 0, 0));
-    _camera[1].SetUp(XMFLOAT3(0, 1, 0));
-
-    _camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
-    _camera[2].SetAt(XMFLOAT3(0, 0, 0));
-    _camera[2].SetUp(XMFLOAT3(0, 1, 0));
+    //Initiate Scene
+    InitGameObjects();
 
     //Skybox
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
     _skybox.SetTexture(_skyboxTexture);
-
-    //Initiate Scene
-    InitGameObjects();
-    InitLighting();
 
     if (FAILED(hr))
     {
@@ -413,6 +403,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
 DX11Framework::~DX11Framework()
 {
+    delete _camera;
     //need to delete gameobjects and cameras
     //skybox and plane
     if (_immediateContext) { _immediateContext->Release(); }
@@ -588,21 +579,10 @@ void DX11Framework::Update()
     const double alpha = accumulator / 0.016;
     RendererUpdates(alpha);
 
-    //Sets the view and projection to the currently active camera
-    _view = _camera[camNumber].GetView();
-    _projection = _camera[camNumber].GetProjection();
-
-    _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_view));
-    _cbData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&_projection));
-
-    //Cameras
-    _camera[camNumber].Update();
-
     //Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
 
-    //Lighting
-    _cbData.cameraPosition = _camera[0].GetEye();
+    _cbData.cameraPosition = _camera->GetEye();
     _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
     _cbData.hasTexture = _hasTexture;
@@ -613,18 +593,41 @@ void DX11Framework::Update()
 
 void DX11Framework::RendererUpdates(float deltaTime)
 {
-    //// Update camera
-    //float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
+    // Update camera
+    float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
 
-    //float x = _cameraOrbitRadius * cos(angleAroundZ);
-    //float z = _cameraOrbitRadius * sin(angleAroundZ);
+    float x = _cameraOrbitRadius * cos(angleAroundZ);
+    float z = _cameraOrbitRadius * sin(angleAroundZ);
 
-    //XMFLOAT3 cameraPos = _camera->GetPosition();
-    //cameraPos.x = x;
-    //cameraPos.z = z;
+    XMFLOAT3 cameraPos = _camera->GetEye();
+    cameraPos.x = x;
+    cameraPos.z = z;
 
-    //_camera->SetPosition(cameraPos);
-    //_camera->Update();
+    _camera->SetEye(cameraPos);
+    _camera->Update();
+
+#pragma region CameraMovement
+    //W - Fowards
+    if (GetAsyncKeyState(0x57) & 0X0001)
+    {
+        _cameraOrbitRadius = max(_cameraOrbitRadiusMin, _cameraOrbitRadius - (_cameraSpeed * 0.2f));
+    }
+    //S - Backwards
+    if (GetAsyncKeyState(0x53) & 0X0001)
+    {
+        _cameraOrbitRadius = min(_cameraOrbitRadiusMax, _cameraOrbitRadius + (_cameraSpeed * 0.2f));
+    }
+    //A - Left
+    if (GetAsyncKeyState(0x41) & 0X0001)
+    {
+        _cameraOrbitAngleXZ += _cameraSpeed;
+    }
+    //D - Right
+    if (GetAsyncKeyState(0x44) & 0X0001)
+    {
+        _cameraOrbitAngleXZ -= _cameraSpeed;
+    }
+#pragma endregion
 }
 
 void DX11Framework::PhysicsUpdates(float deltaTime)
@@ -748,106 +751,12 @@ void DX11Framework::Keybinds()
         _immediateContext->RSSetState(_wireframeState);
     }
 #pragma endregion
-
-#pragma region CameraSwitching
-    //Switch Cameras
-    //1 - Basic Static Camera
-    if (GetAsyncKeyState(0x31) & 0x0001)
-    {
-        camNumber = 0;
-    }
-    //2 - Basic Static Camera 2
-    if (GetAsyncKeyState(0x32) & 0x0001)
-    {
-        camNumber = 1;
-    }
-    //3 - FreeCam
-    if (GetAsyncKeyState(0x33) & 0x0001)
-    {
-        camNumber = 2;
-    }
-#pragma endregion
-
-#pragma region FreeCamMovement
-    if (camNumber == 2)
-    {
-        //W - Fowards
-        if (GetAsyncKeyState(0x57) & 0X0001)
-        {
-            _eyeMovement = _camera[2].GetEye();
-            _operator = XMFLOAT3(0, 0, 1.0f);
-            _vector = XMLoadFloat3(&_eyeMovement);
-            _operation = XMLoadFloat3(&_operator);
-            _eyeResult = XMVectorAdd(_vector, _operation);
-            XMStoreFloat3(&_eyeMovement, _eyeResult);
-
-            _lookAt = _camera[2].GetAt();
-            _operator = XMFLOAT3(0, 0, 1.0f);
-            _vector = XMLoadFloat3(&_lookAt);
-            _operation = XMLoadFloat3(&_operator);
-            _lookAtResult = XMVectorAdd(_vector, _operation);
-            XMStoreFloat3(&_lookAt, _lookAtResult);
-
-            _View = _camera[2].GetView();
-            _Projection = _camera[2].GetProjection();
-
-            _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
-            _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
-            return;
-        }
-        //S - Backwards
-        if (GetAsyncKeyState(0x53) & 0X0001)
-        {
-            _eyeMovement = _camera[2].GetEye();
-            _operator = XMFLOAT3(0, 0, -1.0f);
-            _vector = XMLoadFloat3(&_eyeMovement);
-            _operation = XMLoadFloat3(&_operator);
-            _eyeResult = XMVectorAdd(_vector, _operation);
-            XMStoreFloat3(&_eyeMovement, _eyeResult);
-
-            _lookAt = _camera[2].GetAt();
-            _operator = XMFLOAT3(0, 0, -1.0f);
-            _vector = XMLoadFloat3(&_lookAt);
-            _operation = XMLoadFloat3(&_operator);
-            _lookAtResult = XMVectorAdd(_vector, _operation);
-            XMStoreFloat3(&_lookAt, _lookAtResult);
-
-            _View = _camera[2].GetView();
-            _Projection = _camera[2].GetProjection();
-
-            _camera[2].SetEye(XMFLOAT3(_eyeMovement.x, _eyeMovement.y, _eyeMovement.z));
-            _camera[2].SetAt(XMFLOAT3(_lookAt.x, _lookAt.y, _lookAt.z));
-            return;
-        }
-        //A - Left
-        if (GetAsyncKeyState(0x41) & 0X0001)
-        {
-            //NEED TO ADD
-        }
-        //D - Left
-        if (GetAsyncKeyState(0x44) & 0X0001)
-        {
-            //NEED TO ADD
-        }
-    }
-    //Resets the FreeCam settings if FreeCam isnt active
-    else if (camNumber != 2)
-    {
-        _camera[2].SetEye(XMFLOAT3(0, 0, -6.1));
-        _camera[2].SetAt(XMFLOAT3(0, 0, 0));
-        _camera[2].SetUp(XMFLOAT3(0, 1, 0));
-    }
-#pragma endregion
 }
 
 void DX11Framework::Draw()
 {    
     //Present unbinds render target, so rebind and clear at start of each frame
-    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };  
-
-        //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
+    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
@@ -855,6 +764,22 @@ void DX11Framework::Draw()
     //Vertex and Pixel Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
+    _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
+    _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer); //this is causing issues??
+    _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
+
+    //Camera
+    XMFLOAT4X4 tempView = _camera->GetView();
+    XMFLOAT4X4 tempProjection = _camera->GetProjection();
+
+    XMMATRIX view = XMLoadFloat4x4(&tempView);
+    XMMATRIX projection = XMLoadFloat4x4(&tempProjection);
+
+    _cbData.View = XMMatrixTranspose(view);
+    _cbData.Projection = XMMatrixTranspose(projection);
+
+    //Write constant buffer data onto GPU
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
@@ -862,7 +787,7 @@ void DX11Framework::Draw()
     //Loads Game Objects
     for (int i = 0; i < gameobjects.size(); i++)
     {
-        // Set texture
+        // Set Texture
         if (_gameObject[i].GetAppearance()->HasTexture())
         {
             _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
@@ -881,6 +806,8 @@ void DX11Framework::Draw()
 
         _gameObject[i].Draw(_immediateContext);
     }
+
+    //Skybox
     //Changes the Stencil State to the Skybox one
     _immediateContext->OMSetDepthStencilState(_depthStencilSkybox, 0);
 
