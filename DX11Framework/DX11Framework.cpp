@@ -634,6 +634,7 @@ void DX11Framework::Keybinds()
 DX11Framework::~DX11Framework()
 {
     //need to delete gameobjects and cameras
+    //skybox and plane
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
     if (_dxgiDevice) { _dxgiDevice->Release(); }
@@ -740,6 +741,7 @@ void DX11Framework::LoadGameObjects()
         gameObjectData g;
         json& gameObjectDesc = fileData.at(i);
         g.objFilePath = gameObjectDesc["FilePath"];
+        g.type = gameObjectDesc["Type"];
         g.colorTexture = gameObjectDesc["Color"];
         g.specularTexture = gameObjectDesc["Specular"];
         g.scale.x = gameObjectDesc["Scale"][0];
@@ -757,22 +759,25 @@ void DX11Framework::LoadGameObjects()
 
     for (int i = 0; i < gameobjects.size(); i++)
     {
-        //mesh
-        Appearance* _appearance = new Appearance();
-        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+        //Type
+        _gameObject[i].SetType(gameobjects.at(i).type);
 
-        //texture
+        //Texture
         ID3D11ShaderResourceView* _texture;
         std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
         CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
 
+        //Specular Texture
         std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
 
+        //Mesh
+        Appearance* _appearance = new Appearance();
+        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
         _appearance->SetTexture(_texture);
         _gameObject[i].SetAppearance(_appearance);
 
-        //transform
+        //Transform
         _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).scale.x, gameobjects.at(i).scale.y, gameobjects.at(i).scale.z));
         _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).rotation.x, gameobjects.at(i).rotation.y, gameobjects.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).position.x, gameobjects.at(i).position.y, gameobjects.at(i).position.z));

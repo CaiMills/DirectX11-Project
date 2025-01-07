@@ -77,6 +77,7 @@ struct lightingData
 struct gameObjectData
 {
 	std::string objFilePath;
+	std::string type;
 	std::string specularTexture;
 	std::string colorTexture;
 	XMFLOAT3 scale;
