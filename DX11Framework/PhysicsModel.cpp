@@ -4,7 +4,7 @@ PhysicsModel::PhysicsModel(Transform* transform)
 {
 	_transform = transform;
 	_mass = 1.0f;
-	_simulateGravity = true;
+	_simulateGravity = false;
 
 	_velocity = Vector3();
 	_acceleration = Vector3();
