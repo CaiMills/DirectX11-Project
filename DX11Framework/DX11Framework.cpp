@@ -2,7 +2,7 @@
 #include "Geometry.h"
 #include <atlstr.h> // to use CString.
 
-//#define RETURNFAIL(x) if(FAILED(x)) return x;
+#define FPS60 1.0f/60.0f
 
 Geometry _skybox;
 
@@ -33,47 +33,28 @@ HRESULT DX11Framework::Initialise(HINSTANCE hInstance, int nShowCmd)
 {
     HRESULT hr = S_OK;
 
+    _timer = new Timer();
+
     hr = CreateWindowHandle(hInstance, nShowCmd);
-    if (FAILED(hr))
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     hr = CreateD3DDevice();
-    if (FAILED(hr)) 
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     hr = CreateSwapChainAndFrameBuffer();
-    if (FAILED(hr)) 
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     hr = InitShadersAndInputLayout();
-    if (FAILED(hr))
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     hr = InitVertexIndexBuffers();
-    if (FAILED(hr))
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     hr = InitPipelineVariables();
-    if (FAILED(hr))
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     hr = InitRunTimeData();
-    if (FAILED(hr))
-    {
-        return E_FAIL;
-    }
+    if (FAILED(hr)) return E_FAIL;
 
     return hr;
 }
@@ -396,6 +377,8 @@ HRESULT DX11Framework::InitRunTimeData()
 {
     HRESULT hr = S_OK;
 
+
+
     //Camera Settings - This is where they are initalised
     camNumber = 0;
 
@@ -418,8 +401,9 @@ HRESULT DX11Framework::InitRunTimeData()
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
     _skybox.SetTexture(_skyboxTexture);
 
-    //Game Objects
-    LoadGameObjects();
+    //Initiate Scene
+    InitGameObjects();
+    InitLighting();
 
     if (FAILED(hr))
     {
@@ -427,58 +411,260 @@ HRESULT DX11Framework::InitRunTimeData()
     }
 }
 
-void DX11Framework::Keybinds()
+DX11Framework::~DX11Framework()
 {
-#pragma region ChangeStates
-    //Sets it to fill state on F1 press 
-    if (GetAsyncKeyState(VK_F1) & 0x0001)
+    //need to delete gameobjects and cameras
+    //skybox and plane
+    if (_immediateContext) { _immediateContext->Release(); }
+    if (_device) { _device->Release(); }
+    if (_dxgiDevice) { _dxgiDevice->Release(); }
+    if (_dxgiFactory) { _dxgiFactory->Release(); }
+    if (_frameBufferView) { _frameBufferView->Release(); }
+    if (_swapChain) { _swapChain->Release(); }
+    if (_wireframeState) { _wireframeState->Release(); }
+    if (_fillState) { _fillState->Release(); }
+    if (_vertexShader) { _vertexShader->Release(); }
+    if (_vertexShaderSkybox) { _vertexShaderSkybox->Release(); }
+    if (_pixelShader) { _pixelShader->Release(); }
+    if (_pixelShaderSkybox) { _pixelShaderSkybox->Release(); }
+    if (_inputLayout) { _inputLayout->Release(); }
+    if (_constantBuffer) { _constantBuffer->Release(); }
+    if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
+    if (_depthStencilView) { _depthStencilView->Release(); }
+}
+
+/// <summary>
+/// A json loader that specifically loads the lighting data
+/// </summary>
+void DX11Framework::InitLighting()
+{
+    //Json Parser
+    json jFile;
+
+    std::ifstream fileOpen("JSON/lighting.json");
+
+    //validates to see if the file has been opened
+    if (!fileOpen.is_open() || fileOpen.fail())
     {
-        _immediateContext->RSSetState(_fillState);
+        std::cerr << "Error: file could not be opened." << std::endl;
+        return;
     }
 
-    //Sets it to wireframe state on F2 press 
-    if (GetAsyncKeyState(VK_F2) & 0x0001)
-    {
-        _immediateContext->RSSetState(_wireframeState);
-    }
-#pragma endregion
+    jFile = json::parse(fileOpen);
+    std::string v = jFile["version"].get<std::string>();
+    json& fileData = jFile["Lighting"]; //← gets an array
+    int size = fileData.size();
 
+    std::vector<lightingData> lightingdata;
+
+    for (unsigned int i = 0; i < size; i++)
+    {
+        lightingData ld;
+        json& lightsDesc = fileData.at(i);
+        ld.lightFile = lightsDesc["Type"]; // ← gets a string
+        ld.light.x = lightsDesc["Light"][0];
+        ld.light.y = lightsDesc["Light"][1];
+        ld.light.z = lightsDesc["Light"][2];
+        ld.light.w = lightsDesc["Light"][3];
+
+        ld.material.x = lightsDesc["Material"][0];
+        ld.material.y = lightsDesc["Material"][1];
+        ld.material.z = lightsDesc["Material"][2];
+        ld.material.w = lightsDesc["Material"][3];
+
+        if (ld.lightFile == "diffuse")
+        {
+            _cbData.diffuseLight = ld.light;
+            _cbData.diffuseMaterial = ld.material;
+        }
+        if (ld.lightFile == "ambient")
+        {
+            _cbData.ambientLight = ld.light;
+            _cbData.ambientMaterial = ld.material;
+        }
+        if (ld.lightFile == "specular")
+        {
+            _cbData.specularLight = ld.light;
+            _cbData.specularMaterial = ld.material;
+        }
+
+        lightingdata.push_back(ld);
+    }
+    
+    fileOpen.close();
+}
+
+/// <summary>
+/// A json loader that specifically loads the Game Object data
+/// </summary>
+void DX11Framework::InitGameObjects()
+{
+    json jFile; //Json Parser
+
+    std::ifstream fileOpen("JSON/gameObjects.json");
+
+    //validates to see if the file has been opened
+    if (!fileOpen.is_open() || fileOpen.fail())
+    {
+        std::cerr << "Error: file could not be opened." << std::endl;
+        return;
+    }
+
+    jFile = json::parse(fileOpen);
+
+    std::string v = jFile["version"].get<std::string>();
+    json& fileData = jFile["GameObjects"]; //← gets an array
+    int size = fileData.size();
+
+    for (unsigned int i = 0; i < size; i++)
+    {
+        gameObjectData g;
+        json& gameObjectDesc = fileData.at(i);
+        g.objFilePath = gameObjectDesc["FilePath"];
+        g.type = gameObjectDesc["Type"];
+        g.colorTexture = gameObjectDesc["Color"];
+        g.specularTexture = gameObjectDesc["Specular"];
+        g.scale.x = gameObjectDesc["Scale"][0];
+        g.scale.y = gameObjectDesc["Scale"][1];
+        g.scale.z = gameObjectDesc["Scale"][2];
+        g.rotation.x = gameObjectDesc["Rotation"][0];
+        g.rotation.y = gameObjectDesc["Rotation"][1];
+        g.rotation.z = gameObjectDesc["Rotation"][2];
+        g.position.x = gameObjectDesc["Position"][0];
+        g.position.y = gameObjectDesc["Position"][1];
+        g.position.z = gameObjectDesc["Position"][2];
+
+        gameobjects.push_back(g); //Adds the gameobject to the list
+    }
+
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        //Type
+        _gameObject[i].SetType(gameobjects.at(i).type);
+
+        //Texture
+        ID3D11ShaderResourceView* _texture;
+        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
+
+        //Specular Texture
+        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
+
+        //Mesh
+        Appearance* _appearance = new Appearance();
+        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+        _appearance->SetTexture(_texture);
+        _gameObject[i].SetAppearance(_appearance);
+
+        //Transform
+        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).scale.x, gameobjects.at(i).scale.y, gameobjects.at(i).scale.z));
+        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).rotation.x, gameobjects.at(i).rotation.y, gameobjects.at(i).rotation.z));
+        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).position.x, gameobjects.at(i).position.y, gameobjects.at(i).position.z));
+    }
+}
+
+void DX11Framework::Update()
+{
+    _timer->Tick();
+
+    //Static initializes this value only once    
+    static ULONGLONG frameStart = GetTickCount64();
+
+    ULONGLONG frameNow = GetTickCount64();
+    float deltaTime = (frameNow - frameStart) / 1000.0f;
+    frameStart = frameNow;
+
+    static float accumulator = 0.0f;
+    accumulator += deltaTime;
+
+    while (accumulator >= FPS60)
+    {
+        DebugPrintF("deltaTime is %f\n", accumulator);
+        PhysicsUpdates(0.016);
+        accumulator -= 0.016; //resets the accumulator counter
+    }
+
+    const double alpha = accumulator / 0.016;
+    RendererUpdates(alpha);
+
+    //Sets the view and projection to the currently active camera
+    _view = _camera[camNumber].GetView();
+    _projection = _camera[camNumber].GetProjection();
+
+    _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_view));
+    _cbData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&_projection));
+
+    //Cameras
+    _camera[camNumber].Update();
+
+    //Defines the world position
+    XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
+
+    //Lighting
+    _cbData.cameraPosition = _camera[0].GetEye();
+    _cbData.specPower = 10;
+    _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
+    _cbData.hasTexture = _hasTexture;
+    _cbData.hasSpecularMap = _hasSpecularMap;
+
+    Keybinds();
+}
+
+void DX11Framework::RendererUpdates(float deltaTime)
+{
+    //// Update camera
+    //float angleAroundZ = XMConvertToRadians(_cameraOrbitAngleXZ);
+
+    //float x = _cameraOrbitRadius * cos(angleAroundZ);
+    //float z = _cameraOrbitRadius * sin(angleAroundZ);
+
+    //XMFLOAT3 cameraPos = _camera->GetPosition();
+    //cameraPos.x = x;
+    //cameraPos.z = z;
+
+    //_camera->SetPosition(cameraPos);
+    //_camera->Update();
+}
+
+void DX11Framework::PhysicsUpdates(float deltaTime)
+{
 #pragma region GOMovementControls
     //NUMPAD 8 - Fowards
     if (GetAsyncKeyState(0x68) & 0X0001)
     {
-        _gameObject[0].GetTransform()->Move(Vector3(0, 0, 0.1f));
-        _gameObject[1].GetTransform()->Move(Vector3(0, 0, 0.1f));
+        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
+        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
     }
     //NUMPAD 2 - Backwards
     if (GetAsyncKeyState(0x62) & 0X0001)
     {
-        _gameObject[0].GetTransform()->Move(Vector3(0, 0, -0.1f));
-        _gameObject[1].GetTransform()->Move(Vector3(0, 0, -0.1f));
+        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
+        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
     }
     //NUMPAD 4 - Left
     if (GetAsyncKeyState(0x64) & 0X0001)
     {
-        _gameObject[0].GetTransform()->Move(Vector3(-0.1f, 0, 0));
-        _gameObject[1].GetTransform()->Move(Vector3(-0.1f, 0, 0));
+        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(-1.0f, 0, 0));
+        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(-1.0f, 0, 0));
     }
     //NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
-        _gameObject[0].GetTransform()->Move(Vector3(0.1f, 0, 0));
-        _gameObject[1].GetTransform()->Move(Vector3(0.1f, 0, 0));
+        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(1.0f, 0, 0));
+        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(1.0f, 0, 0));
     }
     //NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
     {
-        _gameObject[0].GetTransform()->Move(Vector3(0, 0.1f, 0));
-        _gameObject[1].GetTransform()->Move(Vector3(0, 0.1f, 0));
+        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 1.0f, 0));
+        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 1.0f, 0));
     }
     //NUMPAD 3 - Down
     if (GetAsyncKeyState(0x63) & 0X0001)
     {
-        _gameObject[0].GetTransform()->Move(Vector3(0, -0.1f, 0));
-        _gameObject[1].GetTransform()->Move(Vector3(0, -0.1f, 0));
+        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, -1.0f, 0));
+        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, -1.0f, 0));
     }
 #pragma endregion
 
@@ -537,6 +723,29 @@ void DX11Framework::Keybinds()
     {
         _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
         _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
+    }
+#pragma endregion
+
+    //Update objects
+    for (int i = 0; i < gameobjects.size(); i++)
+    {
+        _gameObject[i].Update(deltaTime);
+    }
+}
+
+void DX11Framework::Keybinds()
+{
+#pragma region ChangeStates
+    //Sets it to fill state on F1 press 
+    if (GetAsyncKeyState(VK_F1) & 0x0001)
+    {
+        _immediateContext->RSSetState(_fillState);
+    }
+
+    //Sets it to wireframe state on F2 press 
+    if (GetAsyncKeyState(VK_F2) & 0x0001)
+    {
+        _immediateContext->RSSetState(_wireframeState);
     }
 #pragma endregion
 
@@ -629,198 +838,6 @@ void DX11Framework::Keybinds()
         _camera[2].SetUp(XMFLOAT3(0, 1, 0));
     }
 #pragma endregion
-}
-
-DX11Framework::~DX11Framework()
-{
-    //need to delete gameobjects and cameras
-    //skybox and plane
-    if (_immediateContext) { _immediateContext->Release(); }
-    if (_device) { _device->Release(); }
-    if (_dxgiDevice) { _dxgiDevice->Release(); }
-    if (_dxgiFactory) { _dxgiFactory->Release(); }
-    if (_frameBufferView) { _frameBufferView->Release(); }
-    if (_swapChain) { _swapChain->Release(); }
-    if (_wireframeState) { _wireframeState->Release(); }
-    if (_fillState) { _fillState->Release(); }
-    if (_vertexShader) { _vertexShader->Release(); }
-    if (_vertexShaderSkybox) { _vertexShaderSkybox->Release(); }
-    if (_pixelShader) { _pixelShader->Release(); }
-    if (_pixelShaderSkybox) { _pixelShaderSkybox->Release(); }
-    if (_inputLayout) { _inputLayout->Release(); }
-    if (_constantBuffer) { _constantBuffer->Release(); }
-    if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
-    if (_depthStencilView) { _depthStencilView->Release(); }
-}
-
-/// <summary>
-/// A json loader that specifically loads the lighting data
-/// </summary>
-void DX11Framework::LoadLightingData()
-{
-    //Json Parser
-    json jFile;
-
-    std::ifstream fileOpen("JSON/lighting.json");
-
-    //validates to see if the file has been opened
-    if (!fileOpen.is_open() || fileOpen.fail())
-    {
-        std::cerr << "Error: file could not be opened." << std::endl;
-        return;
-    }
-
-    jFile = json::parse(fileOpen);
-    std::string v = jFile["version"].get<std::string>();
-    json& fileData = jFile["Lighting"]; //← gets an array
-    int size = fileData.size();
-
-    std::vector<lightingData> lightingdata;
-
-    for (unsigned int i = 0; i < size; i++)
-    {
-        lightingData ld;
-        json& lightsDesc = fileData.at(i);
-        ld.lightFile = lightsDesc["Type"]; // ← gets a string
-        ld.light.x = lightsDesc["Light"][0];
-        ld.light.y = lightsDesc["Light"][1];
-        ld.light.z = lightsDesc["Light"][2];
-        ld.light.w = lightsDesc["Light"][3];
-
-        ld.material.x = lightsDesc["Material"][0];
-        ld.material.y = lightsDesc["Material"][1];
-        ld.material.z = lightsDesc["Material"][2];
-        ld.material.w = lightsDesc["Material"][3];
-
-        if (ld.lightFile == "diffuse")
-        {
-            _cbData.diffuseLight = ld.light;
-            _cbData.diffuseMaterial = ld.material;
-        }
-        if (ld.lightFile == "ambient")
-        {
-            _cbData.ambientLight = ld.light;
-            _cbData.ambientMaterial = ld.material;
-        }
-        if (ld.lightFile == "specular")
-        {
-            _cbData.specularLight = ld.light;
-            _cbData.specularMaterial = ld.material;
-        }
-
-        lightingdata.push_back(ld);
-    }
-    
-    fileOpen.close();
-}
-
-/// <summary>
-/// A json loader that specifically loads the Game Object data
-/// </summary>
-void DX11Framework::LoadGameObjects()
-{
-    json jFile; //Json Parser
-
-    std::ifstream fileOpen("JSON/gameObjects.json");
-
-    //validates to see if the file has been opened
-    if (!fileOpen.is_open() || fileOpen.fail())
-    {
-        std::cerr << "Error: file could not be opened." << std::endl;
-        return;
-    }
-
-    jFile = json::parse(fileOpen);
-
-    std::string v = jFile["version"].get<std::string>();
-    json& fileData = jFile["GameObjects"]; //← gets an array
-    int size = fileData.size();
-
-    for (unsigned int i = 0; i < size; i++)
-    {
-        gameObjectData g;
-        json& gameObjectDesc = fileData.at(i);
-        g.objFilePath = gameObjectDesc["FilePath"];
-        g.type = gameObjectDesc["Type"];
-        g.colorTexture = gameObjectDesc["Color"];
-        g.specularTexture = gameObjectDesc["Specular"];
-        g.scale.x = gameObjectDesc["Scale"][0];
-        g.scale.y = gameObjectDesc["Scale"][1];
-        g.scale.z = gameObjectDesc["Scale"][2];
-        g.rotation.x = gameObjectDesc["Rotation"][0];
-        g.rotation.y = gameObjectDesc["Rotation"][1];
-        g.rotation.z = gameObjectDesc["Rotation"][2];
-        g.position.x = gameObjectDesc["Position"][0];
-        g.position.y = gameObjectDesc["Position"][1];
-        g.position.z = gameObjectDesc["Position"][2];
-
-        gameobjects.push_back(g); //Adds the gameobject to the list
-    }
-
-    for (int i = 0; i < gameobjects.size(); i++)
-    {
-        //Type
-        _gameObject[i].SetType(gameobjects.at(i).type);
-
-        //Texture
-        ID3D11ShaderResourceView* _texture;
-        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
-        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
-
-        //Specular Texture
-        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
-        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
-
-        //Mesh
-        Appearance* _appearance = new Appearance();
-        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
-        _appearance->SetTexture(_texture);
-        _gameObject[i].SetAppearance(_appearance);
-
-        //Transform
-        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).scale.x, gameobjects.at(i).scale.y, gameobjects.at(i).scale.z));
-        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).rotation.x, gameobjects.at(i).rotation.y, gameobjects.at(i).rotation.z));
-        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).position.x, gameobjects.at(i).position.y, gameobjects.at(i).position.z));
-    }
-}
-
-void DX11Framework::Update()
-{
-    //Sets the view and projection to the currently active camera
-    _view = _camera[camNumber].GetView();
-    _projection = _camera[camNumber].GetProjection();
-
-    _cbData.View = XMMatrixTranspose(XMLoadFloat4x4(&_view));
-    _cbData.Projection = XMMatrixTranspose(XMLoadFloat4x4(&_projection));
-
-    //Cameras
-    _camera[camNumber].Update();
-
-    //Static initializes this value only once    
-    static ULONGLONG frameStart = GetTickCount64();
-
-    ULONGLONG frameNow = GetTickCount64();
-    float deltaTime = (frameNow - frameStart) / 1000.0f;
-    frameStart = frameNow;
-
-    //Defines the world position
-    XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
-
-    //Lighting
-    LoadLightingData();
-    _cbData.cameraPosition = _camera[0].GetEye();
-    _cbData.specPower = 10;
-    _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
-    _cbData.hasTexture = _hasTexture;
-    _cbData.hasSpecularMap = _hasSpecularMap;
-
-    //Update objects
-    for (int i = 0; i < gameobjects.size(); i++)
-    {
-        _gameObject[i].Update(deltaTime);
-    }
-
-    Keybinds();
 }
 
 void DX11Framework::Draw()

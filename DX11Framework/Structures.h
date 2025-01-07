@@ -13,6 +13,7 @@
 #include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
 #include "Vector3.h"
 #include <cstring>
+#include "Debug.h"
 
 using namespace DirectX;
 

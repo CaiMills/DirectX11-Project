@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Camera.h"
+#include "Timer.h"
 #include <vector>
 
 //#include <wrl.h>
@@ -61,6 +62,9 @@ class DX11Framework
 	//Lighting
 	XMFLOAT3 _lightDir;
 
+	//Timer
+	Timer* _timer;
+
 	//Texturing
 	int _hasTexture;
 	int _hasSpecularMap;
@@ -101,10 +105,12 @@ public:
 	HRESULT InitVertexIndexBuffers();
 	HRESULT InitPipelineVariables();
 	HRESULT InitRunTimeData();
-	void Keybinds();
 	~DX11Framework();
-	void LoadLightingData();
-	void LoadGameObjects();
+	void RendererUpdates(float deltaTime);
+	void PhysicsUpdates(float deltaTime);
+	void Keybinds();
+	void InitLighting();
+	void InitGameObjects();
 	void Update();
 	void Draw();
 };
