@@ -1,7 +1,7 @@
 #pragma once
-#include "Shapes.h"
+#include "Geometry.h"
 
-class Cube : public Shapes
+class Cube : public Geometry
 {
 protected:
 	ID3D11ShaderResourceView* _texture = nullptr;

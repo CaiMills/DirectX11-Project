@@ -6,7 +6,7 @@
 /// This is just the base class for the other shapes such as cube and pyramid
 /// </summary>
 
-class Shapes
+class Geometry
 {
 private:
 	XMFLOAT4X4 _world;
@@ -14,8 +14,8 @@ private:
 public:
 	Transform* _transform = nullptr;
 
-	Shapes();
-	virtual ~Shapes();
+	Geometry();
+	virtual ~Geometry();
 
 	virtual void IndexData();
 	virtual void VertexData();

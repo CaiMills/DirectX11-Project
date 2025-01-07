@@ -1,11 +1,11 @@
 #pragma once
-#include "Shapes.h"
+#include "Geometry.h"
 
 /// <summary>
 /// NOTE: Line no longer works as Color has been removed for Normal
 /// </summary>
 
-class Line : public Shapes
+class Line : public Geometry
 {
 protected:
 	ID3D11Buffer* _lineVertexBuffer;

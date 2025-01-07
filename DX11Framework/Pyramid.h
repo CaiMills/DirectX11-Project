@@ -1,6 +1,7 @@
 #pragma once
-#include "Shapes.h"
-class Pyramid : public Shapes
+#include "Geometry.h"
+
+class Pyramid : public Geometry
 {
 protected:
 	ID3D11Buffer* _pyramidIndexBuffer;
