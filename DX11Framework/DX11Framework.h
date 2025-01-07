@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Camera.h"
+#include "Timer.h"
 #include <vector>
 
 //#include <wrl.h>
@@ -10,6 +11,14 @@ using namespace DirectX;
 
 class DX11Framework
 {
+	//2K
+	//int _WindowWidth = 2560;
+	//int _WindowHeight = 1440;
+
+	//1080p
+	//int _WindowWidth = 1920;
+	//int _WindowHeight = 1080;
+
 	int _WindowWidth = 1280;
 	int _WindowHeight = 768;
 
@@ -23,6 +32,7 @@ class DX11Framework
 	IDXGISwapChain1* _swapChain;
 	D3D11_VIEWPORT _viewport;
 
+	ID3D11DepthStencilState* _DSLessEqual;
 	ID3D11RasterizerState* _fillState;
 	ID3D11RasterizerState* _wireframeState;
 
@@ -56,6 +66,9 @@ class DX11Framework
 	//Lighting
 	XMFLOAT3 _lightDir;
 
+	//Timer
+	Timer* _timer;
+
 	//Texturing
 	int _hasTexture;
 	int _hasSpecularMap;
@@ -69,26 +82,20 @@ class DX11Framework
 	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
+	std::vector<gameObjectData> gameobjects;
 	GameObject* _gameObject = new GameObject[10];
 
 	//Camera
-	Camera* _camera = new Camera[3];
-	XMFLOAT4X4 _view;
-	XMFLOAT4X4 _projection;
-	int camNumber;
-	XMFLOAT3 _operator;
-	XMVECTOR _vector;
-	XMVECTOR _operation;
-	XMFLOAT3 _eyeMovement;
-	XMVECTOR _eyeResult;
-	XMFLOAT3 _lookAt;
-	XMVECTOR _lookAtResult;
+	Camera* _camera = nullptr;
+	float _cameraOrbitRadius = 7.0f;
+	float _cameraOrbitRadiusMin = 2.0f;
+	float _cameraOrbitRadiusMax = 50.0f;
+	float _cameraOrbitAngleXZ = -90.0f;
+	float _cameraSpeed = 2.0f;
 
-public:
-	std::vector<gameObjectData> gameobjects; //Creates a list for all gameobjects
 	ConstantBuffer _cbData;
 
-	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
+private:
 	HRESULT CreateWindowHandle(HINSTANCE hInstance, int nCmdShow);
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChainAndFrameBuffer();
@@ -96,10 +103,17 @@ public:
 	HRESULT InitVertexIndexBuffers();
 	HRESULT InitPipelineVariables();
 	HRESULT InitRunTimeData();
-	void Keybinds();
+
+public:
 	~DX11Framework();
-	void LoadLightingData();
-	void LoadGameObjects();
+
+	HRESULT Initialise(HINSTANCE hInstance, int nCmdShow);
+
+	void RendererUpdates(float deltaTime);
+	void PhysicsUpdates(float deltaTime);
+	void Keybinds();
+	void InitLighting();
+	void InitGameObjects();
 	void Update();
 	void Draw();
 };

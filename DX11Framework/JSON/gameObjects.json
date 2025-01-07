@@ -3,6 +3,7 @@
   [
     {
       "FilePath": "Models\\Test Models\\Made In 3ds Max\\star.obj",
+      "Type": "Star",
       "Color": "",
       "Specular": "",
       "Scale": [ 1.0, 1.0, 1.0 ],
@@ -11,6 +12,7 @@
     },
     {
       "FilePath": "Models\\Test Models\\Made In Blender\\donut.obj",
+      "Type": "Donut",
       "Color": "Textures\\Test Textures\\asphalt_COLOR.dds",
       "Specular": "Textures\\Test Textures\\asphalt_SPEC.dds",
       "Scale": [ 2.2, 2.2, 2.2 ],

@@ -1,5 +1,7 @@
 #pragma once
 #include <windows.h>
+#include <cstring>
+#include <d3d11.h>
 #include <d3d11_4.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -11,6 +13,7 @@
 #include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
 #include "Vector3.h"
 #include <cstring>
+#include "Debug.h"
 
 using namespace DirectX;
 
@@ -75,6 +78,7 @@ struct lightingData
 struct gameObjectData
 {
 	std::string objFilePath;
+	std::string type;
 	std::string specularTexture;
 	std::string colorTexture;
 	XMFLOAT3 scale;
