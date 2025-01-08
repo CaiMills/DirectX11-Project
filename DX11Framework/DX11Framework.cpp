@@ -4,7 +4,7 @@
 
 #define FPS60 1.0f/60.0f
 
-Geometry _skybox;
+//Geometry _skybox;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -136,7 +136,7 @@ HRESULT DX11Framework::CreateSwapChainAndFrameBuffer()
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
     swapChainDesc.Width = 0; // Defer to WindowWidth
     swapChainDesc.Height = 0; // Defer to WindowHeight
-    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB backbuffer
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB back buffer
     swapChainDesc.Stereo = FALSE;
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
@@ -287,7 +287,7 @@ HRESULT DX11Framework::InitVertexIndexBuffers()
 {
     HRESULT hr = S_OK;
 
-    _skybox.CubeData(_device, true);
+    //_skybox.CubeData(_device, true);
 
     return S_OK;
 }
@@ -366,18 +366,6 @@ HRESULT DX11Framework::InitRunTimeData()
     _viewport = { 0.0f, 0.0f, (float)_WindowWidth, (float)_WindowHeight, 0.0f, 1.0f };
     _immediateContext->RSSetViewports(1, &_viewport);
 
-    //Skybox
-    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
-    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    dsDescSkybox.DepthEnable = true;
-    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_depthStencilSkybox);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
     // Setup Camera
     XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, -6.1f);
     XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -392,8 +380,20 @@ HRESULT DX11Framework::InitRunTimeData()
     InitGameObjects();
 
     //Skybox
+    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    dsDescSkybox.DepthEnable = true;
+    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_depthStencilSkybox);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
-    _skybox.SetTexture(_skyboxTexture);
+    //_skybox.SetTexture(_skyboxTexture);
+
 
     if (FAILED(hr))
     {
@@ -406,6 +406,7 @@ DX11Framework::~DX11Framework()
     delete _camera;
     //need to delete gameobjects and cameras
     //skybox and plane
+
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
     if (_dxgiDevice) { _dxgiDevice->Release(); }
@@ -820,8 +821,8 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    _skybox.Draw(_immediateContext);
+    //_skybox.Draw(_immediateContext);
     
-    //Present Backbuffer to screen
+    //Present back buffer to screen
     _swapChain->Present(0, 0);
 }

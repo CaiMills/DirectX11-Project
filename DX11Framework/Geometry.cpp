@@ -1,9 +1,7 @@
-#include "Geometry.h"
+/*#include "Geometry.h"
 
 Geometry::Geometry()
 {
-    _texture = nullptr;
-	_transform = new Transform();
     _indexBuffer = nullptr;
     _vertexBuffer = nullptr;
     _noOfIndices = 0;
@@ -12,8 +10,6 @@ Geometry::Geometry()
 
 Geometry::~Geometry()
 {
-    _texture = nullptr;
-    _transform = nullptr;
     _indexBuffer = nullptr;
     _vertexBuffer = nullptr;
 }
@@ -294,3 +290,4 @@ void Geometry::Draw(ID3D11DeviceContext* _immediateContext)
     //this draws the indicies, and must have enough space for all three index points of a triangle to work
     _immediateContext->DrawIndexed(_noOfIndices, 0, 0);
 }
+*/
