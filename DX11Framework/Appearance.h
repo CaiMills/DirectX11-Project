@@ -21,8 +21,6 @@ public:
 	Appearance(MeshData meshData);
 	~Appearance();
 
-
-	MeshData* GetMeshData() { return &_meshData; }
 	Material GetMaterial() const { return _material; }
 	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
 

@@ -16,6 +16,7 @@ private:
 
 public:
 	GameObject();
+	GameObject(string type, Appearance* appearance);
 	~GameObject();
 
 	void SetAppearance(Appearance* appearance) { _appearance = appearance; }
