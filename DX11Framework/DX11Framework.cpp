@@ -400,11 +400,10 @@ HRESULT DX11Framework::InitRunTimeData()
 DX11Framework::~DX11Framework()
 {
     delete _camera;
-    //need to delete gameobjects and cameras
-    //skybox and plane
-    for (int i = 0; i < gameObjectDataList.size(); i++)
+    //need to add skybox and plane
+    for (int i = 0; i < _gameObjects.size(); i++)
     {
-        //delete _gameObject[i];
+        delete &_gameObject[i];
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -525,32 +524,34 @@ void DX11Framework::InitGameObjects()
         g.position.y = gameObjectDesc["Position"][1];
         g.position.z = gameObjectDesc["Position"][2];
 
-        gameObjectDataList.push_back(g); //Adds the gameobject to the list
+        _gameObjectDataList.push_back(g); //Adds the gameobject to the list
     }
 
-    for (int i = 0; i < gameObjectDataList.size(); i++)
+    for (int i = 0; i < _gameObjectDataList.size(); i++)
     {
         //Type
-        _gameObject[i].SetType(gameObjectDataList.at(i).type);
+        _gameObject[i].SetType(_gameObjectDataList.at(i).type);
 
         //Texture
         ID3D11ShaderResourceView* _texture;
-        std::wstring colorTexFilePath = static_cast<CString>(gameObjectDataList.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        std::wstring colorTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
         CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
 
         //Specular Texture
-        std::wstring specTexFilePath = static_cast<CString>(gameObjectDataList.at(i).colorTexture.c_str()).GetString();
+        std::wstring specTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).colorTexture.c_str()).GetString();
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
 
         //Appearance
-        Appearance* _appearance = new Appearance(OBJLoader::Load(gameObjectDataList.at(i).objFilePath, _device, false));
+        Appearance* _appearance = new Appearance(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
         _appearance->SetTexture(_texture);
         _gameObject[i].SetAppearance(_appearance);
 
         //Transform
-        _gameObject[i].GetTransform()->SetScale(Vector3(gameObjectDataList.at(i).scale.x, gameObjectDataList.at(i).scale.y, gameObjectDataList.at(i).scale.z));
-        _gameObject[i].GetTransform()->SetRotation(Vector3(gameObjectDataList.at(i).rotation.x, gameObjectDataList.at(i).rotation.y, gameObjectDataList.at(i).rotation.z));
-        _gameObject[i].GetTransform()->SetPosition(Vector3(gameObjectDataList.at(i).position.x, gameObjectDataList.at(i).position.y, gameObjectDataList.at(i).position.z));
+        _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
+        _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
+        _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
+
+        _gameObjects.push_back(&_gameObject[i]);
     }
 }
 
@@ -729,7 +730,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
     //Update objects
-    for (int i = 0; i < gameObjectDataList.size(); i++)
+    for (int i = 0; i < _gameObjects.size(); i++)
     {
         _gameObject[i].Update(deltaTime);
     }
@@ -784,7 +785,7 @@ void DX11Framework::Draw()
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
     //Loads Game Objects
-    for (int i = 0; i < gameObjectDataList.size(); i++)
+    for (int i = 0; i < _gameObjects.size(); i++)
     {
         // Set Texture
         if (_gameObject[i].GetAppearance()->HasTexture())
