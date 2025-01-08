@@ -103,10 +103,13 @@
     <None Include="SkyboxShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="JSON\gameObjects.json">
+    <None Include="JSON\Geometry.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="JSON\lighting.json">
+    <None Include="JSON\GameObjects.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="JSON\Lighting.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

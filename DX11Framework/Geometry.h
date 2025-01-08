@@ -25,9 +25,6 @@
 //	void PyramidData(ID3D11Device* _device);
 //	void PlaneData(ID3D11Device* _device);
 //
-//	void SetTexture(ID3D11ShaderResourceView* in) { _texture = in; }
-//	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
-//
 //	virtual void Draw(ID3D11DeviceContext* _immediateContext);
 //};
 //

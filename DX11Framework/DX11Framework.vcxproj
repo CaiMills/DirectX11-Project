@@ -145,8 +145,9 @@
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="JSON\gameObjects.json" />
-    <None Include="JSON\lighting.json" />
+    <None Include="JSON\GameObjects.json" />
+    <None Include="JSON\Geometry.json" />
+    <None Include="JSON\Lighting.json" />
     <None Include="SimpleShaders.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>

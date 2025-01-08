@@ -431,7 +431,7 @@ void DX11Framework::InitLighting()
     //Json Parser
     json jFile;
 
-    std::ifstream fileOpen("JSON/lighting.json");
+    std::ifstream fileOpen("JSON/Lighting.json");
 
     //validates to see if the file has been opened
     if (!fileOpen.is_open() || fileOpen.fail())
@@ -491,7 +491,7 @@ void DX11Framework::InitGameObjects()
 {
     json jFile; //Json Parser
 
-    std::ifstream fileOpen("JSON/gameObjects.json");
+    std::ifstream fileOpen("JSON/GameObjects.json");
 
     //validates to see if the file has been opened
     if (!fileOpen.is_open() || fileOpen.fail())
