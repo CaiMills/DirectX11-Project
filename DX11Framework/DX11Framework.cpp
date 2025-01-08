@@ -366,9 +366,9 @@ HRESULT DX11Framework::InitRunTimeData()
     Geometry geo; //Geometry Reference
 
     //Skybox
-    Appearance* _skybox = new Appearance(geo.CubeData(_device, true));
+    Appearance* _appearance = new Appearance(geo.CubeData(_device, true));
     CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
-    _skybox->SetTexture(_skyboxTexture);
+    _appearance->SetTexture(_skyboxTexture);
 
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
     dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -380,8 +380,8 @@ HRESULT DX11Framework::InitRunTimeData()
     {
         return hr;
     }
-    _skyboxGO->SetType("Skybox");
-    _skyboxGO->SetAppearance(_skybox);
+    _skybox->SetType("Skybox");
+    _skybox->SetAppearance(_appearance);
 
     //Geometry
 
@@ -391,8 +391,11 @@ HRESULT DX11Framework::InitRunTimeData()
 
 DX11Framework::~DX11Framework()
 {
+    if (_camera) { delete _camera; }
+    if (_skybox) { delete _skybox; }
     for (int i = 0; i < _gameObjects.size(); i++)
     {
+        //does work currently for some reason
         //delete &_gameObject[i];
     }
     if (_immediateContext) { _immediateContext->Release(); }
@@ -810,7 +813,7 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    _skyboxGO->Draw(_immediateContext);
+    _skybox->Draw(_immediateContext);
     
     //Present back buffer to screen
     _swapChain->Present(0, 0);

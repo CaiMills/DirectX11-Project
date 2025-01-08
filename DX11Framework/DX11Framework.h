@@ -82,7 +82,7 @@ class DX11Framework
 	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
-	GameObject* _skyboxGO = new GameObject();
+	GameObject* _skybox = new GameObject();
 	std::vector<gameObjectData> _gameObjectDataList;
 	vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
