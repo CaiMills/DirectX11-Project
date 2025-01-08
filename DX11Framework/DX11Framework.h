@@ -79,10 +79,11 @@ class DX11Framework
 	ID3D11PixelShader* _pixelShaderSkybox;
 	ID3D11DepthStencilState* _depthStencilSkybox;
 	XMFLOAT4X4 _skyboxMatrix;
-	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
 	GameObject* _skybox = new GameObject();
+	GameObject* _geometry = new GameObject[10];
+	vector<GameObject*> _geometryList;
 	std::vector<gameObjectData> _gameObjectDataList;
 	vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];

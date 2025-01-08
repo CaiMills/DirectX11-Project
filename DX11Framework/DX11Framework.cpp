@@ -364,11 +364,12 @@ HRESULT DX11Framework::InitRunTimeData()
 
     //Initiate Scene
     Geometry geo; //Geometry Reference
+    ID3D11ShaderResourceView* _texture;
 
     //Skybox
     Appearance* _appearance = new Appearance(geo.CubeData(_device, true));
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
-    _appearance->SetTexture(_skyboxTexture);
+    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
+    _appearance->SetTexture(_texture);
 
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
     dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -384,6 +385,17 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(_appearance);
 
     //Geometry
+    //_appearance = new Appearance(geo.PlaneData(_device));
+    //CreateDDSTextureFromFile(_device, L"Resources\\Textures\\Test Textures\\floor.dds", nullptr, &_texture);
+    //_appearance->SetTexture(_texture);
+
+    //_geometry[0].SetType("Floor");
+    //_geometry[0].SetAppearance(_appearance);
+    //_geometry[0].GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    //_geometry[0].GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
+    //_geometry[0].GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
+
+    //_gameObjects.push_back(&_geometry[0]);
 
     //GameObjects
     InitGameObjects();
@@ -578,8 +590,6 @@ void DX11Framework::Update()
     _cbData.cameraPosition = _camera->GetEye();
     _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
-    _cbData.hasTexture = _hasTexture;
-    _cbData.hasSpecularMap = _hasSpecularMap;
 
     Keybinds();
 }
@@ -774,12 +784,12 @@ void DX11Framework::Draw()
     //Write constant buffer data onto GPU
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
-    //Store this frames data in constant buffer struct
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-
     //Loads Game Objects
     for (int i = 0; i < _gameObjects.size(); i++)
     {
+        //Store this frames data in constant buffer struct
+        _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+
         // Set Texture
         if (_gameObject[i].GetAppearance()->HasTexture())
         {
