@@ -1,4 +1,4 @@
-/*#include "Geometry.h"
+#include "Geometry.h"
 
 Geometry::Geometry()
 {
@@ -14,7 +14,7 @@ Geometry::~Geometry()
     _vertexBuffer = nullptr;
 }
 
-void Geometry::CubeData(ID3D11Device* _device, bool inverted)
+MeshData Geometry::CubeData(ID3D11Device* _device, bool inverted)
 {
     D3D11_BUFFER_DESC bufferDesc = {};
     D3D11_SUBRESOURCE_DATA InitData;
@@ -162,10 +162,17 @@ void Geometry::CubeData(ID3D11Device* _device, bool inverted)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
-    _noOfIndices = 36;
+    MeshData cubeMesh;
+    cubeMesh.IndexBuffer = _indexBuffer;
+    cubeMesh.VertexBuffer = _vertexBuffer;
+    cubeMesh.IndexCount = 36;
+    cubeMesh.VBOffset = 0;
+    cubeMesh.VBStride = sizeof(SimpleVertex);
+
+    return cubeMesh;
 }
 
-void Geometry::PyramidData(ID3D11Device* _device)
+MeshData Geometry::PyramidData(ID3D11Device* _device)
 {
     D3D11_BUFFER_DESC bufferDesc = {};
     D3D11_SUBRESOURCE_DATA InitData;
@@ -228,10 +235,17 @@ void Geometry::PyramidData(ID3D11Device* _device)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    _noOfIndices = 18;
+    MeshData cubeMesh;
+    cubeMesh.IndexBuffer = _indexBuffer;
+    cubeMesh.VertexBuffer = _vertexBuffer;
+    cubeMesh.IndexCount = 18;
+    cubeMesh.VBOffset = 0;
+    cubeMesh.VBStride = sizeof(SimpleVertex);
+
+    return cubeMesh;
 }
 
-void Geometry::PlaneData(ID3D11Device* _device)
+MeshData Geometry::PlaneData(ID3D11Device* _device)
 {
     D3D11_BUFFER_DESC bufferDesc = {};
     D3D11_SUBRESOURCE_DATA InitData;
@@ -272,22 +286,12 @@ void Geometry::PlaneData(ID3D11Device* _device)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    _noOfIndices = 6;
+    MeshData cubeMesh;
+    cubeMesh.IndexBuffer = _indexBuffer;
+    cubeMesh.VertexBuffer = _vertexBuffer;
+    cubeMesh.IndexCount = 6;
+    cubeMesh.VBOffset = 0;
+    cubeMesh.VBStride = sizeof(SimpleVertex);
+
+    return cubeMesh;
 }
-
-void Geometry::Draw(ID3D11DeviceContext* _immediateContext)
-{
-    //Set object variables and draw
-    UINT stride = { sizeof(SimpleVertex) };
-    UINT offset = 0;
-
-    _immediateContext->PSSetShaderResources(0, 1, GetTexture());
-
-    //Loads the buffer information for the cube
-    _immediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-    _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
-    //this draws the indicies, and must have enough space for all three index points of a triangle to work
-    _immediateContext->DrawIndexed(_noOfIndices, 0, 0);
-}
-*/

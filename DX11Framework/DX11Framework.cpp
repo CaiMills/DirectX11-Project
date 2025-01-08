@@ -1,5 +1,6 @@
 ﻿#include "DX11Framework.h"
 #include <atlstr.h> // to use CString.
+#include "Geometry.h"
 
 #define FPS60 1.0f/60.0f
 
@@ -374,9 +375,11 @@ HRESULT DX11Framework::InitRunTimeData()
     InitLighting();
 
     //Initiate Scene
-    InitGameObjects();
+    Geometry geo; //Geometry Reference
 
     //Skybox
+    _skybox = new Appearance(geo.CubeData(_device, true));
+
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
     dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     dsDescSkybox.DepthEnable = true;
@@ -388,13 +391,20 @@ HRESULT DX11Framework::InitRunTimeData()
         return hr;
     }
 
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
-    //_skybox.SetTexture(_skyboxTexture);
+    //hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
+    //_skybox->SetTexture(_skyboxTexture);
+    ////_skyboxGO->SetType("Skybox");
+    //_skyboxGO->SetAppearance(_skybox);
 
     if (FAILED(hr))
     {
         return hr;
     }
+
+    //Geometry
+
+    //GameObjects
+    InitGameObjects();
 }
 
 DX11Framework::~DX11Framework()
@@ -505,10 +515,10 @@ void DX11Framework::InitGameObjects()
     std::string v = jFile["version"].get<std::string>();
     json& fileData = jFile["GameObjects"]; //← gets an array
     int size = fileData.size();
+    gameObjectData g;
 
     for (unsigned int i = 0; i < size; i++)
     {
-        gameObjectData g;
         json& gameObjectDesc = fileData.at(i);
         g.objFilePath = gameObjectDesc["FilePath"];
         g.type = gameObjectDesc["Type"];
@@ -551,7 +561,7 @@ void DX11Framework::InitGameObjects()
         _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
 
-        _gameObjects.push_back(&_gameObject[i]);
+        _gameObjects.push_back(&_gameObject[i]); //Adds it a different list with all gameObjects
     }
 }
 
@@ -820,7 +830,7 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    //_skybox.Draw(_immediateContext);
+    //_skyboxGO->Draw(_immediateContext);
     
     //Present back buffer to screen
     _swapChain->Present(0, 0);

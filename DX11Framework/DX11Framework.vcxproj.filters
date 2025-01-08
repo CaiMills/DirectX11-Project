@@ -103,9 +103,6 @@
     <None Include="SkyboxShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="JSON\Geometry.json">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="JSON\GameObjects.json">
       <Filter>Resource Files</Filter>
     </None>
