@@ -394,7 +394,6 @@ HRESULT DX11Framework::InitRunTimeData()
     hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
     //_skybox.SetTexture(_skyboxTexture);
 
-
     if (FAILED(hr))
     {
         return hr;
@@ -544,8 +543,7 @@ void DX11Framework::InitGameObjects()
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
 
         //Mesh
-        Appearance* _appearance = new Appearance();
-        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+        Appearance* _appearance = new Appearance(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false));
         _appearance->SetTexture(_texture);
         _gameObject[i].SetAppearance(_appearance);
 

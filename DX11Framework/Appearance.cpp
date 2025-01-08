@@ -1,6 +1,6 @@
 #include "Appearance.h"
 
-Appearance::Appearance()
+Appearance::Appearance(MeshData meshData) : _meshData(meshData)
 {
 	_texture = nullptr;
 }
