@@ -82,9 +82,7 @@ class DX11Framework
 	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
-	Appearance* _skybox;
-	MeshData* _geometry = new MeshData[10];
-	GameObject* _skyboxGO;
+	GameObject* _skyboxGO = new GameObject();
 	std::vector<gameObjectData> _gameObjectDataList;
 	vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
@@ -104,7 +102,6 @@ private:
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChainAndFrameBuffer();
 	HRESULT InitShadersAndInputLayout();
-	HRESULT InitVertexIndexBuffers();
 	HRESULT InitPipelineVariables();
 	HRESULT InitRunTimeData();
 

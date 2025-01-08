@@ -45,9 +45,6 @@ HRESULT DX11Framework::Initialise(HINSTANCE hInstance, int nShowCmd)
     hr = InitShadersAndInputLayout();
     if (FAILED(hr)) return E_FAIL;
 
-    hr = InitVertexIndexBuffers();
-    if (FAILED(hr)) return E_FAIL;
-
     hr = InitPipelineVariables();
     if (FAILED(hr)) return E_FAIL;
 
@@ -281,15 +278,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     return hr;
 }
 
-HRESULT DX11Framework::InitVertexIndexBuffers()
-{
-    HRESULT hr = S_OK;
-
-    //_skybox.CubeData(_device, true);
-
-    return S_OK;
-}
-
 HRESULT DX11Framework::InitPipelineVariables()
 {
     HRESULT hr = S_OK;
@@ -378,7 +366,9 @@ HRESULT DX11Framework::InitRunTimeData()
     Geometry geo; //Geometry Reference
 
     //Skybox
-    _skybox = new Appearance(geo.CubeData(_device, true));
+    Appearance* _skybox = new Appearance(geo.CubeData(_device, true));
+    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
+    _skybox->SetTexture(_skyboxTexture);
 
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
     dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -390,16 +380,8 @@ HRESULT DX11Framework::InitRunTimeData()
     {
         return hr;
     }
-
-    //hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
-    //_skybox->SetTexture(_skyboxTexture);
-    ////_skyboxGO->SetType("Skybox");
-    //_skyboxGO->SetAppearance(_skybox);
-
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    _skyboxGO->SetType("Skybox");
+    _skyboxGO->SetAppearance(_skybox);
 
     //Geometry
 
@@ -409,11 +391,9 @@ HRESULT DX11Framework::InitRunTimeData()
 
 DX11Framework::~DX11Framework()
 {
-    delete _camera;
-    //need to add skybox and plane
     for (int i = 0; i < _gameObjects.size(); i++)
     {
-        delete &_gameObject[i];
+        //delete &_gameObject[i];
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -830,7 +810,7 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    //_skyboxGO->Draw(_immediateContext);
+    _skyboxGO->Draw(_immediateContext);
     
     //Present back buffer to screen
     _swapChain->Present(0, 0);
