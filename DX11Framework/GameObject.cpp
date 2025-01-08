@@ -7,13 +7,6 @@ GameObject::GameObject()
 	_physicsModel = new PhysicsModel(_transform);
 }
 
-GameObject::GameObject(string type, Appearance* appearance) : _type(type), _appearance(appearance)
-{
-	_appearance = nullptr;
-	_transform = new Transform();
-	_physicsModel = new PhysicsModel(_transform);
-}
-
 GameObject::~GameObject()
 {
 	_appearance = nullptr;

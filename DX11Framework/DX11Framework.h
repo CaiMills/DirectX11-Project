@@ -82,7 +82,7 @@ class DX11Framework
 	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
-	std::vector<gameObjectData> gameobjects;
+	std::vector<gameObjectData> gameObjectDataList;
 	GameObject* _gameObject = new GameObject[10];
 
 	//Camera

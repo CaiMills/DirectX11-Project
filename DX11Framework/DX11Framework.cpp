@@ -1,10 +1,7 @@
 ﻿#include "DX11Framework.h"
-#include "Geometry.h"
 #include <atlstr.h> // to use CString.
 
 #define FPS60 1.0f/60.0f
-
-//Geometry _skybox;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -405,7 +402,10 @@ DX11Framework::~DX11Framework()
     delete _camera;
     //need to delete gameobjects and cameras
     //skybox and plane
-
+    for (int i = 0; i < gameObjectDataList.size(); i++)
+    {
+        //delete _gameObject[i];
+    }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
     if (_dxgiDevice) { _dxgiDevice->Release(); }
@@ -525,32 +525,32 @@ void DX11Framework::InitGameObjects()
         g.position.y = gameObjectDesc["Position"][1];
         g.position.z = gameObjectDesc["Position"][2];
 
-        gameobjects.push_back(g); //Adds the gameobject to the list
+        gameObjectDataList.push_back(g); //Adds the gameobject to the list
     }
 
-    for (int i = 0; i < gameobjects.size(); i++)
+    for (int i = 0; i < gameObjectDataList.size(); i++)
     {
         //Type
-        _gameObject[i].SetType(gameobjects.at(i).type);
+        _gameObject[i].SetType(gameObjectDataList.at(i).type);
 
         //Texture
         ID3D11ShaderResourceView* _texture;
-        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        std::wstring colorTexFilePath = static_cast<CString>(gameObjectDataList.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
         CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
 
         //Specular Texture
-        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        std::wstring specTexFilePath = static_cast<CString>(gameObjectDataList.at(i).colorTexture.c_str()).GetString();
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
 
         //Appearance
-        Appearance* _appearance = new Appearance(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false));
+        Appearance* _appearance = new Appearance(OBJLoader::Load(gameObjectDataList.at(i).objFilePath, _device, false));
         _appearance->SetTexture(_texture);
         _gameObject[i].SetAppearance(_appearance);
 
         //Transform
-        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).scale.x, gameobjects.at(i).scale.y, gameobjects.at(i).scale.z));
-        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).rotation.x, gameobjects.at(i).rotation.y, gameobjects.at(i).rotation.z));
-        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).position.x, gameobjects.at(i).position.y, gameobjects.at(i).position.z));
+        _gameObject[i].GetTransform()->SetScale(Vector3(gameObjectDataList.at(i).scale.x, gameObjectDataList.at(i).scale.y, gameObjectDataList.at(i).scale.z));
+        _gameObject[i].GetTransform()->SetRotation(Vector3(gameObjectDataList.at(i).rotation.x, gameObjectDataList.at(i).rotation.y, gameObjectDataList.at(i).rotation.z));
+        _gameObject[i].GetTransform()->SetPosition(Vector3(gameObjectDataList.at(i).position.x, gameObjectDataList.at(i).position.y, gameObjectDataList.at(i).position.z));
     }
 }
 
@@ -729,7 +729,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
     //Update objects
-    for (int i = 0; i < gameobjects.size(); i++)
+    for (int i = 0; i < gameObjectDataList.size(); i++)
     {
         _gameObject[i].Update(deltaTime);
     }
@@ -784,7 +784,7 @@ void DX11Framework::Draw()
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
     //Loads Game Objects
-    for (int i = 0; i < gameobjects.size(); i++)
+    for (int i = 0; i < gameObjectDataList.size(); i++)
     {
         // Set Texture
         if (_gameObject[i].GetAppearance()->HasTexture())
