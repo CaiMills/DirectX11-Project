@@ -397,6 +397,20 @@ HRESULT DX11Framework::InitRunTimeData()
 
     _gameObjects.push_back(_floor);
 
+    for (auto i = 0; i < 4; i++)
+    {
+        _appearance = new Appearance(geo.Cube(_device, false));
+        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
+        _appearance->SetTexture(_texture);
+
+        _cubes[i].SetType("Cube " + i);
+        _cubes[i].SetAppearance(_appearance);
+        _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
+        _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
+
+        _gameObjects.push_back(&_cubes[i]);
+    }
+
     //GameObjects
     InitGameObjects();
 }
@@ -407,7 +421,7 @@ DX11Framework::~DX11Framework()
     if (_skybox) { delete _skybox; }
     for (auto gameObject : _gameObjects)
     {
-        //delete gameObject;
+        delete gameObject;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -638,38 +652,38 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //NUMPAD 8 - Fowards
     if (GetAsyncKeyState(0x68) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
     }
     //NUMPAD 2 - Backwards
     if (GetAsyncKeyState(0x62) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
     }
     //NUMPAD 4 - Left
     if (GetAsyncKeyState(0x64) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(-1.0f, 0, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(-1.0f, 0, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
     }
     //NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(1.0f, 0, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(1.0f, 0, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     //NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 1.0f, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 1.0f, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
     }
     //NUMPAD 3 - Down
     if (GetAsyncKeyState(0x63) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, -1.0f, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, -1.0f, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
     }
 #pragma endregion
 
@@ -677,38 +691,38 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //UP ARROW - Fowards Constant Velocity
     if (GetAsyncKeyState(0x26) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
     }
     //DOWN ARROW - Backwards Constant Velocity
     if (GetAsyncKeyState(0x28) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
     }
     //LEFT ARROW - Left Constant Velocity
     if (GetAsyncKeyState(0x25) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
     }
     //RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
     }
     //PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
     }
     //PAGE DOWN - Down Constant Velocity
     if (GetAsyncKeyState(0x21) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), false);
     }
 #pragma endregion
 
@@ -726,8 +740,8 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //INSERT / NUMPAD 0 - Stop All Velocity
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
     }
 #pragma endregion
 

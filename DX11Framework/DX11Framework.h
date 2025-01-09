@@ -84,6 +84,7 @@ class DX11Framework
 	//GameObjects
 	GameObject* _skybox = new GameObject();
 	GameObject* _floor = new GameObject();
+	GameObject* _cubes = new GameObject[4];
 	std::vector<gameObjectData> _gameObjectDataList;
 	vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
