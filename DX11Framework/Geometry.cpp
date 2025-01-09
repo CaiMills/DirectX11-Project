@@ -14,9 +14,9 @@ Geometry::~Geometry()
     _vertexBuffer = nullptr;
 }
 
-MeshData Geometry::CubeData(ID3D11Device* _device, bool inverted)
+MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
 {
-    D3D11_BUFFER_DESC bufferDesc = {};
+    D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
 
     SimpleVertex CubeVertices[] =
@@ -172,9 +172,9 @@ MeshData Geometry::CubeData(ID3D11Device* _device, bool inverted)
     return cubeMesh;
 }
 
-MeshData Geometry::PyramidData(ID3D11Device* _device)
+MeshData Geometry::Pyramid(ID3D11Device* _device)
 {
-    D3D11_BUFFER_DESC bufferDesc = {};
+    D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
 
     SimpleVertex PyramidVertices[] =
@@ -245,9 +245,9 @@ MeshData Geometry::PyramidData(ID3D11Device* _device)
     return pyramidMesh;
 }
 
-MeshData Geometry::PlaneData(ID3D11Device* _device)
+MeshData Geometry::Plane(ID3D11Device* _device)
 {
-    D3D11_BUFFER_DESC bufferDesc = {};
+    D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
 
     SimpleVertex PlaneVertices[] =
@@ -259,9 +259,9 @@ MeshData Geometry::PlaneData(ID3D11Device* _device)
     };
 
     //Plane Vertex Initialization
-    bufferDesc.ByteWidth = sizeof(SimpleVertex);
-    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(SimpleVertex) * 4;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
 
     ZeroMemory(&InitData, sizeof(InitData));
@@ -278,8 +278,9 @@ MeshData Geometry::PlaneData(ID3D11Device* _device)
     };
 
     //Plane Index Initialization
-    bufferDesc.ByteWidth = sizeof(SimpleVertex);
-    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(WORD) * 6;
     bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
 

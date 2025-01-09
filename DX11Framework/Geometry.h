@@ -19,8 +19,8 @@ public:
 	Geometry();
 	~Geometry();
 
-	MeshData CubeData(ID3D11Device* _device, bool inverted);
-	MeshData PyramidData(ID3D11Device* _device);
-	MeshData PlaneData(ID3D11Device* _device);
+	MeshData Cube(ID3D11Device* _device, bool inverted);
+	MeshData Pyramid(ID3D11Device* _device);
+	MeshData Plane(ID3D11Device* _device);
 };
 

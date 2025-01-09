@@ -367,7 +367,7 @@ HRESULT DX11Framework::InitRunTimeData()
     ID3D11ShaderResourceView* _texture;
 
     //Skybox
-    Appearance* _appearance = new Appearance(geo.CubeData(_device, true));
+    Appearance* _appearance = new Appearance(geo.Cube(_device, true));
     CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
     _appearance->SetTexture(_texture);
 
@@ -385,16 +385,13 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(_appearance);
 
     //Geometry
-    Geometry geo2; //Geometry Reference
-    ID3D11ShaderResourceView* _texture2;
-
-    Appearance* _appearance2 = new Appearance(geo2.PlaneData(_device));
-    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture2);
-    _appearance2->SetTexture(_texture2);
+    _appearance = new Appearance(geo.Cube(_device, true));
+    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
+    _appearance->SetTexture(_texture);
 
     _floor->SetType("Floor");
-    _floor->SetAppearance(_appearance2);
-    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    _floor->SetAppearance(_appearance);
+    _floor->GetTransform()->SetPosition(Vector3(0.0f, 4.0f, 0.0f));
     _floor->GetTransform()->SetScale(Vector3(2.0f, 2.0f, 2.0f));
     _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
 
