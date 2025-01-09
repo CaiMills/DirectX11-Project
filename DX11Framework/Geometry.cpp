@@ -82,29 +82,29 @@ MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
     {
         WORD CubeIndices[] =
         {
-            //top face
-            22, 21, 20,
-            20, 23, 22,
+            //top
+            3, 1, 0,
+            2, 1, 3,
 
-            //front face
-            6, 5, 4,
-            4, 7, 6,
+            //front
+            5, 4, 6,
+            6, 4, 7,
 
-            //left face
-            10, 9, 8,
-            8, 11, 10,
+            //right
+            11, 9, 8,
+            10, 9, 11,
 
-            //right face
-            14, 13, 12,
-            12, 15, 14,
+            //left
+            13, 12, 14,
+            14, 12, 15,
 
-            //back face
-            2, 1, 0,
-            0, 3, 2,
+            //back
+            17, 16, 18,
+            18, 16, 19,
 
-            //bottom face
-            18, 17, 16,
-            16, 19, 18,
+            //bottom
+            21, 20, 22,
+            22, 20, 23
         };
 
         //Cube Index Initialization
@@ -125,34 +125,35 @@ MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
     {
         WORD CubeIndices[] =
         {
-            //top face
-            20, 21, 22,
-            22, 23, 20,
+        //top
+        0, 1, 3,
+        3, 1, 2,
 
-            //front face
-            4, 5, 6,
-            6, 7, 4,
+        //front
+        6, 4, 5,
+        7, 4, 6,
 
-            //left face
-            8, 9, 10,
-            10, 11, 8,
+        //right
+        8, 9, 11,
+        11, 9, 10,
 
-            //right face
-            12, 13, 14,
-            14, 15, 12,
+        //left
+        14, 12, 13,
+        15, 12, 14,
 
-            //back face
-            0, 1, 2,
-            2, 3, 0,
+        //back
+        18, 16, 17,
+        19, 16, 18,
 
-            //bottom face
-            16, 17, 18,
-            18, 19, 16,
+        //bottom
+        22, 20, 21,
+        23, 20, 22
         };
 
-        //Cube Index Initialization
-        bufferDesc.ByteWidth = sizeof(SimpleVertex);
-        bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.ByteWidth = sizeof(WORD) * 36;
         bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
         bufferDesc.CPUAccessFlags = 0;
 
@@ -210,11 +211,11 @@ MeshData Geometry::Pyramid(ID3D11Device* _device)
         //front
         0, 1, 2,
 
-        //left
-        3, 1, 0,
-
         //right
         2, 1, 4,
+
+        //left
+        3, 1, 0,
 
         //back
         3, 4, 1,

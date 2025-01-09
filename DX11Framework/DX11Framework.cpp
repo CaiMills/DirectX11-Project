@@ -393,7 +393,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _floor->SetAppearance(_appearance);
     _floor->GetTransform()->SetPosition(Vector3(0.0f, 4.0f, 0.0f));
     _floor->GetTransform()->SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
+    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(0.0f), 0.0f, 0.0f));
 
     _gameObjects.push_back(_floor);
 
