@@ -16,11 +16,12 @@ class DX11Framework
 	//int _WindowHeight = 1440;
 
 	//1080p
-	//int _WindowWidth = 1920;
-	//int _WindowHeight = 1080;
+	int _WindowWidth = 1920;
+	int _WindowHeight = 1080;
 
-	int _WindowWidth = 1280;
-	int _WindowHeight = 768;
+	//768p
+	//int _WindowWidth = 1280;
+	//int _WindowHeight = 768;
 
 	HWND _windowHandle;
 

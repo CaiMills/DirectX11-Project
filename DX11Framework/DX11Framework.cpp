@@ -353,8 +353,8 @@ HRESULT DX11Framework::InitRunTimeData()
     _immediateContext->RSSetViewports(1, &_viewport);
 
     // Setup Camera
-    XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, -6.1f);
-    XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
+    XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 0.0f);
     XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 
     _camera = new Camera(eye, at, up, (float)_WindowWidth, (float)_WindowHeight, 0.01f, 200.0f);
@@ -385,15 +385,15 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(_appearance);
 
     //Geometry
-    _appearance = new Appearance(geo.Cube(_device, false));
+    _appearance = new Appearance(geo.Plane(_device));
     CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
     _appearance->SetTexture(_texture);
 
     _floor->SetType("Floor");
     _floor->SetAppearance(_appearance);
-    _floor->GetTransform()->SetPosition(Vector3(0.0f, 4.0f, 0.0f));
-    _floor->GetTransform()->SetScale(Vector3(2.0f, 2.0f, 2.0f));
-    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(0.0f), 0.0f, 0.0f));
+    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
+    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
 
     _gameObjects.push_back(_floor);
 
