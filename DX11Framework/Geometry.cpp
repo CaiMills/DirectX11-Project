@@ -19,6 +19,65 @@ MeshData Geometry::CubeData(ID3D11Device* _device, bool inverted)
     D3D11_BUFFER_DESC bufferDesc = {};
     D3D11_SUBRESOURCE_DATA InitData;
 
+    SimpleVertex CubeVertices[] =
+    {
+        //top face
+        //Position                           //Normal                           //Texture Coords
+        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
+        { XMFLOAT3(1.00f,  1.00f, -1.00f),   XMFLOAT3(1.00f,  1.00f, -1.00f),   XMFLOAT2(1.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, 1.00f, 1.00f),    XMFLOAT3(-1.00f, 1.00f, 1.00f),    XMFLOAT2(0.00f, 0.00f)},
+
+        //front face
+        //Position                           //Normal                           //Texture Coords                  
+        { XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT2(1.00f, 0.00f)},
+        { XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT2(1.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
+        { XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT2(0.00f, 0.00f)},
+
+        //left face
+        //Position                           //Normal                           //Texture Coords
+        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
+        { XMFLOAT3(1.00f,  -1.00f, 1.00f),   XMFLOAT3(1.00f,  -1.00f, 1.00f),   XMFLOAT2(1.00f, 1.00f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
+        { XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT2(0.00f, 0.00f)},
+
+        //right face
+        //Position                           //Normal                           //Texture Coords                      
+        { XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT2(1.00f, 0.00f)},
+        { XMFLOAT3(-1.00f,  1.00f, -1.00f),  XMFLOAT3(-1.00f,  1.00f, -1.00f),  XMFLOAT2(1.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f),  XMFLOAT3(-1.00f, -1.00f, -1.00f),  XMFLOAT2(0.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 0.00f)},
+
+        //back face
+        //Position                           //Normal                           //Texture Coords
+        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
+        { XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT2(1.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 1.00f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT2(0.00f, 0.00f)},
+
+        //bottom face
+        //Position                           //Normal                           //Texture Coords                 
+        { XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT2(1.00f, 0.00f)},
+        { XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT2(1.00f, 1.00f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT2(0.00f, 1.00f)},
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 0.00f)},
+    };
+
+    //Cube Vertex Initialization
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(SimpleVertex) * 24;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = CubeVertices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     if (_isInverted)
     {
         WORD CubeIndices[] =
@@ -103,65 +162,6 @@ MeshData Geometry::CubeData(ID3D11Device* _device, bool inverted)
         _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    SimpleVertex CubeVertices[] =
-    {
-        //top face
-        //Position                           //Normal                           //Texture Coords
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(1.00f,  1.00f, -1.00f),   XMFLOAT3(1.00f,  1.00f, -1.00f),   XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, 1.00f, 1.00f),    XMFLOAT3(-1.00f, 1.00f, 1.00f),    XMFLOAT2(0.00f, 0.00f)},
-
-        //front face
-        //Position                           //Normal                           //Texture Coords                  
-        { XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT2(0.00f, 0.00f)},
-
-        //left face
-        //Position                           //Normal                           //Texture Coords
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(1.00f,  -1.00f, 1.00f),   XMFLOAT3(1.00f,  -1.00f, 1.00f),   XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT2(0.00f, 0.00f)},
-
-        //right face
-        //Position                           //Normal                           //Texture Coords                      
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(-1.00f,  1.00f, -1.00f),  XMFLOAT3(-1.00f,  1.00f, -1.00f),  XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f),  XMFLOAT3(-1.00f, -1.00f, -1.00f),  XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 0.00f)},
-
-        //back face
-        //Position                           //Normal                           //Texture Coords
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT2(0.00f, 0.00f)},
-
-        //bottom face
-        //Position                           //Normal                           //Texture Coords                 
-        { XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 0.00f)},
-    };
-
-    //Cube Vertex Initialization
-    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(SimpleVertex) * 24;
-    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-
-    ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = CubeVertices;
-
-    _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
-
     MeshData cubeMesh;
     cubeMesh.IndexBuffer = _indexBuffer;
     cubeMesh.VertexBuffer = _vertexBuffer;
@@ -176,6 +176,33 @@ MeshData Geometry::PyramidData(ID3D11Device* _device)
 {
     D3D11_BUFFER_DESC bufferDesc = {};
     D3D11_SUBRESOURCE_DATA InitData;
+
+    SimpleVertex PyramidVertices[] =
+    {
+        //front
+        //Position                           //Normal                           
+        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(-1.00f, -1.00f, -1.00f)},
+        { XMFLOAT3(0.00f, 1.00f, 0.00f),    XMFLOAT3(0.00f, 1.00f, 0.00f)},
+        { XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT3(1.00f, -1.00f, -1.00f)},
+
+        //back
+        //Position                          //Normal                            
+        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(-1.00f, -1.00f, 1.00f)},
+        { XMFLOAT3(1.00f, -1.00f, 1.00f),   XMFLOAT3(1.00f, -1.00f, 1.00f)},
+    };
+
+    //Pyramid Vertex Initialization
+    bufferDesc.ByteWidth = sizeof(SimpleVertex);
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = PyramidVertices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     WORD PyramidIndices[] =
     {
@@ -208,33 +235,6 @@ MeshData Geometry::PyramidData(ID3D11Device* _device)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    SimpleVertex PyramidVertices[] =
-    {
-        //front
-        //Position                           //Normal                           
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(-1.00f, -1.00f, -1.00f)},
-        { XMFLOAT3(0.00f, 1.00f, 0.00f),    XMFLOAT3(0.00f, 1.00f, 0.00f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT3(1.00f, -1.00f, -1.00f)},
-
-        //back
-        //Position                          //Normal                            
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(-1.00f, -1.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),   XMFLOAT3(1.00f, -1.00f, 1.00f)},
-    };
-
-    //Pyramid Vertex Initialization
-    bufferDesc.ByteWidth = sizeof(SimpleVertex);
-    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-
-    ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = PyramidVertices;
-
-    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
-
     MeshData pyramidMesh;
     pyramidMesh.IndexBuffer = _indexBuffer;
     pyramidMesh.VertexBuffer = _vertexBuffer;
@@ -249,23 +249,6 @@ MeshData Geometry::PlaneData(ID3D11Device* _device)
 {
     D3D11_BUFFER_DESC bufferDesc = {};
     D3D11_SUBRESOURCE_DATA InitData;
-
-    WORD PlaneIndices[] =
-    {
-        0, 3, 1,
-        3, 2, 1,
-    };
-
-    //Plane Index Initialization
-    bufferDesc.ByteWidth = sizeof(SimpleVertex);
-    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-
-    ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = PlaneIndices;
-
-    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
     SimpleVertex PlaneVertices[] =
     {
@@ -283,6 +266,25 @@ MeshData Geometry::PlaneData(ID3D11Device* _device)
 
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = PlaneVertices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    WORD PlaneIndices[] =
+    {
+        0, 3, 1,
+        3, 2, 1,
+    };
+
+    //Plane Index Initialization
+    bufferDesc.ByteWidth = sizeof(SimpleVertex);
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = PlaneIndices;
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
