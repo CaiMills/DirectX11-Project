@@ -22,46 +22,46 @@ MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
     SimpleVertex CubeVertices[] =
     {
         //top face
-        //Position                           //Normal                           //Texture Coords
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(1.00f,  1.00f, -1.00f),   XMFLOAT3(1.00f,  1.00f, -1.00f),   XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, 1.00f, 1.00f),    XMFLOAT3(-1.00f, 1.00f, 1.00f),    XMFLOAT2(0.00f, 0.00f)},
+        //Position                        //Normal                        //Texture Coords
+        { XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT2(0.0f, 0.0f)},
 
         //front face
-        //Position                           //Normal                           //Texture Coords                  
-        { XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT3(-1.00f, 1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT2(0.00f, 0.00f)},
+        //Position                        //Normal                        //Texture Coords                 
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT2(0.0f, 0.0f)},
 
         //left face
-        //Position                           //Normal                           //Texture Coords
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(1.00f,  -1.00f, 1.00f),   XMFLOAT3(1.00f,  -1.00f, 1.00f),   XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT3(1.00f, 1.00f, -1.00f),    XMFLOAT2(0.00f, 0.00f)},
+        //Position                        //Normal                        //Texture Coords
+        { XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT2(0.0f, 0.0f)},
 
         //right face
-        //Position                           //Normal                           //Texture Coords                      
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(-1.00f,  1.00f, -1.00f),  XMFLOAT3(-1.00f,  1.00f, -1.00f),  XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f),  XMFLOAT3(-1.00f, -1.00f, -1.00f),  XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 0.00f)},
+        //Position                        //Normal                        //Texture Coords                     
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 0.0f)},
 
         //back face
-        //Position                           //Normal                           //Texture Coords
-        { XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT3(1.00f,  1.00f, 1.00f),    XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT3(-1.00f,  1.00f, 1.00f),   XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT2(0.00f, 0.00f)},
+        //Position                        //Normal                        //Texture Coords
+        { XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT2(0.0f, 0.0f)},
 
         //bottom face
-        //Position                           //Normal                           //Texture Coords                 
-        { XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT3(-1.00f,  -1.00f, -1.00f), XMFLOAT2(1.00f, 0.00f)},
-        { XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT3(1.00f,  -1.00f, -1.00f),  XMFLOAT2(1.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT3(1.00f, -1.00f, 1.00f),    XMFLOAT2(0.00f, 1.00f)},
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT3(-1.00f, -1.00f, 1.00f),   XMFLOAT2(0.00f, 0.00f)},
+        //Position                        //Normal                        //Texture Coords                
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 0.0f)},
     };
 
     //Cube Vertex Initialization
@@ -180,15 +180,15 @@ MeshData Geometry::Pyramid(ID3D11Device* _device)
     SimpleVertex PyramidVertices[] =
     {
         //front
-        //Position                           //Normal                           
-        { XMFLOAT3(-1.00f, -1.00f, -1.00f), XMFLOAT3(-1.00f, -1.00f, -1.00f)},
-        { XMFLOAT3(0.00f, 1.00f, 0.00f),    XMFLOAT3(0.00f, 1.00f, 0.00f)},
-        { XMFLOAT3(1.00f, -1.00f, -1.00f),   XMFLOAT3(1.00f, -1.00f, -1.00f)},
+        //Position                       //Normal                           
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.00f, -1.0f, -1.0f)},
+        { XMFLOAT3(0.0f, 1.0f, 0.0f),    XMFLOAT3(0.0f, 1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),  XMFLOAT3(1.0f, -1.0f, -1.0f)},
 
         //back
-        //Position                          //Normal                            
-        { XMFLOAT3(-1.00f, -1.00f, 1.00f), XMFLOAT3(-1.00f, -1.00f, 1.00f)},
-        { XMFLOAT3(1.00f, -1.00f, 1.00f),   XMFLOAT3(1.00f, -1.00f, 1.00f)},
+        //Position                       //Normal                            
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),  XMFLOAT3(-1.0f, -1.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),   XMFLOAT3(1.0f, -1.0f, 1.0f)},
     };
 
     //Pyramid Vertex Initialization
@@ -250,34 +250,34 @@ MeshData Geometry::Plane(ID3D11Device* _device)
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
 
-    SimpleVertex PlaneVertices[] =
+    // Create vertex buffer
+    SimpleVertex planeVertices[] =
     {
-        { XMFLOAT3(-1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 5.0f) },
-        { XMFLOAT3(1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(5.0f, 5.0f) },
-        { XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(5.0f, 0.0f) },
-        { XMFLOAT3(-1.0f, 1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+        //Position                      //Normal                      //Texture Coords         
+        { XMFLOAT3(-1.0f, -1.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, -1.0f),  XMFLOAT2(0.0f, 5.0f) },
+        { XMFLOAT3(1.0f, -1.0f, 0.0f),  XMFLOAT3(0.0f, 0.0f, -1.0f),  XMFLOAT2(5.0f, 5.0f) },
+        { XMFLOAT3(1.0f, 1.0f, 0.0f),   XMFLOAT3(0.0f, 0.0f, -1.0f),  XMFLOAT2(5.0f, 0.0f) },
+        { XMFLOAT3(-1.0f, 1.0f, 0.0f),  XMFLOAT3(0.0f, 0.0f, -1.0f),  XMFLOAT2(0.0f, 0.0f) },
     };
 
-    //Plane Vertex Initialization
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.ByteWidth = sizeof(SimpleVertex) * 4;
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
 
     ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = PlaneVertices;
+    InitData.pSysMem = planeVertices;
 
-    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+    _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    WORD PlaneIndices[] =
+    // Create plane index buffer
+    WORD planeIndices[] =
     {
         0, 3, 1,
         3, 2, 1,
     };
 
-    //Plane Index Initialization
     ZeroMemory(&bufferDesc, sizeof(bufferDesc));
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.ByteWidth = sizeof(WORD) * 6;
@@ -285,8 +285,7 @@ MeshData Geometry::Plane(ID3D11Device* _device)
     bufferDesc.CPUAccessFlags = 0;
 
     ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = PlaneIndices;
-
+    InitData.pSysMem = planeIndices;
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
     MeshData planeMesh;

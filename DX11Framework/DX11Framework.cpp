@@ -258,9 +258,9 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
@@ -385,7 +385,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(_appearance);
 
     //Geometry
-    _appearance = new Appearance(geo.Cube(_device, true));
+    _appearance = new Appearance(geo.Cube(_device, false));
     CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
     _appearance->SetTexture(_texture);
 
