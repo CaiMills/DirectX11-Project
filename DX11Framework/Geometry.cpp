@@ -235,14 +235,14 @@ MeshData Geometry::PyramidData(ID3D11Device* _device)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    MeshData cubeMesh;
-    cubeMesh.IndexBuffer = _indexBuffer;
-    cubeMesh.VertexBuffer = _vertexBuffer;
-    cubeMesh.IndexCount = 18;
-    cubeMesh.VBOffset = 0;
-    cubeMesh.VBStride = sizeof(SimpleVertex);
+    MeshData pyramidMesh;
+    pyramidMesh.IndexBuffer = _indexBuffer;
+    pyramidMesh.VertexBuffer = _vertexBuffer;
+    pyramidMesh.IndexCount = 18;
+    pyramidMesh.VBOffset = 0;
+    pyramidMesh.VBStride = sizeof(SimpleVertex);
 
-    return cubeMesh;
+    return pyramidMesh;
 }
 
 MeshData Geometry::PlaneData(ID3D11Device* _device)
@@ -286,12 +286,12 @@ MeshData Geometry::PlaneData(ID3D11Device* _device)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    MeshData cubeMesh;
-    cubeMesh.IndexBuffer = _indexBuffer;
-    cubeMesh.VertexBuffer = _vertexBuffer;
-    cubeMesh.IndexCount = 6;
-    cubeMesh.VBOffset = 0;
-    cubeMesh.VBStride = sizeof(SimpleVertex);
+    MeshData planeMesh;
+    planeMesh.IndexBuffer = _indexBuffer;
+    planeMesh.VertexBuffer = _vertexBuffer;
+    planeMesh.IndexCount = 6;
+    planeMesh.VBOffset = 0;
+    planeMesh.VBStride = sizeof(SimpleVertex);
 
-    return cubeMesh;
+    return planeMesh;
 }

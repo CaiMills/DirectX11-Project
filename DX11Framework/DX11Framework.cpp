@@ -385,18 +385,20 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(_appearance);
 
     //Geometry
-    //_appearance = new Appearance(geo.PlaneData(_device));
-    //CreateDDSTextureFromFile(_device, L"Resources\\Textures\\Test Textures\\floor.dds", nullptr, &_texture);
-    //_appearance->SetTexture(_texture);
+    Geometry geo2; //Geometry Reference
+    ID3D11ShaderResourceView* _texture2;
 
-    //GameObject go;
-    //go.SetType("Floor");
-    //go.SetAppearance(_appearance);
-    //go.GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    //go.GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
-    //go.GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
+    Appearance* _appearance2 = new Appearance(geo2.PlaneData(_device));
+    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture2);
+    _appearance2->SetTexture(_texture2);
 
-    //_gameObjects.push_back(&go);
+    _floor->SetType("Floor");
+    _floor->SetAppearance(_appearance2);
+    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    _floor->GetTransform()->SetScale(Vector3(2.0f, 2.0f, 2.0f));
+    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
+
+    _gameObjects.push_back(_floor);
 
     //GameObjects
     InitGameObjects();
@@ -408,7 +410,7 @@ DX11Framework::~DX11Framework()
     if (_skybox) { delete _skybox; }
     for (auto gameObject : _gameObjects)
     {
-        delete gameObject;
+        //delete gameObject;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -808,7 +810,6 @@ void DX11Framework::Draw()
 
         gameObject->Draw(_immediateContext);
     }
-
     //Skybox
     //Changes the Stencil State to the Skybox one
     _immediateContext->OMSetDepthStencilState(_depthStencilSkybox, 0);
