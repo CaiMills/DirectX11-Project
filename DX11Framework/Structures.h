@@ -84,5 +84,6 @@ struct gameObjectData
 	XMFLOAT3 scale;
 	XMFLOAT3 rotation;
 	XMFLOAT3 position;
+	std::string continuousRotation;
 };
 

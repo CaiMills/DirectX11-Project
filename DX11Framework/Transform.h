@@ -9,6 +9,8 @@ private:
 	Vector3 _scale;
 	XMFLOAT4X4 _world;
 
+	bool _continuousRotation;
+
 public:
 	Transform();
 	~Transform();
@@ -22,6 +24,7 @@ public:
 
 	void SetRotation(Vector3 rotation) { _rotation = rotation; }
 	Vector3 GetRotation() const { return _rotation; }
+	void ContinousRotation(bool continuousRotation) { _continuousRotation = continuousRotation; }
 
 	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
 

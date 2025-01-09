@@ -528,7 +528,7 @@ void DX11Framework::InitGameObjects()
     for (unsigned int i = 0; i < size; i++)
     {
         json& gameObjectDesc = fileData.at(i);
-        g.objFilePath = gameObjectDesc["FilePath"];
+        g.objFilePath = gameObjectDesc["File Path"];
         g.type = gameObjectDesc["Type"];
         g.colorTexture = gameObjectDesc["Color"];
         g.specularTexture = gameObjectDesc["Specular"];
@@ -541,6 +541,7 @@ void DX11Framework::InitGameObjects()
         g.position.x = gameObjectDesc["Position"][0];
         g.position.y = gameObjectDesc["Position"][1];
         g.position.z = gameObjectDesc["Position"][2];
+        g.continuousRotation = gameObjectDesc["Continuous Rotation"];
 
         _gameObjectDataList.push_back(g); //Adds the gameobject to the list
     }
@@ -568,6 +569,10 @@ void DX11Framework::InitGameObjects()
         _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
         _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
+        
+        bool continuousRotation = false;
+        if (_gameObjectDataList.at(i).continuousRotation == "true") { continuousRotation = true; }
+        _gameObject[i].GetTransform()->ContinousRotation(continuousRotation);
 
         _gameObjects.push_back(&_gameObject[i]); //Adds it a different list with all gameObjects
     }
