@@ -1,10 +1,8 @@
 ﻿#include "DX11Framework.h"
-#include "Geometry.h"
 #include <atlstr.h> // to use CString.
+#include "Geometry.h"
 
 #define FPS60 1.0f/60.0f
-
-Geometry _skybox;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -45,9 +43,6 @@ HRESULT DX11Framework::Initialise(HINSTANCE hInstance, int nShowCmd)
     if (FAILED(hr)) return E_FAIL;
 
     hr = InitShadersAndInputLayout();
-    if (FAILED(hr)) return E_FAIL;
-
-    hr = InitVertexIndexBuffers();
     if (FAILED(hr)) return E_FAIL;
 
     hr = InitPipelineVariables();
@@ -136,7 +131,7 @@ HRESULT DX11Framework::CreateSwapChainAndFrameBuffer()
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc;
     swapChainDesc.Width = 0; // Defer to WindowWidth
     swapChainDesc.Height = 0; // Defer to WindowHeight
-    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB backbuffer
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //FLIP* modes don't support sRGB back buffer
     swapChainDesc.Stereo = FALSE;
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
@@ -263,9 +258,9 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
@@ -281,15 +276,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     errorBlob->Release();
 
     return hr;
-}
-
-HRESULT DX11Framework::InitVertexIndexBuffers()
-{
-    HRESULT hr = S_OK;
-
-    _skybox.CubeData(_device, true);
-
-    return S_OK;
 }
 
 HRESULT DX11Framework::InitPipelineVariables()
@@ -366,7 +352,25 @@ HRESULT DX11Framework::InitRunTimeData()
     _viewport = { 0.0f, 0.0f, (float)_WindowWidth, (float)_WindowHeight, 0.0f, 1.0f };
     _immediateContext->RSSetViewports(1, &_viewport);
 
+    // Setup Camera
+    XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
+    XMFLOAT3 at = XMFLOAT3(0.0f, 2.0f, 0.0f);
+    XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+    _camera = new Camera(eye, at, up, (float)_WindowWidth, (float)_WindowHeight, 0.01f, 200.0f);
+
+    //Lighting
+    InitLighting();
+
+    //Initiate Scene
+    Geometry geo; //Geometry Reference
+    ID3D11ShaderResourceView* _texture;
+
     //Skybox
+    Appearance* _appearance = new Appearance(geo.Cube(_device, true));
+    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
+    _appearance->SetTexture(_texture);
+
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
     dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     dsDescSkybox.DepthEnable = true;
@@ -377,35 +381,48 @@ HRESULT DX11Framework::InitRunTimeData()
     {
         return hr;
     }
+    _skybox->SetType("Skybox");
+    _skybox->SetAppearance(_appearance);
 
-    // Setup Camera
-    XMFLOAT3 eye = XMFLOAT3(0.0f, 0.0f, -6.1f);
-    XMFLOAT3 at = XMFLOAT3(0.0f, 0.0f, 0.0f);
-    XMFLOAT3 up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+    //Geometry
+    _appearance = new Appearance(geo.Plane(_device));
+    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
+    _appearance->SetTexture(_texture);
 
-    _camera = new Camera(eye, at, up, (float)_WindowWidth, (float)_WindowHeight, 0.01f, 200.0f);
+    _floor->SetType("Floor");
+    _floor->SetAppearance(_appearance);
+    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
+    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
 
-    //Lighting
-    InitLighting();
+    _gameObjects.push_back(_floor);
 
-    //Initiate Scene
-    InitGameObjects();
-
-    //Skybox
-    hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_skyboxTexture);
-    _skybox.SetTexture(_skyboxTexture);
-
-    if (FAILED(hr))
+    for (auto i = 0; i < 4; i++)
     {
-        return hr;
+        _appearance = new Appearance(geo.Cube(_device, false));
+        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
+        _appearance->SetTexture(_texture);
+
+        _cubes[i].SetType("Cube " + i);
+        _cubes[i].SetAppearance(_appearance);
+        _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
+        _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
+
+        _gameObjects.push_back(&_cubes[i]);
     }
+
+    //GameObjects
+    InitGameObjects();
 }
 
 DX11Framework::~DX11Framework()
 {
-    delete _camera;
-    //need to delete gameobjects and cameras
-    //skybox and plane
+    if (_camera) { delete _camera; }
+    if (_skybox) { delete _skybox; }
+    for (auto gameObject : _gameObjects)
+    {
+        delete gameObject;
+    }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
     if (_dxgiDevice) { _dxgiDevice->Release(); }
@@ -432,7 +449,7 @@ void DX11Framework::InitLighting()
     //Json Parser
     json jFile;
 
-    std::ifstream fileOpen("JSON/lighting.json");
+    std::ifstream fileOpen("JSON/Lighting.json");
 
     //validates to see if the file has been opened
     if (!fileOpen.is_open() || fileOpen.fail())
@@ -492,7 +509,7 @@ void DX11Framework::InitGameObjects()
 {
     json jFile; //Json Parser
 
-    std::ifstream fileOpen("JSON/gameObjects.json");
+    std::ifstream fileOpen("JSON/GameObjects.json");
 
     //validates to see if the file has been opened
     if (!fileOpen.is_open() || fileOpen.fail())
@@ -506,10 +523,10 @@ void DX11Framework::InitGameObjects()
     std::string v = jFile["version"].get<std::string>();
     json& fileData = jFile["GameObjects"]; //← gets an array
     int size = fileData.size();
+    gameObjectData g;
 
     for (unsigned int i = 0; i < size; i++)
     {
-        gameObjectData g;
         json& gameObjectDesc = fileData.at(i);
         g.objFilePath = gameObjectDesc["FilePath"];
         g.type = gameObjectDesc["Type"];
@@ -525,33 +542,34 @@ void DX11Framework::InitGameObjects()
         g.position.y = gameObjectDesc["Position"][1];
         g.position.z = gameObjectDesc["Position"][2];
 
-        gameobjects.push_back(g); //Adds the gameobject to the list
+        _gameObjectDataList.push_back(g); //Adds the gameobject to the list
     }
 
-    for (int i = 0; i < gameobjects.size(); i++)
+    for (int i = 0; i < _gameObjectDataList.size(); i++)
     {
         //Type
-        _gameObject[i].SetType(gameobjects.at(i).type);
+        _gameObject[i].SetType(_gameObjectDataList.at(i).type);
 
         //Texture
         ID3D11ShaderResourceView* _texture;
-        std::wstring colorTexFilePath = static_cast<CString>(gameobjects.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
+        std::wstring colorTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
         CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
 
         //Specular Texture
-        std::wstring specTexFilePath = static_cast<CString>(gameobjects.at(i).colorTexture.c_str()).GetString();
+        std::wstring specTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).colorTexture.c_str()).GetString();
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
 
-        //Mesh
-        Appearance* _appearance = new Appearance();
-        _appearance->SetMeshData(OBJLoader::Load(gameobjects.at(i).objFilePath, _device, false)); //pass the meshData into the GameObject Class
+        //Appearance
+        Appearance* _appearance = new Appearance(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
         _appearance->SetTexture(_texture);
         _gameObject[i].SetAppearance(_appearance);
 
         //Transform
-        _gameObject[i].GetTransform()->SetScale(Vector3(gameobjects.at(i).scale.x, gameobjects.at(i).scale.y, gameobjects.at(i).scale.z));
-        _gameObject[i].GetTransform()->SetRotation(Vector3(gameobjects.at(i).rotation.x, gameobjects.at(i).rotation.y, gameobjects.at(i).rotation.z));
-        _gameObject[i].GetTransform()->SetPosition(Vector3(gameobjects.at(i).position.x, gameobjects.at(i).position.y, gameobjects.at(i).position.z));
+        _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
+        _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
+        _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
+
+        _gameObjects.push_back(&_gameObject[i]); //Adds it a different list with all gameObjects
     }
 }
 
@@ -585,8 +603,6 @@ void DX11Framework::Update()
     _cbData.cameraPosition = _camera->GetEye();
     _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
-    _cbData.hasTexture = _hasTexture;
-    _cbData.hasSpecularMap = _hasSpecularMap;
 
     Keybinds();
 }
@@ -636,38 +652,38 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //NUMPAD 8 - Fowards
     if (GetAsyncKeyState(0x68) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 1.0f));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
     }
     //NUMPAD 2 - Backwards
     if (GetAsyncKeyState(0x62) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -1.0f));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
     }
     //NUMPAD 4 - Left
     if (GetAsyncKeyState(0x64) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(-1.0f, 0, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(-1.0f, 0, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
     }
     //NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(1.0f, 0, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(1.0f, 0, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     //NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, 1.0f, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, 1.0f, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
     }
     //NUMPAD 3 - Down
     if (GetAsyncKeyState(0x63) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->AddForce(Vector3(0, -1.0f, 0));
-        _gameObject[1].GetPhysicsModel()->AddForce(Vector3(0, -1.0f, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
     }
 #pragma endregion
 
@@ -675,38 +691,38 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //UP ARROW - Fowards Constant Velocity
     if (GetAsyncKeyState(0x26) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
     }
     //DOWN ARROW - Backwards Constant Velocity
     if (GetAsyncKeyState(0x28) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
     }
     //LEFT ARROW - Left Constant Velocity
     if (GetAsyncKeyState(0x25) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
     }
     //RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
     }
     //PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
     }
     //PAGE DOWN - Down Constant Velocity
     if (GetAsyncKeyState(0x21) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), false);
     }
 #pragma endregion
 
@@ -724,15 +740,15 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //INSERT / NUMPAD 0 - Stop All Velocity
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
-        _gameObject[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
-        _gameObject[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
     }
 #pragma endregion
 
     //Update objects
-    for (int i = 0; i < gameobjects.size(); i++)
+    for (GameObject* go : _gameObjects)
     {
-        _gameObject[i].Update(deltaTime);
+        go->Update(deltaTime);
     }
 }
 
@@ -778,19 +794,18 @@ void DX11Framework::Draw()
     _cbData.View = XMMatrixTranspose(view);
     _cbData.Projection = XMMatrixTranspose(projection);
 
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
+    //Write constant buffer data onto GPU
+    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+
     //Loads Game Objects
-    for (int i = 0; i < gameobjects.size(); i++)
+    for (auto gameObject : _gameObjects)
     {
-        // Set Texture
-        if (_gameObject[i].GetAppearance()->HasTexture())
+        if (gameObject->GetAppearance()->HasTexture())
         {
-            _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
+            _immediateContext->PSSetShaderResources(0, 1, gameObject->GetAppearance()->GetTexture());
             _cbData.hasTexture = 1.0f;
             _cbData.hasSpecularMap = 1.0f;
         }
@@ -799,14 +814,13 @@ void DX11Framework::Draw()
             _cbData.hasTexture = 0.0f;
             _cbData.hasSpecularMap = 0.0f;
         }
-        _cbData.World = XMMatrixTranspose(_gameObject[i].GetTransform()->GetWorldMatrix());
+        _cbData.World = XMMatrixTranspose(gameObject->GetTransform()->GetWorldMatrix());
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
 
-        _gameObject[i].Draw(_immediateContext);
+        gameObject->Draw(_immediateContext);
     }
-
     //Skybox
     //Changes the Stencil State to the Skybox one
     _immediateContext->OMSetDepthStencilState(_depthStencilSkybox, 0);
@@ -820,8 +834,8 @@ void DX11Framework::Draw()
     memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     _immediateContext->Unmap(_constantBuffer, 0);
 
-    _skybox.Draw(_immediateContext);
+    _skybox->Draw(_immediateContext);
     
-    //Present Backbuffer to screen
+    //Present back buffer to screen
     _swapChain->Present(0, 0);
 }

@@ -16,11 +16,12 @@ class DX11Framework
 	//int _WindowHeight = 1440;
 
 	//1080p
-	//int _WindowWidth = 1920;
-	//int _WindowHeight = 1080;
+	int _WindowWidth = 1920;
+	int _WindowHeight = 1080;
 
-	int _WindowWidth = 1280;
-	int _WindowHeight = 768;
+	//768p
+	//int _WindowWidth = 1280;
+	//int _WindowHeight = 768;
 
 	HWND _windowHandle;
 
@@ -79,10 +80,13 @@ class DX11Framework
 	ID3D11PixelShader* _pixelShaderSkybox;
 	ID3D11DepthStencilState* _depthStencilSkybox;
 	XMFLOAT4X4 _skyboxMatrix;
-	ID3D11ShaderResourceView* _skyboxTexture;
 
 	//GameObjects
-	std::vector<gameObjectData> gameobjects;
+	GameObject* _skybox = new GameObject();
+	GameObject* _floor = new GameObject();
+	GameObject* _cubes = new GameObject[4];
+	std::vector<gameObjectData> _gameObjectDataList;
+	vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
 
 	//Camera
@@ -100,7 +104,6 @@ private:
 	HRESULT CreateD3DDevice();
 	HRESULT CreateSwapChainAndFrameBuffer();
 	HRESULT InitShadersAndInputLayout();
-	HRESULT InitVertexIndexBuffers();
 	HRESULT InitPipelineVariables();
 	HRESULT InitRunTimeData();
 
