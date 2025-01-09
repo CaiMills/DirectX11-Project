@@ -389,13 +389,14 @@ HRESULT DX11Framework::InitRunTimeData()
     //CreateDDSTextureFromFile(_device, L"Resources\\Textures\\Test Textures\\floor.dds", nullptr, &_texture);
     //_appearance->SetTexture(_texture);
 
-    //_geometry[0].SetType("Floor");
-    //_geometry[0].SetAppearance(_appearance);
-    //_geometry[0].GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    //_geometry[0].GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
-    //_geometry[0].GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
+    //GameObject go;
+    //go.SetType("Floor");
+    //go.SetAppearance(_appearance);
+    //go.GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    //go.GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
+    //go.GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
 
-    //_gameObjects.push_back(&_geometry[0]);
+    //_gameObjects.push_back(&go);
 
     //GameObjects
     InitGameObjects();
@@ -405,10 +406,9 @@ DX11Framework::~DX11Framework()
 {
     if (_camera) { delete _camera; }
     if (_skybox) { delete _skybox; }
-    for (int i = 0; i < _gameObjects.size(); i++)
+    for (auto gameObject : _gameObjects)
     {
-        //does work currently for some reason
-        //delete &_gameObject[i];
+        delete gameObject;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -733,9 +733,9 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
     //Update objects
-    for (int i = 0; i < _gameObjects.size(); i++)
+    for (GameObject* go : _gameObjects)
     {
-        _gameObject[i].Update(deltaTime);
+        go->Update(deltaTime);
     }
 }
 
@@ -781,19 +781,18 @@ void DX11Framework::Draw()
     _cbData.View = XMMatrixTranspose(view);
     _cbData.Projection = XMMatrixTranspose(projection);
 
+    //Store this frames data in constant buffer struct
+    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+
     //Write constant buffer data onto GPU
     D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
     //Loads Game Objects
-    for (int i = 0; i < _gameObjects.size(); i++)
+    for (auto gameObject : _gameObjects)
     {
-        //Store this frames data in constant buffer struct
-        _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-
-        // Set Texture
-        if (_gameObject[i].GetAppearance()->HasTexture())
+        if (gameObject->GetAppearance()->HasTexture())
         {
-            _immediateContext->PSSetShaderResources(0, 1, _gameObject[i].GetAppearance()->GetTexture());
+            _immediateContext->PSSetShaderResources(0, 1, gameObject->GetAppearance()->GetTexture());
             _cbData.hasTexture = 1.0f;
             _cbData.hasSpecularMap = 1.0f;
         }
@@ -802,12 +801,12 @@ void DX11Framework::Draw()
             _cbData.hasTexture = 0.0f;
             _cbData.hasSpecularMap = 0.0f;
         }
-        _cbData.World = XMMatrixTranspose(_gameObject[i].GetTransform()->GetWorldMatrix());
+        _cbData.World = XMMatrixTranspose(gameObject->GetTransform()->GetWorldMatrix());
         _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
         memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
         _immediateContext->Unmap(_constantBuffer, 0);
 
-        _gameObject[i].Draw(_immediateContext);
+        gameObject->Draw(_immediateContext);
     }
 
     //Skybox
