@@ -34,7 +34,7 @@ struct SkyboxVS_Out
     float3 texCoord : TEXCOORD;
 };
 
-SkyboxVS_Out VS_main(float3 Position : POSITION, float2 TexCoord : TEXCOORD)
+SkyboxVS_Out VS_main(float3 Position : POSITION, float3 TexCoord : TEXCOORD)
 {
     SkyboxVS_Out output = (SkyboxVS_Out) 0;
     

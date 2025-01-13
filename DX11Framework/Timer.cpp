@@ -2,7 +2,7 @@
 
 Timer::Timer()
 {
-	duration<float>(steady_clock::now() - lastFrame).count(); //Delta in seconds 
+
 }
 
 float Timer::GetDeltaTime()
