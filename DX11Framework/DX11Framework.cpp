@@ -419,6 +419,7 @@ DX11Framework::~DX11Framework()
 {
     if (_camera) { delete _camera; }
     if (_skybox) { delete _skybox; }
+    //this never works for some reason
     //for each(GameObject * go in _gameObjects)
     {
         //delete go;
@@ -431,15 +432,15 @@ DX11Framework::~DX11Framework()
     if (_swapChain) { _swapChain->Release(); }
     if (_wireframeState) { _wireframeState->Release(); }
     if (_fillState) { _fillState->Release(); }
-    if (_vertexShader) { _vertexShader->Release(); }
-    if (_skyboxVertexShader) { _skyboxVertexShader->Release(); }
-    if (_pixelShader) { _pixelShader->Release(); }
-    if (_skyboxPixelShader) { _skyboxPixelShader->Release(); }
-    if (_inputLayout) { _inputLayout->Release(); }
-    if (_skyboxInputLayout) { _skyboxInputLayout->Release(); }
     if (_constantBuffer) { _constantBuffer->Release(); }
     if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
     if (_depthStencilView) { _depthStencilView->Release(); }
+    if (_vertexShader) { _vertexShader->Release(); }
+    if (_pixelShader) { _pixelShader->Release(); }
+    if (_inputLayout) { _inputLayout->Release(); }
+    if (_skyboxVertexShader) { _skyboxVertexShader->Release(); }
+    if (_skyboxPixelShader) { _skyboxPixelShader->Release(); }
+    if (_skyboxInputLayout) { _skyboxInputLayout->Release(); }
     if (_skyboxDepthStencil) { _skyboxDepthStencil->Release(); }
 }
 
