@@ -66,7 +66,7 @@ class DX11Framework
 
 	//Lighting
 	XMFLOAT3 _lightDir;
-
+	
 	//Timer
 	Timer* _timer;
 

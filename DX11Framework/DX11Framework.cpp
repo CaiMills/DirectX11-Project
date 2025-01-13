@@ -347,14 +347,11 @@ HRESULT DX11Framework::InitRunTimeData()
     constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    hr = _device->CreateBuffer(&constantBufferDesc, nullptr, &_constantBuffer);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
     _viewport = { 0.0f, 0.0f, (float)_WindowWidth, (float)_WindowHeight, 0.0f, 1.0f };
     _immediateContext->RSSetViewports(1, &_viewport);
+
+    hr = _device->CreateBuffer(&constantBufferDesc, nullptr, &_constantBuffer);
+    if (FAILED(hr)) { return hr; }
 
     // Setup Camera
     XMFLOAT3 eye = XMFLOAT3(0.0f, 2.0f, -1.0f);
@@ -367,13 +364,15 @@ HRESULT DX11Framework::InitRunTimeData()
     InitLighting();
 
     //Initiate Scene
-    Geometry geo; //Geometry Reference
-    ID3D11ShaderResourceView* _texture;
+    ID3D11ShaderResourceView* texture;
+    Geometry* geometry = new Geometry(); //This is to get a forwards reference to the geometry functions
 
     //Skybox
-    Appearance* _appearance = new Appearance(geo.Cube(_device, true));
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
-    _appearance->SetTexture(_texture);
+    Appearance* appearance = new Appearance(geometry->Cube(_device, true));
+    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
+    if (FAILED(hr)) { return hr; }
+
+    appearance->SetTexture(texture);
 
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
     dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -381,20 +380,18 @@ HRESULT DX11Framework::InitRunTimeData()
     dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
     hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    if (FAILED(hr)) { return hr; }
+
     _skybox->SetType("Skybox");
-    _skybox->SetAppearance(_appearance);
+    _skybox->SetAppearance(appearance);
 
     //Geometry
-    _appearance = new Appearance(geo.Plane(_device));
-    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
-    _appearance->SetTexture(_texture);
+    appearance = new Appearance(geometry->Plane(_device));
+    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &texture);
+    appearance->SetTexture(texture);
 
     _floor->SetType("Floor");
-    _floor->SetAppearance(_appearance);
+    _floor->SetAppearance(appearance);
     _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
     _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
     _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(90.0f), 0.0f, 0.0f));
@@ -403,18 +400,17 @@ HRESULT DX11Framework::InitRunTimeData()
 
     for (auto i = 0; i < 4; i++)
     {
-        _appearance = new Appearance(geo.Cube(_device, false));
-        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
-        _appearance->SetTexture(_texture);
+        appearance = new Appearance(geometry->Cube(_device, false));
+        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);
+        appearance->SetTexture(texture);
 
         _cubes[i].SetType("Cube " + i);
-        _cubes[i].SetAppearance(_appearance);
+        _cubes[i].SetAppearance(appearance);
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         _gameObjects.push_back(&_cubes[i]);
     }
-
     //GameObjects
     InitGameObjects();
 }
