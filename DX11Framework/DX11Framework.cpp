@@ -191,10 +191,10 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     // the release configuration of this program.
     dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
-    
+    ID3DBlob* vsBlob;
+
     //Skybox
     //Compile the vertex shader
-    ID3DBlob* vsBlob;
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -205,7 +205,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     //Create the vertex shader
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_skyboxVertexShader);
-
     if (FAILED(hr))
     {
         vsBlob->Release();
@@ -224,16 +223,18 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     //Create the vertex shader
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
-
     if (FAILED(hr))
     {
         vsBlob->Release();
         return hr;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    ID3DBlob* psBlob;
+
     //Skybox
     //Compile the pixel shader
-    ID3DBlob* psBlob;
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -241,12 +242,9 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         errorBlob->Release();
         return hr;
     }
-
     //Create the pixel shader
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_skyboxPixelShader);
-
-    if (FAILED(hr))
-        return hr;
+    if (FAILED(hr)) { return hr; }
 
     //Standard
     //Compile the pixel shader
@@ -257,13 +255,23 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         errorBlob->Release();
         return hr;
     }
-
-    //Create the pixel shader
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
+    if (FAILED(hr)) { return hr; }
 
-    if (FAILED(hr))
-        return hr;
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //Skybox
+    //Define the input layout
+    D3D11_INPUT_ELEMENT_DESC skyboxInputElementDesc[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    //Create the input layout
+    //hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_skyboxInputLayout);
+    //if (FAILED(hr)) { return hr; }
+
+    //Standard
     //Define the input layout
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
@@ -271,9 +279,9 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
-
     //Create the input layout
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
+    if (FAILED(hr)) { return hr; }
 
     vsBlob->Release();
     psBlob->Release();
@@ -328,10 +336,7 @@ HRESULT DX11Framework::InitPipelineVariables()
     bilinearSampledesc.MinLOD = 0;
 
     hr = _device->CreateSamplerState(&bilinearSampledesc, &_bilinearSamplerState);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    if (FAILED(hr)) { return hr; }
 
     return S_OK;
 }
@@ -830,8 +835,11 @@ void DX11Framework::Draw()
         gameObject->Draw(_immediateContext);
     }
     //Skybox
-    ////Changes the Stencil State to the Skybox one
+    //Input Assembler
+    //_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     //_immediateContext->IASetInputLayout(_skyboxInputLayout);
+
+    //Changes the Stencil State to the Skybox one
     _immediateContext->OMSetDepthStencilState((_skyboxDepthStencil), 0);
 
     //Vertex and Pixel Shader, Set Shader
