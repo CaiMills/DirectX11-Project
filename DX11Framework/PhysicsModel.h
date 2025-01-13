@@ -1,7 +1,7 @@
 #pragma once
 #include "Transform.h"
 
-class PhysicsModel
+class PhysicsModel abstract
 {
 protected:
 	Transform* _transform;
@@ -25,8 +25,8 @@ public:
 	void SetAcceleration(Vector3 acceleration, bool constAccelerate) { _acceleration = acceleration, _constAccelerate = constAccelerate; }
 	Vector3 GetAcceleration() const { return _acceleration; }
 
-	void AddForce(Vector3 force) { _netForce += force; }
+	virtual void AddForce(Vector3 force) { _netForce += force; }
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 };
 

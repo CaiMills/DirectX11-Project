@@ -1,5 +1,7 @@
 #pragma once
-class RigidBodyModel
+#include "PhysicsModel.h"
+
+class RigidBodyModel : public PhysicsModel
 {
 };
 
