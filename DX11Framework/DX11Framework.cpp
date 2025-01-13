@@ -226,9 +226,9 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    ID3DBlob* psBlob;
-
     ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    ID3DBlob* psBlob;
 
     //Skybox Pixel Shader
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
@@ -251,6 +251,14 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     {
         MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
         errorBlob->Release();
+        return hr;
+    }
+
+    // Create the pixel shader
+    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
+
+    if (FAILED(hr))
+    {
         return hr;
     }
 
