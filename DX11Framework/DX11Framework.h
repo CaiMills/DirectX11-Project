@@ -76,9 +76,10 @@ class DX11Framework
 	ID3D11SamplerState* _bilinearSamplerState;
 
 	//Skybox
-	ID3D11VertexShader* _vertexShaderSkybox;
-	ID3D11PixelShader* _pixelShaderSkybox;
-	ID3D11DepthStencilState* _depthStencilSkybox;
+	ID3D11InputLayout* _skyboxInputLayout;
+	ID3D11VertexShader* _skyboxVertexShader;
+	ID3D11PixelShader* _skyboxPixelShader;
+	ID3D11DepthStencilState* _skyboxDepthStencil;
 	XMFLOAT4X4 _skyboxMatrix;
 
 	//GameObjects

@@ -194,8 +194,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     
     ID3DBlob* vsBlob;
 
-    //Skybox Vertex Shader
-    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
+    // Compile the vertex shader
+    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
         MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
@@ -203,49 +203,17 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShaderSkybox);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-
-    //Primary Vertex Shader
-    hr =  D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-
+    // Create the vertex shader
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
+
     if (FAILED(hr))
     {
+        vsBlob->Release();
         return hr;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
+    // Compile the pixel shader
     ID3DBlob* psBlob;
-
-    //Skybox Pixel Shader
-    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-
-    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShaderSkybox);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    //Primary Pixel Shader
     hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -258,26 +226,18 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
 
     if (FAILED(hr))
-    {
         return hr;
-    }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
+    // Define the input layout
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,   0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
 
+    // Create the input layout
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
-
-    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
 
     vsBlob->Release();
     psBlob->Release();
@@ -384,7 +344,7 @@ HRESULT DX11Framework::InitRunTimeData()
     dsDescSkybox.DepthEnable = true;
     dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_depthStencilSkybox);
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
     if (FAILED(hr))
     {
         return hr;
@@ -427,9 +387,9 @@ DX11Framework::~DX11Framework()
 {
     if (_camera) { delete _camera; }
     if (_skybox) { delete _skybox; }
-    for (auto gameObject : _gameObjects)
+    //for each(GameObject * go in _gameObjects)
     {
-        delete gameObject;
+        //delete go;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -440,13 +400,15 @@ DX11Framework::~DX11Framework()
     if (_wireframeState) { _wireframeState->Release(); }
     if (_fillState) { _fillState->Release(); }
     if (_vertexShader) { _vertexShader->Release(); }
-    if (_vertexShaderSkybox) { _vertexShaderSkybox->Release(); }
+    if (_skyboxVertexShader) { _skyboxVertexShader->Release(); }
     if (_pixelShader) { _pixelShader->Release(); }
-    if (_pixelShaderSkybox) { _pixelShaderSkybox->Release(); }
+    if (_skyboxPixelShader) { _skyboxPixelShader->Release(); }
     if (_inputLayout) { _inputLayout->Release(); }
+    if (_skyboxInputLayout) { _skyboxInputLayout->Release(); }
     if (_constantBuffer) { _constantBuffer->Release(); }
     if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
     if (_depthStencilView) { _depthStencilView->Release(); }
+    if (_skyboxDepthStencil) { _skyboxDepthStencil->Release(); }
 }
 
 /// <summary>
@@ -835,19 +797,20 @@ void DX11Framework::Draw()
         gameObject->Draw(_immediateContext);
     }
     //Skybox
-    //Changes the Stencil State to the Skybox one
-    _immediateContext->OMSetDepthStencilState(_depthStencilSkybox, 0);
+    ////Changes the Stencil State to the Skybox one
+    ////_immediateContext->IASetInputLayout(_skyboxInputLayout);
+    //_immediateContext->OMSetDepthStencilState((_skyboxDepthStencil), 0);
 
-    //Vertex and Pixel Shader, Set Shader
-    _immediateContext->VSSetShader(_vertexShaderSkybox, nullptr, 0);
-    _immediateContext->PSSetShader(_pixelShaderSkybox, nullptr, 0);
+    ////Vertex and Pixel Shader, Set Shader
+    //_immediateContext->VSSetShader(_skyboxVertexShader, nullptr, 0);
+    //_immediateContext->PSSetShader(_skyboxPixelShader, nullptr, 0);
 
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
+    //_cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+    //_immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+    //memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+    //_immediateContext->Unmap(_constantBuffer, 0);
 
-    _skybox->Draw(_immediateContext);
+    //_skybox->Draw(_immediateContext);
     
     //Present back buffer to screen
     _swapChain->Present(0, 0);
