@@ -2,15 +2,15 @@
 
 Timer::Timer()
 {
-	duration<float>(steady_clock::now() - lastFrame).count(); //Delta in seconds 
+
 }
 
 float Timer::GetDeltaTime()
 {
-	return 0.0f;
+	return duration<float>(steady_clock::now() - lastFrame).count();
 }
 
 void Timer::Tick()
 {
-	duration<float>(steady_clock::now() - lastFrame).count();
+	lastFrame = steady_clock::now();
 }

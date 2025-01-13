@@ -1,5 +1,6 @@
 #pragma once
 #include "PhysicsModel.h"
+
 class ParticleModel : public PhysicsModel
 {
 private:
@@ -10,7 +11,7 @@ public:
 	ParticleModel(Transform* transform) : PhysicsModel(transform) {};
 	ParticleModel(Transform* transform, float resetTime, Vector3 pertubation, bool invertGravity);
 
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime) override;
 
 	void Reset();
 };

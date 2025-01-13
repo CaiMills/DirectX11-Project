@@ -31,7 +31,6 @@ cbuffer ConstantBuffer : register(b0)
 struct VS_Out
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
     float3 normal : NORMAL;
     float2 texCoord : TEXCOORD;
 };
@@ -53,6 +52,8 @@ VS_Out VS_main(float3 Position : POSITION, float3 Normal : NORMAL, float2 TexCoo
 
 float4 PS_main(VS_Out input) : SV_TARGET
 {
+    float4 colour;
+    
     input.normal = normalize(input.normal);
     
     float3 normalisedLightDir = normalize(lightDir);
@@ -79,13 +80,13 @@ float4 PS_main(VS_Out input) : SV_TARGET
             float4 specTexColor = diffuseTex.Sample(bilinearSampler, input.texCoord);
             float4 specular = specIntensity * (specTexColor * specularLight);
             float4 litColor = texColor * (ambient + diffuse) + specular;
-            input.color = diffuse + ambient + specular + litColor;
+            colour = diffuse + ambient + specular + litColor;
         }
         else
         {
             float4 specular = specIntensity * (specularMaterial * specularLight);
             float4 litColor = texColor * (ambient + diffuse) + specular;
-            input.color = diffuse + ambient + specular + litColor;
+            colour = diffuse + ambient + specular + litColor;
         }
     }
     else
@@ -94,8 +95,8 @@ float4 PS_main(VS_Out input) : SV_TARGET
         float4 ambient = ambientMaterial * ambientLight;
         float4 specular = specIntensity * (specularMaterial * specularLight);
         
-        input.color = diffuse + ambient + specular;
+        colour.rgb = diffuse + ambient + specular;
     }
    
-    return input.color;
+    return colour;
 }

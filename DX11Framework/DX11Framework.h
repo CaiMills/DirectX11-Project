@@ -16,12 +16,12 @@ class DX11Framework
 	//int _WindowHeight = 1440;
 
 	//1080p
-	int _WindowWidth = 1920;
-	int _WindowHeight = 1080;
+	//int _WindowWidth = 1920;
+	//int _WindowHeight = 1080;
 
 	//768p
-	//int _WindowWidth = 1280;
-	//int _WindowHeight = 768;
+	int _WindowWidth = 1280;
+	int _WindowHeight = 768;
 
 	HWND _windowHandle;
 
@@ -66,7 +66,7 @@ class DX11Framework
 
 	//Lighting
 	XMFLOAT3 _lightDir;
-
+	
 	//Timer
 	Timer* _timer;
 
@@ -76,9 +76,10 @@ class DX11Framework
 	ID3D11SamplerState* _bilinearSamplerState;
 
 	//Skybox
-	ID3D11VertexShader* _vertexShaderSkybox;
-	ID3D11PixelShader* _pixelShaderSkybox;
-	ID3D11DepthStencilState* _depthStencilSkybox;
+	ID3D11InputLayout* _skyboxInputLayout;
+	ID3D11VertexShader* _skyboxVertexShader;
+	ID3D11PixelShader* _skyboxPixelShader;
+	ID3D11DepthStencilState* _skyboxDepthStencil;
 	XMFLOAT4X4 _skyboxMatrix;
 
 	//GameObjects
