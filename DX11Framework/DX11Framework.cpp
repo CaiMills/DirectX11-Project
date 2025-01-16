@@ -756,6 +756,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     }
 #pragma endregion
 
+    //Collisions
+    if (_cubes[0].GetPhysicsModel()->IsCollideable() && _cubes[1].GetPhysicsModel()->IsCollideable())
+    {
+        _cubes[0].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
+        DebugPrintF("Collision");
+    }
+
     //Update objects
     for (GameObject* go : _gameObjects)
     {
