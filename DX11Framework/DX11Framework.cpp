@@ -515,11 +515,9 @@ void DX11Framework::InitLighting()
 /// </summary>
 void DX11Framework::InitGameObjects()
 {
-    json jFile; //Json Parser
-
+    json jFile;
     std::ifstream fileOpen("JSON/GameObjects.json");
 
-    //validates to see if the file has been opened
     if (!fileOpen.is_open() || fileOpen.fail())
     {
         std::cerr << "Error: file could not be opened." << std::endl;
@@ -615,7 +613,7 @@ void DX11Framework::Update()
 
     _cbData.cameraPosition = _camera->GetEye();
     _cbData.specPower = 10;
-    _cbData.lightDir = XMFLOAT3(0, 0.0f, -1.0f);
+    _cbData.lightDir = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
     Keybinds();
 }
