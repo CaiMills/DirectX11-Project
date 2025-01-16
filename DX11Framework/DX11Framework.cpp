@@ -682,7 +682,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     //NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
