@@ -1,12 +1,14 @@
 #pragma once
 #include "Transform.h"
 
+//Foward Declaration
 class SphereCollider;
 
 class Collider abstract
 {
 protected:
 	Transform* _transform;
+	SphereCollider* _sphere;
 
 public:
 	Collider(Transform* transform) { _transform = transform; }

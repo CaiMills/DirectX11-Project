@@ -3,6 +3,7 @@
 #include "Appearance.h"
 #include "PhysicsModel.h"
 #include "ParticleModel.h"
+#include "RigidBodyModel.h"
 #include "Transform.h"
 
 using namespace std;
@@ -13,7 +14,7 @@ private:
 	string _type;
 	Appearance* _appearance;
 	Transform* _transform = nullptr;
-	ParticleModel* _physicsModel = nullptr;
+	PhysicsModel* _physicsModel = nullptr;
 
 public:
 	GameObject();

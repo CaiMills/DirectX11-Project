@@ -1,11 +1,12 @@
 #pragma once
 #include "Collider.h"
+#include "SphereCollider.h"
 
 class PhysicsModel abstract
 {
 protected:
 	Transform* _transform;
-	Collider* _collider;
+	Collider* _collider = new SphereCollider(_transform, 2.0f);
 	float _mass;
 	bool _simulateGravity;
 

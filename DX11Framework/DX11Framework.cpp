@@ -403,6 +403,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
     _gameObjects.push_back(_floor);
 
+    //Cubes
     for (auto i = 0; i < 4; i++)
     {
         appearance = new Appearance(geometry->Cube(_device, false));
@@ -839,24 +840,24 @@ void DX11Framework::Draw()
 
         gameObject->Draw(_immediateContext);
     }
-    //Skybox
+    ////Skybox
     //Input Assembler
     //_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     //_immediateContext->IASetInputLayout(_skyboxInputLayout);
 
-    //Changes the Stencil State to the Skybox one
-    _immediateContext->OMSetDepthStencilState((_skyboxDepthStencil), 0);
+    ////Changes the Stencil State to the Skybox one
+    //_immediateContext->OMSetDepthStencilState((_skyboxDepthStencil), 0);
 
-    //Vertex and Pixel Shader, Set Shader
-    _immediateContext->VSSetShader(_skyboxVertexShader, nullptr, 0);
-    _immediateContext->PSSetShader(_skyboxPixelShader, nullptr, 0);
+    ////Vertex and Pixel Shader, Set Shader
+    //_immediateContext->VSSetShader(_skyboxVertexShader, nullptr, 0);
+    //_immediateContext->PSSetShader(_skyboxPixelShader, nullptr, 0);
 
-    _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
-    _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-    memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-    _immediateContext->Unmap(_constantBuffer, 0);
+    //_cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
+    //_immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
+    //memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
+    //_immediateContext->Unmap(_constantBuffer, 0);
 
-    _skybox->Draw(_immediateContext);
+    //_skybox->Draw(_immediateContext);
     
     //Present back buffer to screen
     _swapChain->Present(0, 0);
