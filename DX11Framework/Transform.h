@@ -10,7 +10,7 @@ private:
 	Vector3 _scale;
 	XMFLOAT4X4 _world;
 
-	bool _continuousRotation;
+	bool _continuousRotation = false;
 
 public:
 	Transform();

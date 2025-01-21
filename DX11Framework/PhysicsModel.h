@@ -6,16 +6,16 @@ class PhysicsModel abstract
 {
 protected:
 	Transform* _transform;
-	Collider* _collider;
-	float _mass;
-	bool _simulateGravity;
+	Collider* _collider = nullptr;
+	float _mass = 1.0f;
+	bool _simulateGravity = false;
 
-	Vector3 _velocity;
-	bool _constVelocity;
-	Vector3 _acceleration;
-	bool _constAccelerate;
-	Vector3 _force;
-	Vector3 _netForce;
+	Vector3 _velocity = Vector3();
+	bool _constVelocity = false;
+	Vector3 _acceleration = Vector3();
+	bool _constAccelerate = false;
+	Vector3 _force; //not sure if this one is needed currently
+	Vector3 _netForce = Vector3();
 
 public:
 	PhysicsModel(Transform* transform);

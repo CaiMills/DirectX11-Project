@@ -6,7 +6,6 @@ Transform::Transform()
 	_orientation = MakeQFromEulerAngles(0, 0, 0);
 	_scale = Vector3(1.0f, 1.0f, 1.0f);
 	_world = XMFLOAT4X4();
-	_continuousRotation = false;
 }
 
 Transform::~Transform()

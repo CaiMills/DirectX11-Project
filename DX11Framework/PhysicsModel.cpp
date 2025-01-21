@@ -3,14 +3,6 @@
 PhysicsModel::PhysicsModel(Transform* transform)
 {
 	_transform = transform;
-	_collider = nullptr;
-	_mass = 1.0f;
-	_simulateGravity = false;
-
-	_velocity = Vector3();
-	_acceleration = Vector3();
-	_constVelocity = false;
-	_constAccelerate = false;
 }
 
 PhysicsModel::~PhysicsModel()
