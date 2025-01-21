@@ -774,20 +774,21 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         Vector3 collisionNormal = _cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
 
         //Velocity Calculation
-        Vector3 relativeVelocity = _cubes[0].GetPhysicsModel()->GetVelocity() - _cubes[0].GetPhysicsModel()->GetVelocity();
+        Vector3 relativeVelocity = _cubes[0].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
 
         //Checks if objects are approaching each other
         if (collisionNormal * relativeVelocity < 0.0f)
         {
             DebugPrintF("Collision\n");
 
-            //float restitution = 0.5f;
+            float restitution = 0.5f;
+            //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition())
 
-            //float vj = collisionNormal * relativeVelocity;
-            //float j = vj * ((1 / _cubes[0].GetPhysicsModel()->GetMass()) + (1 / _cubes[1].GetPhysicsModel()->GetMass()));
+            float vj = collisionNormal * relativeVelocity;
+            float j = vj * ((1 / _cubes[0].GetPhysicsModel()->GetMass()) + (1 / _cubes[1].GetPhysicsModel()->GetMass()));
 
-            //_cubes[0].GetPhysicsModel()->ApplyImpulse((1 / _cubes[0].GetPhysicsModel()->GetMass()) * j * collisionNormal);
-            //_cubes[2].GetPhysicsModel()->ApplyImpulse(-((1 / _cubes[1].GetPhysicsModel()->GetMass()) * j * collisionNormal)); //reversed
+            _cubes[0].GetPhysicsModel()->ApplyImpulse((1 / _cubes[0].GetPhysicsModel()->GetMass()) * j * collisionNormal);
+            _cubes[1].GetPhysicsModel()->ApplyImpulse(-((1 / _cubes[1].GetPhysicsModel()->GetMass()) * j * collisionNormal)); //reversed
         }
     }
 
