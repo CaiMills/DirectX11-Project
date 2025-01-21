@@ -6,11 +6,11 @@ bool SphereCollider::CollidesWith(SphereCollider& other)
 	Vector3 distanceFromTarget = this->GetPosition() - other.GetPosition();
 	
 	//Magnitude Calculation
-	float distance = sqrt((distanceFromTarget.x * distanceFromTarget.x) + (distanceFromTarget.y * distanceFromTarget.y) + (distanceFromTarget.z * distanceFromTarget.z));
+	float distance = distanceFromTarget.Magnitude();
 
 	if (distance < combinedRadius)
 	{
-
+		DebugPrintF("Collision\n");
 		return true;
 	}
 	else
