@@ -17,7 +17,6 @@ PhysicsModel::~PhysicsModel()
 {
 	_transform = nullptr;
 	_collider = nullptr;
-	_mass = 0.0f;
 
 	_velocity = Vector3();
 	_acceleration = Vector3();

@@ -766,6 +766,29 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (_cubes[0].GetPhysicsModel()->IsCollideable() && _cubes[1].GetPhysicsModel()->IsCollideable())
     {
         _cubes[0].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
+
+        //Normalise Calculation
+        //Vector3 distanceFromTarget = _cubes[0].GetTransform()->GetPosition() - _cubes[0].GetTransform()->GetPosition();
+        //float distance = sqrt((distanceFromTarget.x * distanceFromTarget.x) + (distanceFromTarget.y * distanceFromTarget.y) + (distanceFromTarget.z * distanceFromTarget.z));
+        //Vector3 collisionNormal = Vector3(distanceFromTarget.x / distance, distanceFromTarget.y / distance, distanceFromTarget.z / distance);
+        Vector3 collisionNormal = _cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
+
+        //Velocity Calculation
+        Vector3 relativeVelocity = _cubes[0].GetPhysicsModel()->GetVelocity() - _cubes[0].GetPhysicsModel()->GetVelocity();
+
+        //Checks if objects are approaching each other
+        if (collisionNormal * relativeVelocity < 0.0f)
+        {
+            DebugPrintF("Collision\n");
+
+            //float restitution = 0.5f;
+
+            //float vj = collisionNormal * relativeVelocity;
+            //float j = vj * ((1 / _cubes[0].GetPhysicsModel()->GetMass()) + (1 / _cubes[1].GetPhysicsModel()->GetMass()));
+
+            //_cubes[0].GetPhysicsModel()->ApplyImpulse((1 / _cubes[0].GetPhysicsModel()->GetMass()) * j * collisionNormal);
+            //_cubes[2].GetPhysicsModel()->ApplyImpulse(-((1 / _cubes[1].GetPhysicsModel()->GetMass()) * j * collisionNormal)); //reversed
+        }
     }
 
     //Update objects

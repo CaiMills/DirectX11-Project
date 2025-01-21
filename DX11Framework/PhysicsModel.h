@@ -29,7 +29,10 @@ public:
 	Vector3 GetVelocity() const { return _velocity; }
 	void SetAcceleration(Vector3 acceleration, bool constAccelerate) { _acceleration = acceleration, _constAccelerate = constAccelerate; }
 	Vector3 GetAcceleration() const { return _acceleration; }
+	float GetMass() const { return _mass; }
+
 	virtual void AddForce(Vector3 force) { _netForce += force; }
+	virtual void ApplyImpulse(Vector3 impulse) { _velocity += impulse; }
 
 	virtual void Update(float deltaTime);
 };
