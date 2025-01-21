@@ -44,4 +44,5 @@ public:
     };
 
     void AddRelativeForce(Vector3 force, Vector3 point) override;
+    //void CalculateAngularVelocity();
 };
