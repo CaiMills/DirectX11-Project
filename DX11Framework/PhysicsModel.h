@@ -14,6 +14,7 @@ protected:
 	bool _constVelocity;
 	Vector3 _acceleration;
 	bool _constAccelerate;
+	Vector3 _force;
 	Vector3 _netForce;
 
 public:
@@ -34,6 +35,7 @@ public:
 
 	virtual void AddForce(Vector3 force) { _netForce += force; }
 	virtual void ApplyImpulse(Vector3 impulse) { _velocity += impulse; }
+	virtual void AddRelativeForce(Vector3 force, Vector3 point) = 0;
 
 	virtual void Update(float deltaTime);
 };

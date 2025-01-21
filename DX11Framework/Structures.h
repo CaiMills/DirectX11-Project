@@ -86,3 +86,9 @@ struct gameObjectData
 	std::string continuousRotation;
 };
 
+class Structures
+{
+public:
+
+};
+
