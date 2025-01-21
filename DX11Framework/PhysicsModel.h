@@ -30,6 +30,7 @@ public:
 	void SetAcceleration(Vector3 acceleration, bool constAccelerate) { _acceleration = acceleration, _constAccelerate = constAccelerate; }
 	Vector3 GetAcceleration() const { return _acceleration; }
 	float GetMass() const { return _mass; }
+	float GetInverseMass() const { return 1 / _mass; }
 
 	virtual void AddForce(Vector3 force) { _netForce += force; }
 	virtual void ApplyImpulse(Vector3 impulse) { _velocity += impulse; }

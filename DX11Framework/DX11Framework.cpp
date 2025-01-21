@@ -765,10 +765,17 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     //Collisions
     if (_cubes[0].GetPhysicsModel()->IsCollideable() && _cubes[1].GetPhysicsModel()->IsCollideable())
     {
+        //Allows for collision between cube 0 and 1
         _cubes[0].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
 
         //Normalise Calculation
         Vector3 collisionNormal = _cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
+
+        //Sphere Collisions
+        //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
+            //_cubes[1].GetPhysicsModel()->GetCollider()->GetRadius();
+
+        //collisionNormal = collisionNormal * depth * _cubes[0].GetPhysicsModel()->GetInverseMass() * _cubes[1].GetPhysicsModel()->GetInverseMass();
 
         //Velocity Calculation
         Vector3 relativeVelocity = _cubes[0].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
@@ -776,16 +783,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         //Checks if objects are approaching each other
         if (collisionNormal * relativeVelocity < 0.0f)
         {
-            //Sphere Collisions
-            //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - this._radius - other.radius;
-
             //General Collisions
             float restitution = 0.5f;
             float vj = collisionNormal * relativeVelocity;
-            float j = vj * ((1 / _cubes[0].GetPhysicsModel()->GetMass()) + (1 / _cubes[1].GetPhysicsModel()->GetMass()));
+            float j = vj * (_cubes[0].GetPhysicsModel()->GetInverseMass() + _cubes[1].GetPhysicsModel()->GetInverseMass());
 
-            _cubes[0].GetPhysicsModel()->ApplyImpulse((1 / _cubes[0].GetPhysicsModel()->GetMass()) * j * collisionNormal);
-            _cubes[1].GetPhysicsModel()->ApplyImpulse(-((1 / _cubes[1].GetPhysicsModel()->GetMass()) * j * collisionNormal)); //reversed
+            _cubes[0].GetPhysicsModel()->ApplyImpulse(_cubes[0].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
+            _cubes[1].GetPhysicsModel()->ApplyImpulse(-(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
         }
     }
 
