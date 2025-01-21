@@ -2,11 +2,16 @@
 
 bool SphereCollider::CollidesWith(SphereCollider& other)
 {
-	float combinedRadius = this->GetRadius() + other.GetRadius();
-	Vector3 collisionNormal = Vector3(other.GetPosition().x / other.GetPosition().Magnitude(), other.GetPosition().y / other.GetPosition().Magnitude(), other.GetPosition().z / other.GetPosition().Magnitude());
-	if (collisionNormal.x <= combinedRadius || collisionNormal.y <= combinedRadius || collisionNormal.z <= combinedRadius)
+	float combinedRadius = _radius + other._radius;
+	Vector3 distanceFromTarget = this->GetPosition() - other.GetPosition();
+	float distance = sqrt((distanceFromTarget.x * distanceFromTarget.x) + (distanceFromTarget.y * distanceFromTarget.y) + (distanceFromTarget.z * distanceFromTarget.z));
+	if (distance < combinedRadius)
 	{
+		DebugPrintF("Collision\n");
 		return true;
 	}
-	else { return false; }
+	else
+	{
+		return false;
+	}
 }

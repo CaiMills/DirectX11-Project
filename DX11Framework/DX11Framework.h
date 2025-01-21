@@ -98,8 +98,6 @@ class DX11Framework
 	float _cameraOrbitAngleXZ = -90.0f;
 	float _cameraSpeed = 2.0f;
 
-	SphereCollider* _collider;
-
 	ConstantBuffer _cbData;
 
 private:

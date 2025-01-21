@@ -6,7 +6,7 @@ class PhysicsModel abstract
 {
 protected:
 	Transform* _transform;
-	Collider* _collider = new SphereCollider(_transform, 2.0f);
+	Collider* _collider;
 	float _mass;
 	bool _simulateGravity;
 

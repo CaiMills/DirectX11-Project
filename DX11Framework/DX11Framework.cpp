@@ -403,6 +403,9 @@ HRESULT DX11Framework::InitRunTimeData()
 
     _gameObjects.push_back(_floor);
 
+    //Collider
+    Collider* collider;
+
     //Cubes
     for (auto i = 0; i < 4; i++)
     {
@@ -415,6 +418,9 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
+        collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
+        _cubes[i].GetPhysicsModel()->SetCollider(collider);
+
         _gameObjects.push_back(&_cubes[i]);
     }
     //GameObjects
@@ -426,9 +432,9 @@ DX11Framework::~DX11Framework()
     if (_camera) { delete _camera; }
     if (_skybox) { delete _skybox; }
     //this never works for some reason
-    //for each(GameObject * go in _gameObjects)
+    //for (GameObject* go : _gameObjects)
     {
-        //delete go;
+       //delete go;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -601,7 +607,6 @@ void DX11Framework::Update()
 
     while (accumulator >= FPS60)
     {
-        DebugPrintF("deltaTime is %f\n", accumulator);
         PhysicsUpdates(0.016);
         accumulator -= 0.016; //resets the accumulator counter
     }
@@ -761,7 +766,6 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (_cubes[0].GetPhysicsModel()->IsCollideable() && _cubes[1].GetPhysicsModel()->IsCollideable())
     {
         _cubes[0].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
-        DebugPrintF("Collision");
     }
 
     //Update objects
