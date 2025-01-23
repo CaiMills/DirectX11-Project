@@ -2,13 +2,12 @@
 
 bool SphereCollider::CollidesWith(SphereCollider& other)
 {
-	float combinedRadius = _radius + other._radius;
-	Vector3 distanceFromTarget = this->GetPosition() - other.GetPosition();
-	
-	//Magnitude Calculation
-	float distance = distanceFromTarget.Magnitude();
+	//AABB Calculation
+	float distance = pow(this->GetPosition().x - other.GetPosition().x, 2) +
+		pow(this->GetPosition().y - other.GetPosition().y, 2) +
+		pow(this->GetPosition().z - other.GetPosition().z, 2);
 
-	if (distance < combinedRadius)
+	if (distance < this->GetRadius() + other.GetRadius())
 	{
 		DebugPrintF("Collision\n");
 		return true;
