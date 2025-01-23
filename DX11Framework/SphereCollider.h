@@ -10,6 +10,7 @@ public:
 
 	virtual bool CollidesWith(Collider& other) override { return other.CollidesWith(*this); }
 	virtual bool CollidesWith(SphereCollider& other) override;
+	virtual bool CollidesWith(BoxCollider& other) override;
 
 	float GetRadius() const { return _radius; }
 };

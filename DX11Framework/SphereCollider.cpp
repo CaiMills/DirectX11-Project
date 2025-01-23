@@ -2,7 +2,7 @@
 
 bool SphereCollider::CollidesWith(SphereCollider& other)
 {
-	//AABB Calculation
+	//Sphere Collision
 	float distance = pow(this->GetPosition().x - other.GetPosition().x, 2) +
 		pow(this->GetPosition().y - other.GetPosition().y, 2) +
 		pow(this->GetPosition().z - other.GetPosition().z, 2);
@@ -16,4 +16,10 @@ bool SphereCollider::CollidesWith(SphereCollider& other)
 	{
 		return false;
 	}
+}
+
+bool SphereCollider::CollidesWith(BoxCollider& other)
+{
+	//Sphere vs AABB Collision
+	return false;
 }
