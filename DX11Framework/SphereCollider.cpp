@@ -9,7 +9,7 @@ bool SphereCollider::CollidesWith(SphereCollider& other)
 
 	if (distance < this->GetRadius() + other.GetRadius())
 	{
-		DebugPrintF("Collision\n");
+		DebugPrintF("Sphere vs Sphere Collision\n");
 		return true;
 	}
 	else
