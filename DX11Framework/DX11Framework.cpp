@@ -1,6 +1,4 @@
 ﻿#include "DX11Framework.h"
-#include <atlstr.h> // to use CString.
-#include "Geometry.h"
 
 #define FPS60 1.0f/60.0f
 

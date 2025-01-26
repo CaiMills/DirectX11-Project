@@ -10,6 +10,7 @@
 #include <string>
 #include <locale>
 #include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
+#include <atlstr.h> // to use CString.
 #include "Vector3.h"
 #include <cstring>
 #include "Debug.h"
