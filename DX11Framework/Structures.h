@@ -13,6 +13,7 @@
 #include "Vector3.h"
 #include <cstring>
 #include "Debug.h"
+#include <vector>
 
 using namespace DirectX;
 

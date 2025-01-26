@@ -2,7 +2,8 @@
 
 BoundingBox::BoundingBox()
 {
-	_min = XMFLOAT3(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity()); //Sets the variable to lowest possible value
+	//Sets the variables to lowest possible value
+	_min = XMFLOAT3(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 	_max = XMFLOAT3(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 }
 
@@ -10,19 +11,21 @@ BoundingBox::~BoundingBox()
 {
 }
 
-void BoundingBox::CalculateBox(SimpleVertex* vertexData)
+void BoundingBox::CalculateBox(std::vector<SimpleVertex> vertexData)
 {
-	for (XMFLOAT3 vertices : vertexData->Position)
+	for (auto& vertex : vertexData)
 	{
+		XMFLOAT3 pos = vertex.Position;
+
 		//if the vertex's position is more than the current max value, then make that the new max value
-		if (vertices.x > _max.x || vertices.y > _max.y || vertices.z > _max.z)
+		if (pos.x > _max.x || pos.y > _max.y || pos.z > _max.z)
 		{
-			_max = vertices;
+			_max = pos;
 		}
 		//if the vertex's position is less than the current min value, then make that the new min value
-		else if (vertices.x > _min.x || vertices.y > _min.y || vertices.z > _min.z)
+		else if (pos.x > _min.x || pos.y > _min.y || pos.z > _min.z)
 		{
-			_min = vertices;
+			_min = pos;
 		}
 	}
 }

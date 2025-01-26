@@ -11,6 +11,6 @@ public:
 	BoundingBox();
 	~BoundingBox();
 
-	void CalculateBox(SimpleVertex* vertexData);
+	void CalculateBox(std::vector<SimpleVertex> vertexData);
 };
 
