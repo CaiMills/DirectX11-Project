@@ -2,6 +2,7 @@
 #include "Structures.h"
 #include "OBJLoader.h"
 #include "DDSTextureLoader.h"
+#include "Globals.h"
 
 struct Material
 {

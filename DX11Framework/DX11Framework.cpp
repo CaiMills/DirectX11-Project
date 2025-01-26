@@ -844,30 +844,12 @@ void DX11Framework::Draw()
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
     //Loads Game Objects
     for (auto gameObject : _gameObjects)
     {
-        if (gameObject->GetAppearance()->HasTexture())
-        {
-            _immediateContext->PSSetShaderResources(0, 1, gameObject->GetAppearance()->GetTexture());
-            _cbData.hasTexture = 1.0f;
-            _cbData.hasSpecularMap = 1.0f;
-        }
-        else
-        {
-            _cbData.hasTexture = 0.0f;
-            _cbData.hasSpecularMap = 0.0f;
-        }
-        _cbData.World = XMMatrixTranspose(gameObject->GetTransform()->GetWorldMatrix());
-        _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-        memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-        _immediateContext->Unmap(_constantBuffer, 0);
-
         gameObject->Draw(_immediateContext);
     }
+
     ////Skybox
     //Input Assembler
     //_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
