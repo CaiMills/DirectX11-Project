@@ -86,10 +86,3 @@ struct gameObjectData
 	XMFLOAT3 position;
 	std::string continuousRotation;
 };
-
-class Structures
-{
-public:
-
-};
-

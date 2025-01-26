@@ -170,9 +170,6 @@ MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
     cubeMesh.VBOffset = 0;
     cubeMesh.VBStride = sizeof(SimpleVertex);
 
-    BoundingBox* boundingBox = new BoundingBox();
-    boundingBox->CalculateBox(CubeVertices);
-
     return cubeMesh;
 }
 

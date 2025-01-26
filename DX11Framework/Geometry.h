@@ -1,7 +1,6 @@
 #pragma once
 #include "Structures.h"
 #include "Transform.h"
-#include "BoundingBox.h"
 
 /// <summary>
 /// This is just the base class for the other shapes such as cube and pyramid

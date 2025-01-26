@@ -431,10 +431,9 @@ DX11Framework::~DX11Framework()
 {
     if (_camera) { delete _camera; }
     if (_skybox) { delete _skybox; }
-    //this never works for some reason
-    //for (GameObject* go : _gameObjects)
+    for (auto& go : _gameObjects)
     {
-       //delete go;
+       delete go;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -583,11 +582,13 @@ void DX11Framework::InitGameObjects()
         _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
         
+        //Continuous Rotation
         bool continuousRotation = false;
         if (_gameObjectDataList.at(i).continuousRotation == "true") { continuousRotation = true; }
         _gameObject[i].GetTransform()->ContinousRotation(continuousRotation);
 
-        _gameObjects.push_back(&_gameObject[i]); //Adds it a different list with all gameObjects
+        //Adds it a different list with all gameObjects
+        _gameObjects.push_back(&_gameObject[i]); 
     }
 }
 
@@ -829,7 +830,7 @@ void DX11Framework::Draw()
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
-    _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer); //this is causing issues??
+    _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
 
     //Camera
