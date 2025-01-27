@@ -416,11 +416,15 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
-        collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        //collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        //_cubes[i].GetPhysicsModel()->SetCollider(collider);
+
+        collider = new SphereCollider(_cubes[i].GetTransform(), 2.0f);
         _cubes[i].GetPhysicsModel()->SetCollider(collider);
 
-        //collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
-        //_cubes[i].GetPhysicsModel()->SetCollider(collider);
+        //Testing AABB V Sphere
+        //collider = new BoxCollider(_cubes[0].GetTransform(), _cubes[0].GetAppearance());
+        //_cubes[0].GetPhysicsModel()->SetCollider(collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
