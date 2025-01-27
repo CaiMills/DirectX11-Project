@@ -847,7 +847,7 @@ void DX11Framework::Draw()
     //Loads Game Objects
     for (auto gameObject : _gameObjects)
     {
-        gameObject->Draw(_immediateContext);
+        gameObject->Draw(_immediateContext, _device);
     }
 
     ////Skybox
