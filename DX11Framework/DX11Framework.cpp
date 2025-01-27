@@ -423,8 +423,8 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetCollider(collider);
 
         //Testing AABB V Sphere
-        //collider = new BoxCollider(_cubes[0].GetTransform(), _cubes[0].GetAppearance());
-        //_cubes[0].GetPhysicsModel()->SetCollider(collider);
+        collider = new BoxCollider(_cubes[0].GetTransform(), _cubes[0].GetAppearance());
+        _cubes[0].GetPhysicsModel()->SetCollider(collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
