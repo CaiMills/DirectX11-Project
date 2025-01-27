@@ -43,12 +43,13 @@ void Appearance::SetMinAndMax()
 
 
 
-    // Get the vertex buffer description
-    D3D11_BUFFER_DESC desc;
-    _meshData.VertexBuffer->GetDesc(&desc);
+    //Get the vertex buffer description
+    D3D11_BUFFER_DESC vertexDesc;
+    _meshData.VertexBuffer->GetDesc(&vertexDesc);
     
-    // Create a staging buffer with the same size as the vertex buffer
-    D3D11_BUFFER_DESC stagingDesc = desc;
+    //Create a staging buffer with the same size as the vertex buffer
+	//This is needed as the data has been created beforehand, meaning that its stored within the CPU, with this buffer allowing for access to the CPU data
+    D3D11_BUFFER_DESC stagingDesc = vertexDesc;
     stagingDesc.Usage = D3D11_USAGE_STAGING;
     stagingDesc.BindFlags = 0; // No binding
     stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
@@ -75,13 +76,13 @@ void Appearance::SetMinAndMax()
     }
     
     // Access the vertex data
-    const SimpleVertex* vertices = static_cast<const SimpleVertex*>(mappedResource.pData);
-    size_t vertexCount = desc.ByteWidth / sizeof(SimpleVertex);
+    SimpleVertex* vertices = static_cast<SimpleVertex*>(mappedResource.pData);
+    size_t vertexCount = vertexDesc.ByteWidth / sizeof(SimpleVertex);
     
     // Iterate through vertices to find the bounding box
     for (size_t i = 0; i < vertexCount; ++i)
     {
-        const DirectX::XMFLOAT3& pos = vertices[i].Position;
+        XMFLOAT3& pos = vertices[i].Position;
 
 		// Update min and max values
 		_min.x = min(_min.x, pos.x);
