@@ -9,8 +9,8 @@ class Appearance
 private:
 	MeshData _meshData;
 	ID3D11ShaderResourceView* _texture = nullptr;
-	XMFLOAT3 _max;
-	XMFLOAT3 _min;
+	XMFLOAT3 _max = XMFLOAT3();
+	XMFLOAT3 _min = XMFLOAT3();
 
 public:
 	Appearance(MeshData meshData);
