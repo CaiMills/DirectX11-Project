@@ -20,9 +20,9 @@ public:
 	void SetTexture(ID3D11ShaderResourceView* in) { _texture = in; }
 	bool HasTexture() const { return _texture ? true : false; }
 
-	void SetMaxAndMin(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device);
-	XMFLOAT3 GetMax() { return _max; }
+	void SetMinAndMax(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device);
 	XMFLOAT3 GetMin() { return _min; }
+	XMFLOAT3 GetMax() { return _max; }
 
 	void Draw(ID3D11DeviceContext* pImmediateContext, ID3D11Device* _device);
 };

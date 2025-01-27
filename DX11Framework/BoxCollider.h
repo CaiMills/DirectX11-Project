@@ -3,11 +3,11 @@
 
 class BoxCollider : public Collider
 {
-	Vector3 _min = Vector3(1, 1, 1);
-	Vector3 _max = Vector3(1, 1, 1);
+	XMFLOAT3 _min = XMFLOAT3();
+	XMFLOAT3 _max = XMFLOAT3();
 
 public:
-	BoxCollider(Transform* transform, Vector3 min, Vector3 max) : Collider(transform) { _min = min, _max = max; }
+	BoxCollider(Transform* transform, XMFLOAT3 min, XMFLOAT3 max) : Collider(transform) { _min = min, _max = max; }
 
 	virtual bool CollidesWith(Collider& other) override { return other.CollidesWith(*this); }
 	virtual bool CollidesWith(BoxCollider& other) override;
