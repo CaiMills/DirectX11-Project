@@ -9,8 +9,8 @@ class Appearance
 private:
 	MeshData _meshData;
 	ID3D11ShaderResourceView* _texture = nullptr;
-	XMFLOAT3 _max = XMFLOAT3();
-	XMFLOAT3 _min = XMFLOAT3();
+	Vector3 _max = Vector3();
+	Vector3 _min = Vector3();
 
 public:
 	Appearance(MeshData meshData);
@@ -21,8 +21,8 @@ public:
 	bool HasTexture() const { return _texture ? true : false; }
 
 	void SetMinAndMax(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device);
-	XMFLOAT3 GetMin() { return _min; }
-	XMFLOAT3 GetMax() { return _max; }
+	Vector3 GetMin() const { return _min; }
+	Vector3 GetMax() const { return _max; }
 
 	void Draw(ID3D11DeviceContext* pImmediateContext, ID3D11Device* _device);
 };

@@ -3,11 +3,12 @@
 bool BoxCollider::CollidesWith(BoxCollider& other)
 {
     //AABB vs AABB Collision
-    if (_min.x <= other._max.x && _max.x >= other._min.x &&
-        _min.y <= other._max.y && _max.y >= other._min.y &&
-        _min.z <= other._max.z && _max.z >= other._min.z)
+    if (_appearance->GetMin().x <= other.GetAppearance()->GetMax().x && _appearance->GetMax().x >= other.GetAppearance()->GetMin().x &&
+        _appearance->GetMin().y <= other.GetAppearance()->GetMax().y && _appearance->GetMax().y >= other.GetAppearance()->GetMin().y &&
+        _appearance->GetMin().z <= other.GetAppearance()->GetMax().z && _appearance->GetMax().z >= other.GetAppearance()->GetMin().z)
     {
         DebugPrintF("AABB vs AABB Collision\n");
+        return true;
     }
     else
     {
