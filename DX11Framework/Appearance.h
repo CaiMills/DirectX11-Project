@@ -20,10 +20,10 @@ public:
 	void SetTexture(ID3D11ShaderResourceView* in) { _texture = in; }
 	bool HasTexture() const { return _texture ? true : false; }
 
-	void SetMinAndMax(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device);
+	void SetMinAndMax();
 	Vector3 GetMin() const { return _min; }
 	Vector3 GetMax() const { return _max; }
 
-	void Draw(ID3D11DeviceContext* pImmediateContext, ID3D11Device* _device);
+	void Draw();
 };
 

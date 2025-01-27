@@ -12,7 +12,7 @@ Appearance::~Appearance()
 	_meshData.VertexBuffer = nullptr;
 }
 
-void Appearance::SetMinAndMax(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device)
+void Appearance::SetMinAndMax()
 {
 	////Write constant buffer data onto GPU
 	//D3D11_MAPPED_SUBRESOURCE mappedSubresource;
@@ -100,11 +100,11 @@ void Appearance::SetMinAndMax(ID3D11DeviceContext* _immediateContext, ID3D11Devi
     stagingBuffer->Release();
 }
 
-void Appearance::Draw(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device)
+void Appearance::Draw()
 {
-	SetMinAndMax(_immediateContext, _device);
-	//DebugPrintF("Max x is %f, Max y is %f, Max z is %f\n", _max.x, _max.y, _max.z);
-	//DebugPrintF("Min x is %f, Min y is %f, Min z is %f\n", _min.x, _min.y, _min.z);
+	SetMinAndMax();
+	DebugPrintF("Max x is %f, Max y is %f, Max z is %f\n", _max.x, _max.y, _max.z);
+	DebugPrintF("Min x is %f, Min y is %f, Min z is %f\n", _min.x, _min.y, _min.z);
 
 	//A majority of the draw code need for the game object class (some I couldnt move to this class due to _cbData or something simular)
 	if (_meshData.VertexBuffer != nullptr && _meshData.IndexBuffer != nullptr)

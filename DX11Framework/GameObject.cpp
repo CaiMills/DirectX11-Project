@@ -23,7 +23,7 @@ void GameObject::Update(float deltaTime)
 	}
 }
 
-void GameObject::Draw(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device)
+void GameObject::Draw()
 {
 	//Write constant buffer data onto GPU
 	D3D11_MAPPED_SUBRESOURCE mappedSubresource;
@@ -45,5 +45,5 @@ void GameObject::Draw(ID3D11DeviceContext* _immediateContext, ID3D11Device* _dev
 	memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
 	_immediateContext->Unmap(_constantBuffer, 0);
 
-	_appearance->Draw(_immediateContext, _device);
+	_appearance->Draw();
 }

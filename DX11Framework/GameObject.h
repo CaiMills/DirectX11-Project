@@ -29,6 +29,6 @@ public:
 	PhysicsModel* GetPhysicsModel() const { return _physicsModel; }
 
 	void Update(float deltaTime);
-	void Draw(ID3D11DeviceContext* _immediateContext, ID3D11Device* _device);
+	void Draw();
 };
 

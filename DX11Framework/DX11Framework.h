@@ -26,8 +26,6 @@ class DX11Framework
 
 	HWND _windowHandle;
 
-	ID3D11DeviceContext* _immediateContext = nullptr;
-	ID3D11Device* _device;
 	IDXGIDevice* _dxgiDevice = nullptr;
 	IDXGIFactory2* _dxgiFactory = nullptr;
 	ID3D11RenderTargetView* _frameBufferView = nullptr;
