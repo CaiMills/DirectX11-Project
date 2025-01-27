@@ -23,22 +23,20 @@ void Appearance::SetMinAndMax()
 	//	printf("Failed to map vertex buffer. HRESULT: 0x%X\n", hr);
 	//	return;
 	//}
-	//const SimpleVertex* vertices = static_cast<const SimpleVertex*>(mappedSubresource.pData);
+	//SimpleVertex* vertices = static_cast<SimpleVertex*>(mappedSubresource.pData);
 
 	//for (size_t i = 0; i < _meshData.IndexCount; ++i)
 	//{
 	//	XMFLOAT3 pos = vertices[i].Position;
 	//
-	//	//if the vertex's position is more than the current max value, then make that the new max value
-	//	if (pos.x > _max.x || pos.y > _max.y || pos.z > _max.z)
-	//	{
-	//		_max = pos;
-	//	}
-	//	//if the vertex's position is less than the current min value, then make that the new min value
-	//	else if (pos.x > _min.x || pos.y > _min.y || pos.z > _min.z)
-	//	{
-	//		_min = pos;
-	//	}
+	//	// Update min and max values
+	//	_min.x = min(_min.x, pos.x);
+	//	_min.y = min(_min.y, pos.y);
+	//	_min.z = min(_min.z, pos.z);
+
+	//	_max.x = max(_max.x, pos.x);
+	//	_max.y = max(_max.y, pos.y);
+	//	_max.z = max(_max.z, pos.z);
 	//}
 	//// Unmap the vertex buffer
 	//_immediateContext->Unmap(_meshData.VertexBuffer, 0);
@@ -48,13 +46,13 @@ void Appearance::SetMinAndMax()
     // Get the vertex buffer description
     D3D11_BUFFER_DESC desc;
     _meshData.VertexBuffer->GetDesc(&desc);
-
+    
     // Create a staging buffer with the same size as the vertex buffer
     D3D11_BUFFER_DESC stagingDesc = desc;
     stagingDesc.Usage = D3D11_USAGE_STAGING;
     stagingDesc.BindFlags = 0; // No binding
     stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
+    
     ID3D11Buffer* stagingBuffer = nullptr;
     HRESULT hr = _device->CreateBuffer(&stagingDesc, nullptr, &stagingBuffer);
     if (FAILED(hr))
@@ -62,10 +60,10 @@ void Appearance::SetMinAndMax()
         printf("Failed to create staging buffer. HRESULT: 0x%X\n", hr);
         return;
     }
-
+    
     // Copy the vertex buffer data to the staging buffer
     _immediateContext->CopyResource(stagingBuffer, _meshData.VertexBuffer);
-
+    
     // Map the staging buffer to access the vertex data
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     hr = _immediateContext->Map(stagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
@@ -75,11 +73,11 @@ void Appearance::SetMinAndMax()
         stagingBuffer->Release();
         return;
     }
-
+    
     // Access the vertex data
     const SimpleVertex* vertices = static_cast<const SimpleVertex*>(mappedResource.pData);
     size_t vertexCount = desc.ByteWidth / sizeof(SimpleVertex);
-
+    
     // Iterate through vertices to find the bounding box
     for (size_t i = 0; i < vertexCount; ++i)
     {
