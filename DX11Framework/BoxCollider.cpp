@@ -29,7 +29,9 @@ bool BoxCollider::CollidesWith(SphereCollider& other)
     closestPoint.y = max(_appearance->GetMin().y, min(other.GetPosition().y, _appearance->GetMax().y));
     closestPoint.z = max(_appearance->GetMin().z, min(other.GetPosition().z, _appearance->GetMax().z));
 
-    float distance = sqrt(pow(closestPoint.x - other.GetPosition().x, 2) + pow(closestPoint.y - other.GetPosition().y, 2) + pow(closestPoint.z - other.GetPosition().z, 2));
+    float distance = sqrt(pow(closestPoint.x - other.GetPosition().x, 2) + 
+        pow(closestPoint.y - other.GetPosition().y, 2) + 
+        pow(closestPoint.z - other.GetPosition().z, 2));
 
     if (distance < other.GetRadius())
     {
