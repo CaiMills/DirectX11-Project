@@ -1,16 +1,12 @@
 #include "Mesh.h"
 
-Mesh::Mesh()
-{
-}
-
 Mesh::~Mesh()
 {
     _indexBuffer = nullptr;
     _vertexBuffer = nullptr;
 }
 
-MeshData Mesh::Cube(bool inverted)
+MeshData Mesh::CreateCube(bool inverted)
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -168,7 +164,7 @@ MeshData Mesh::Cube(bool inverted)
     return _mesh;
 }
 
-MeshData Mesh::Pyramid()
+MeshData Mesh::CreatePyramid()
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -241,7 +237,7 @@ MeshData Mesh::Pyramid()
     return _mesh;
 }
 
-MeshData Mesh::Plane()
+MeshData Mesh::CreatePlane()
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;

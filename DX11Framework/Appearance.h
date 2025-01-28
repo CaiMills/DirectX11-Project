@@ -17,7 +17,7 @@ public:
 	~Appearance();
 
 	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
-	void SetTexture(ID3D11ShaderResourceView* in) { _texture = in; }
+	void SetTexture(ID3D11ShaderResourceView* texture) { _texture = texture; }
 	bool HasTexture() const { return _texture ? true : false; }
 
 	void SetMinAndMax();

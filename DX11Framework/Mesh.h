@@ -17,11 +17,16 @@ private:
 	bool _isInverted = false;
 
 public:
-	Mesh();
+	//Two constructors, incase the mesh data already exists from an external file
+	Mesh() : _mesh({}) {}
+	Mesh(MeshData mesh) : _mesh(mesh) { _mesh = mesh; }
 	~Mesh();
 
-	MeshData Cube(bool inverted);
-	MeshData Pyramid();
-	MeshData Plane();
+	void SetMesh(MeshData mesh) { _mesh = mesh; }
+	MeshData GetMesh() const { return _mesh; }
+
+	MeshData CreateCube(bool inverted);
+	MeshData CreatePyramid();
+	MeshData CreatePlane();
 };
 

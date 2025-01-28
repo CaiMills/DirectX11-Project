@@ -371,7 +371,7 @@ HRESULT DX11Framework::InitRunTimeData()
     Mesh* mesh = new Mesh(); //This is to get a forwards reference to the Mesh class
 
     //Skybox
-    Appearance* appearance = new Appearance(mesh->Cube(true));
+    Appearance* appearance = new Appearance(mesh->CreateCube(true));
     CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
     if (FAILED(hr)) { return hr; }
 
@@ -389,7 +389,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(appearance);
 
     //Geometry
-    appearance = new Appearance(mesh->Plane());
+    appearance = new Appearance(mesh->CreatePlane());
     CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &texture);
     appearance->SetTexture(texture);
 
@@ -407,7 +407,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Cubes
     for (auto i = 0; i < 4; i++)
     {
-        appearance = new Appearance(mesh->Cube(false));
+        appearance = new Appearance(mesh->CreateCube(false));
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);
         appearance->SetTexture(texture);
 
@@ -569,18 +569,19 @@ void DX11Framework::InitGameObjects()
         _gameObject[i].SetType(_gameObjectDataList.at(i).type);
 
         //Texture
-        ID3D11ShaderResourceView* _texture;
+        ID3D11ShaderResourceView* texture;
         std::wstring colorTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
-        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &texture);
 
         //Specular Texture
         std::wstring specTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).colorTexture.c_str()).GetString();
-        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &texture);
 
         //Appearance
-        Appearance* _appearance = new Appearance(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
-        _appearance->SetTexture(_texture);
-        _gameObject[i].SetAppearance(_appearance);
+        Mesh* mesh = new Mesh(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
+        Appearance* appearance = new Appearance(mesh->GetMesh());
+        appearance->SetTexture(texture);
+        _gameObject[i].SetAppearance(appearance);
 
         //Transform
         _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
