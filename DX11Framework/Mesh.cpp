@@ -1,20 +1,16 @@
-#include "Geometry.h"
+#include "Mesh.h"
 
-Geometry::Geometry()
+Mesh::Mesh()
 {
-    _indexBuffer = nullptr;
-    _vertexBuffer = nullptr;
-    _noOfIndices = 0;
-    _isInverted = false;
 }
 
-Geometry::~Geometry()
+Mesh::~Mesh()
 {
     _indexBuffer = nullptr;
     _vertexBuffer = nullptr;
 }
 
-MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
+MeshData Mesh::Cube(bool inverted)
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -162,18 +158,17 @@ MeshData Geometry::Cube(ID3D11Device* _device, bool inverted)
 
         _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
     }
+    //Creates the Mesh
+    _mesh.IndexBuffer = _indexBuffer;
+    _mesh.VertexBuffer = _vertexBuffer;
+    _mesh.IndexCount = 36;
+    _mesh.VBOffset = 0;
+    _mesh.VBStride = sizeof(SimpleVertex);
 
-    MeshData cubeMesh;
-    cubeMesh.IndexBuffer = _indexBuffer;
-    cubeMesh.VertexBuffer = _vertexBuffer;
-    cubeMesh.IndexCount = 36;
-    cubeMesh.VBOffset = 0;
-    cubeMesh.VBStride = sizeof(SimpleVertex);
-
-    return cubeMesh;
+    return _mesh;
 }
 
-MeshData Geometry::Pyramid(ID3D11Device* _device)
+MeshData Mesh::Pyramid()
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -236,17 +231,17 @@ MeshData Geometry::Pyramid(ID3D11Device* _device)
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    MeshData pyramidMesh;
-    pyramidMesh.IndexBuffer = _indexBuffer;
-    pyramidMesh.VertexBuffer = _vertexBuffer;
-    pyramidMesh.IndexCount = 18;
-    pyramidMesh.VBOffset = 0;
-    pyramidMesh.VBStride = sizeof(SimpleVertex);
+    //Creates the Mesh
+    _mesh.IndexBuffer = _indexBuffer;
+    _mesh.VertexBuffer = _vertexBuffer;
+    _mesh.IndexCount = 18;
+    _mesh.VBOffset = 0;
+    _mesh.VBStride = sizeof(SimpleVertex);
 
-    return pyramidMesh;
+    return _mesh;
 }
 
-MeshData Geometry::Plane(ID3D11Device* _device)
+MeshData Mesh::Plane()
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -289,12 +284,12 @@ MeshData Geometry::Plane(ID3D11Device* _device)
     InitData.pSysMem = planeIndices;
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    MeshData planeMesh;
-    planeMesh.IndexBuffer = _indexBuffer;
-    planeMesh.VertexBuffer = _vertexBuffer;
-    planeMesh.IndexCount = 6;
-    planeMesh.VBOffset = 0;
-    planeMesh.VBStride = sizeof(SimpleVertex);
+    //Creates the Mesh
+    _mesh.IndexBuffer = _indexBuffer;
+    _mesh.VertexBuffer = _vertexBuffer;
+    _mesh.IndexCount = 6;
+    _mesh.VBOffset = 0;
+    _mesh.VBStride = sizeof(SimpleVertex);
 
-    return planeMesh;
+    return _mesh;
 }

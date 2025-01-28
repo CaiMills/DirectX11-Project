@@ -368,10 +368,10 @@ HRESULT DX11Framework::InitRunTimeData()
 
     //Initiate Scene
     ID3D11ShaderResourceView* texture;
-    Geometry* geometry = new Geometry(); //This is to get a forwards reference to the geometry functions
+    Mesh* mesh = new Mesh(); //This is to get a forwards reference to the Mesh class
 
     //Skybox
-    Appearance* appearance = new Appearance(geometry->Cube(_device, true));
+    Appearance* appearance = new Appearance(mesh->Cube(true));
     CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
     if (FAILED(hr)) { return hr; }
 
@@ -389,7 +389,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _skybox->SetAppearance(appearance);
 
     //Geometry
-    appearance = new Appearance(geometry->Plane(_device));
+    appearance = new Appearance(mesh->Plane());
     CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &texture);
     appearance->SetTexture(texture);
 
@@ -407,7 +407,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //Cubes
     for (auto i = 0; i < 4; i++)
     {
-        appearance = new Appearance(geometry->Cube(_device, false));
+        appearance = new Appearance(mesh->Cube(false));
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);
         appearance->SetTexture(texture);
 
