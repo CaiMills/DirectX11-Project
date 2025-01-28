@@ -1,6 +1,4 @@
 ﻿#include "DX11Framework.h"
-#include <atlstr.h> // to use CString.
-#include "Geometry.h"
 
 #define FPS60 1.0f/60.0f
 
@@ -418,8 +416,15 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
-        collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
+        collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
         _cubes[i].GetPhysicsModel()->SetCollider(collider);
+
+        //collider = new SphereCollider(_cubes[i].GetTransform(), 2.0f);
+        //_cubes[i].GetPhysicsModel()->SetCollider(collider);
+
+        //Testing AABB V Sphere
+        //collider = new BoxCollider(_cubes[0].GetTransform(), _cubes[0].GetAppearance());
+        //_cubes[0].GetPhysicsModel()->SetCollider(collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -431,10 +436,9 @@ DX11Framework::~DX11Framework()
 {
     if (_camera) { delete _camera; }
     if (_skybox) { delete _skybox; }
-    //this never works for some reason
-    //for (GameObject* go : _gameObjects)
+    for (auto& go : _gameObjects)
     {
-       //delete go;
+       delete go;
     }
     if (_immediateContext) { _immediateContext->Release(); }
     if (_device) { _device->Release(); }
@@ -583,11 +587,13 @@ void DX11Framework::InitGameObjects()
         _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
         
+        //Continuous Rotation
         bool continuousRotation = false;
         if (_gameObjectDataList.at(i).continuousRotation == "true") { continuousRotation = true; }
         _gameObject[i].GetTransform()->ContinousRotation(continuousRotation);
 
-        _gameObjects.push_back(&_gameObject[i]); //Adds it a different list with all gameObjects
+        //Adds it a different list with all gameObjects
+        _gameObjects.push_back(&_gameObject[i]); 
     }
 }
 
@@ -727,7 +733,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
     }
     //PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
@@ -784,12 +790,12 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         if (collisionNormal * relativeVelocity < 0.0f)
         {
             //General Collisions
-            float restitution = 0.5f;
-            float vj = collisionNormal * relativeVelocity;
-            float j = vj * (_cubes[0].GetPhysicsModel()->GetInverseMass() + _cubes[1].GetPhysicsModel()->GetInverseMass());
+            //float restitution = 0.5f;
+            //float vj = collisionNormal * relativeVelocity;
+            //float j = vj * (_cubes[0].GetPhysicsModel()->GetInverseMass() + _cubes[1].GetPhysicsModel()->GetInverseMass());
 
-            _cubes[0].GetPhysicsModel()->ApplyImpulse(_cubes[0].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
-            _cubes[1].GetPhysicsModel()->ApplyImpulse(-(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
+            //_cubes[0].GetPhysicsModel()->ApplyImpulse(_cubes[0].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
+            //_cubes[1].GetPhysicsModel()->ApplyImpulse(-(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
         }
     }
 
@@ -829,7 +835,7 @@ void DX11Framework::Draw()
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
-    _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer); //this is causing issues??
+    _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
 
     //Camera
@@ -845,30 +851,12 @@ void DX11Framework::Draw()
     //Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
-    //Write constant buffer data onto GPU
-    D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
     //Loads Game Objects
     for (auto gameObject : _gameObjects)
     {
-        if (gameObject->GetAppearance()->HasTexture())
-        {
-            _immediateContext->PSSetShaderResources(0, 1, gameObject->GetAppearance()->GetTexture());
-            _cbData.hasTexture = 1.0f;
-            _cbData.hasSpecularMap = 1.0f;
-        }
-        else
-        {
-            _cbData.hasTexture = 0.0f;
-            _cbData.hasSpecularMap = 0.0f;
-        }
-        _cbData.World = XMMatrixTranspose(gameObject->GetTransform()->GetWorldMatrix());
-        _immediateContext->Map(_constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubresource);
-        memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
-        _immediateContext->Unmap(_constantBuffer, 0);
-
-        gameObject->Draw(_immediateContext);
+        gameObject->Draw();
     }
+
     ////Skybox
     //Input Assembler
     //_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

@@ -2,31 +2,28 @@
 #include "Structures.h"
 #include "OBJLoader.h"
 #include "DDSTextureLoader.h"
-
-struct Material
-{
-	XMFLOAT4 diffuse;
-	XMFLOAT4 ambient;
-	XMFLOAT4 specular;
-};
+#include "Globals.h"
 
 class Appearance
 {
 private:
 	MeshData _meshData;
-	Material _material;
 	ID3D11ShaderResourceView* _texture = nullptr;
+	Vector3 _max = Vector3();
+	Vector3 _min = Vector3();
 
 public:
 	Appearance(MeshData meshData);
 	~Appearance();
 
-	Material GetMaterial() const { return _material; }
 	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
-
 	void SetTexture(ID3D11ShaderResourceView* in) { _texture = in; }
 	bool HasTexture() const { return _texture ? true : false; }
 
-	void Draw(ID3D11DeviceContext* pImmediateContext);
+	void SetMinAndMax();
+	Vector3 GetMin() const { return _min; }
+	Vector3 GetMax() const { return _max; }
+
+	void Draw();
 };
 

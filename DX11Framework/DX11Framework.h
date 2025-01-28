@@ -2,7 +2,8 @@
 #include "GameObject.h"
 #include "Camera.h"
 #include "Timer.h"
-#include <vector>
+#include "Globals.h"
+#include "Geometry.h"
 
 //#include <wrl.h>
 
@@ -25,8 +26,6 @@ class DX11Framework
 
 	HWND _windowHandle;
 
-	ID3D11DeviceContext* _immediateContext = nullptr;
-	ID3D11Device* _device;
 	IDXGIDevice* _dxgiDevice = nullptr;
 	IDXGIFactory2* _dxgiFactory = nullptr;
 	ID3D11RenderTargetView* _frameBufferView = nullptr;
@@ -41,7 +40,6 @@ class DX11Framework
 	ID3D11VertexShader* _vertexShader;
 	ID3D11PixelShader* _pixelShader;
 
-	ID3D11Buffer* _constantBuffer;
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
 
@@ -97,8 +95,6 @@ class DX11Framework
 	float _cameraOrbitRadiusMax = 50.0f;
 	float _cameraOrbitAngleXZ = -90.0f;
 	float _cameraSpeed = 2.0f;
-
-	ConstantBuffer _cbData;
 
 private:
 	HRESULT CreateWindowHandle(HINSTANCE hInstance, int nCmdShow);
