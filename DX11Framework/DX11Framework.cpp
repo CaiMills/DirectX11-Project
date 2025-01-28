@@ -401,7 +401,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
     _gameObjects.push_back(_floor);
 
-    //Collider
+    //Collider Reference
     Collider* collider;
 
     //Cubes
@@ -579,7 +579,7 @@ void DX11Framework::InitGameObjects()
 
         //Appearance
         Mesh* mesh = new Mesh(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
-        Appearance* appearance = new Appearance(mesh->GetMesh());
+        Appearance* appearance = new Appearance(mesh->GetMeshData());
         appearance->SetTexture(texture);
         _gameObject[i].SetAppearance(appearance);
 
