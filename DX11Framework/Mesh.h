@@ -10,7 +10,7 @@
 class Mesh
 {
 private:
-	MeshData _mesh = {};
+	MeshData _meshData = {};
 	ID3D11Buffer* _vertexBuffer = nullptr;
 	ID3D11Buffer* _indexBuffer = nullptr;
 	Vector3 _max = Vector3();
@@ -19,12 +19,12 @@ private:
 
 public:
 	//Two constructors, in case the mesh data already exists from an external file
-	Mesh() : _mesh({}) {}
-	Mesh(MeshData mesh) : _mesh(mesh) { _mesh = mesh; }
+	Mesh();
+	Mesh(MeshData meshData) { _meshData = meshData; }
 	~Mesh();
 
-	void SetMesh(MeshData mesh) { _mesh = mesh; }
-	MeshData GetMeshData() const { return _mesh; }
+	void SetMeshData(MeshData meshData) { _meshData = meshData; }
+	MeshData GetMeshData() const { return _meshData; }
 
 	MeshData CreateCube(bool inverted);
 	MeshData CreatePyramid();

@@ -1,5 +1,10 @@
 #include "Mesh.h"
 
+Mesh::Mesh()
+{
+
+}
+
 Mesh::~Mesh()
 {
     _indexBuffer = nullptr;
@@ -155,13 +160,13 @@ MeshData Mesh::CreateCube(bool inverted)
         _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
     }
     //Creates the Mesh
-    _mesh.IndexBuffer = _indexBuffer;
-    _mesh.VertexBuffer = _vertexBuffer;
-    _mesh.IndexCount = 36;
-    _mesh.VBOffset = 0;
-    _mesh.VBStride = sizeof(SimpleVertex);
+    _meshData.IndexBuffer = _indexBuffer;
+    _meshData.VertexBuffer = _vertexBuffer;
+    _meshData.IndexCount = 36;
+    _meshData.VBOffset = 0;
+    _meshData.VBStride = sizeof(SimpleVertex);
 
-    return _mesh;
+    return _meshData;
 }
 
 MeshData Mesh::CreatePyramid()
@@ -228,13 +233,13 @@ MeshData Mesh::CreatePyramid()
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
     //Creates the Mesh
-    _mesh.IndexBuffer = _indexBuffer;
-    _mesh.VertexBuffer = _vertexBuffer;
-    _mesh.IndexCount = 18;
-    _mesh.VBOffset = 0;
-    _mesh.VBStride = sizeof(SimpleVertex);
+    _meshData.IndexBuffer = _indexBuffer;
+    _meshData.VertexBuffer = _vertexBuffer;
+    _meshData.IndexCount = 18;
+    _meshData.VBOffset = 0;
+    _meshData.VBStride = sizeof(SimpleVertex);
 
-    return _mesh;
+    return _meshData;
 }
 
 MeshData Mesh::CreatePlane()
@@ -281,13 +286,13 @@ MeshData Mesh::CreatePlane()
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
     //Creates the Mesh
-    _mesh.IndexBuffer = _indexBuffer;
-    _mesh.VertexBuffer = _vertexBuffer;
-    _mesh.IndexCount = 6;
-    _mesh.VBOffset = 0;
-    _mesh.VBStride = sizeof(SimpleVertex);
+    _meshData.IndexBuffer = _indexBuffer;
+    _meshData.VertexBuffer = _vertexBuffer;
+    _meshData.IndexCount = 6;
+    _meshData.VBOffset = 0;
+    _meshData.VBStride = sizeof(SimpleVertex);
 
-    return _mesh;
+    return _meshData;
 }
 
 void Mesh::SetMinAndMax()
@@ -322,7 +327,7 @@ void Mesh::SetMinAndMax()
 
     //Get the vertex buffer description
     D3D11_BUFFER_DESC vertexDesc;
-    _mesh.VertexBuffer->GetDesc(&vertexDesc);
+    _meshData.VertexBuffer->GetDesc(&vertexDesc);
 
     //Create a staging buffer with the same size as the vertex buffer
     //This is needed as the data has been created beforehand, meaning that its stored within the CPU, with this buffer allowing for access to the CPU data
@@ -340,7 +345,7 @@ void Mesh::SetMinAndMax()
     }
 
     //Copy the vertex buffer data to the staging buffer
-    _immediateContext->CopyResource(stagingBuffer, _mesh.VertexBuffer);
+    _immediateContext->CopyResource(stagingBuffer, _meshData.VertexBuffer);
 
     //Map the staging buffer to access the vertex data
     D3D11_MAPPED_SUBRESOURCE mappedResource;
