@@ -3,7 +3,7 @@
 
 bool SphereCollider::CollidesWith(SphereCollider& other)
 {
-	//Sphere Collision
+	// Sphere Collision
 	float distance = pow(GetPosition().x - other.GetPosition().x, 2) +
 		pow(GetPosition().y - other.GetPosition().y, 2) +
 		pow(GetPosition().z - other.GetPosition().z, 2);
@@ -21,7 +21,7 @@ bool SphereCollider::CollidesWith(SphereCollider& other)
 
 bool SphereCollider::CollidesWith(BoxCollider& other)
 {
-    ////Sphere vs AABB Collision
+    //// Sphere vs AABB Collision
     //Vector3 closestPoint;
     //closestPoint.x = max(other.GetAppearance()->GetMin().x, min(GetPosition().x, other.GetAppearance()->GetMax().x));
     //closestPoint.y = max(other.GetAppearance()->GetMin().y, min(GetPosition().y, other.GetAppearance()->GetMax().y));

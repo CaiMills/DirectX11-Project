@@ -25,7 +25,7 @@ void GameObject::Update(float deltaTime)
 
 void GameObject::Draw()
 {
-	//Write constant buffer data onto GPU
+	// Write constant buffer data onto GPU
 	D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
 	if (_appearance->HasTexture())

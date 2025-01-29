@@ -10,8 +10,6 @@ private:
 	Vector3 _scale;
 	XMFLOAT4X4 _world;
 
-	bool _continuousRotation = false;
-
 public:
 	Transform();
 	~Transform();
@@ -26,7 +24,6 @@ public:
 	void SetRotation(Vector3 rotation) { _orientation = MakeQFromEulerAngles(rotation.x, rotation.y, rotation.z); }
 	Vector3 GetRotation() const { return MakeEulerAnglesFromQ(_orientation); }
 	Quaternion GetOrientation(Quaternion orientation) { _orientation = orientation; }
-	void ContinousRotation(bool continuousRotation) { _continuousRotation = continuousRotation; }
 
 	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
 

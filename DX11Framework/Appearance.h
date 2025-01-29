@@ -8,14 +8,14 @@
 class Appearance
 {
 private:
-	MeshData _mesh;
+	Mesh* _mesh;
 	ID3D11ShaderResourceView* _texture = nullptr;
 
 public:
-	Appearance(MeshData mesh);
+	Appearance(Mesh* mesh);
 	~Appearance();
 
-	MeshData GetMesh() const { return _mesh; }
+	Mesh* GetMesh() const { return _mesh; }
 
 	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
 	void SetTexture(ID3D11ShaderResourceView* texture) { _texture = texture; }

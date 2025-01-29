@@ -3,7 +3,7 @@
 
 bool BoxCollider::CollidesWith(BoxCollider& other)
 {
-    ////AABB vs AABB Collision
+    //// AABB vs AABB Collision
     //if (_appearance->GetMesh()->GetMin().x <= other.GetAppearance()->GetMax().x && _appearance->GetMax().x >= other.GetAppearance()->GetMin().x &&
     //    _appearance->GetMin().y <= other.GetAppearance()->GetMax().y && _appearance->GetMax().y >= other.GetAppearance()->GetMin().y &&
     //    _appearance->GetMin().z <= other.GetAppearance()->GetMax().z && _appearance->GetMax().z >= other.GetAppearance()->GetMin().z)
@@ -25,7 +25,7 @@ bool BoxCollider::CollidesWith(BoxCollider& other)
 
 bool BoxCollider::CollidesWith(SphereCollider& other)
 {
-    ////AABB vs Sphere Collision
+    //// AABB vs Sphere Collision
     //Vector3 closestPoint;
     //closestPoint.x = max(_appearance->GetMin().x, min(other.GetPosition().x, _appearance->GetMax().x));
     //closestPoint.y = max(_appearance->GetMin().y, min(other.GetPosition().y, _appearance->GetMax().y));
