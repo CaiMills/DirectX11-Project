@@ -266,8 +266,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
     // Create the input layout
-    // hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_skyboxInputLayout);
-    // if (FAILED(hr)) { return hr; }
+    //hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_skyboxInputLayout);
+    //if (FAILED(hr)) { return hr; }
 
     // Standard
     // Define the input layout
@@ -369,25 +369,26 @@ HRESULT DX11Framework::InitRunTimeData()
     // Initiate Scene
     ID3D11ShaderResourceView* texture;
     Mesh* mesh = new Mesh(); // This is to get a forwards reference to the Mesh class
+    Appearance* appearance;
 
-    // Skybox
-    mesh->CreateCube(true);
-    Appearance* appearance = new Appearance(mesh);
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
-    if (FAILED(hr)) { return hr; }
+    //// Skybox
+    //mesh->CreateCube(true);
+    //appearance = new Appearance(mesh);
+    //CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
+    //if (FAILED(hr)) { return hr; }
 
-    appearance->SetTexture(texture);
+    //appearance->SetTexture(texture);
 
-    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
-    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    dsDescSkybox.DepthEnable = true;
-    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    //D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    //dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    //dsDescSkybox.DepthEnable = true;
+    //dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
-    if (FAILED(hr)) { return hr; }
+    //hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
+    //if (FAILED(hr)) { return hr; }
 
-    _skybox->SetType("Skybox");
-    _skybox->SetAppearance(appearance);
+    //_skybox->SetType("Skybox");
+    //_skybox->SetAppearance(appearance);
 
     // Geometry
     mesh->CreatePlane();
@@ -585,8 +586,7 @@ void DX11Framework::InitGameObjects()
 
         // Mesh
         Mesh* mesh = new Mesh();
-        MeshData* tempData = new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
-        mesh->SetMeshData(tempData);
+        mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
 
         // Appearance
         Appearance* appearance = new Appearance(mesh);
@@ -863,6 +863,9 @@ void DX11Framework::Draw()
         gameObject->Draw();
     }
 
+    //// Write constant buffer data onto GPU
+    //D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+
     //// Skybox
     //// Input Assembler
     //_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -880,7 +883,7 @@ void DX11Framework::Draw()
     //memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     //_immediateContext->Unmap(_constantBuffer, 0);
 
-    //_skybox->Draw(_immediateContext);
+    //_skybox->Draw();
     
     // Present back buffer to screen
     _swapChain->Present(0, 0);
