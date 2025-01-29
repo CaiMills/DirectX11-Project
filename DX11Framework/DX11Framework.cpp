@@ -583,11 +583,12 @@ void DX11Framework::InitGameObjects()
         std::wstring specTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).colorTexture.c_str()).GetString();
         CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &texture);
 
-        // Appearance
+        // Mesh
         Mesh* mesh = new Mesh();
-        MeshData* data = new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
-        mesh->SetMeshData(data);
+        MeshData* tempData = new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
+        mesh->SetMeshData(tempData);
 
+        // Appearance
         Appearance* appearance = new Appearance(mesh);
         appearance->SetTexture(texture);
         _gameObject[i].SetAppearance(appearance);
