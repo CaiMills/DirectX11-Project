@@ -420,7 +420,7 @@ HRESULT DX11Framework::InitRunTimeData()
 
         _cubes[i].SetType("Cube " + i);
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
-        _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
+        _cubes[i].GetTransform()->SetScale(Vector3(1.0f + (i * 2.5f), 1.0f + (i * 2.5f), 1.0f + (i * 2.5f)));
 
         // Box Collider
         collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());

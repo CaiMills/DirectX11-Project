@@ -20,7 +20,7 @@ private:
 public:
 	// Two constructors, in case the mesh data already exists from an external file
 	Mesh();
-	Mesh(MeshData* meshData) { _meshData = meshData; }
+	Mesh(MeshData* meshData);
 	~Mesh();
 
 	void SetMeshData(MeshData* meshData) { _meshData = meshData; }

@@ -14,8 +14,6 @@ Appearance::~Appearance()
 
 void Appearance::Draw()
 {
-	//DebugPrintF("Max x is %f, Max y is %f, Max z is %f\n", _max.x, _max.y, _max.z);
-	//DebugPrintF("Min x is %f, Min y is %f, Min z is %f\n", _min.x, _min.y, _min.z);
 	if (_mesh->GetMeshData()->VertexBuffer != nullptr && _mesh->GetMeshData()->IndexBuffer != nullptr)
 	{
 		// Set texture

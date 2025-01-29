@@ -5,6 +5,11 @@ Mesh::Mesh()
 
 }
 
+Mesh::Mesh(MeshData* meshData) : _meshData(meshData)
+{
+    SetMinAndMax();
+}
+
 Mesh::~Mesh()
 {
     _indexBuffer = nullptr;
@@ -166,6 +171,8 @@ MeshData* Mesh::CreateCube(bool inverted)
     _meshData->VBOffset = 0;
     _meshData->VBStride = sizeof(SimpleVertex);
 
+    SetMinAndMax();
+
     return _meshData;
 }
 
@@ -299,7 +306,7 @@ void Mesh::SetMinAndMax()
     //// Write constant buffer data onto GPU
     //D3D11_MAPPED_SUBRESOURCE mappedSubresource;
 
-    //HRESULT hr = _immediateContext->Map(_meshData.VertexBuffer, 0, D3D11_MAP_READ, 0, &mappedSubresource);
+    //HRESULT hr = _immediateContext->Map(_meshData->VertexBuffer, 0, D3D11_MAP_READ, 0, &mappedSubresource);
     //if (FAILED(hr))
     //{
     //	printf("Failed to map vertex buffer. HRESULT: 0x%X\n", hr);
@@ -307,7 +314,7 @@ void Mesh::SetMinAndMax()
     //}
     //SimpleVertex* vertices = static_cast<SimpleVertex*>(mappedSubresource.pData);
 
-    //for (size_t i = 0; i < _meshData.IndexCount; ++i)
+    //for (size_t i = 0; i < _meshData->IndexCount; ++i)
     //{
     //	XMFLOAT3 pos = vertices[i].Position;
     //
@@ -321,7 +328,7 @@ void Mesh::SetMinAndMax()
     //	_max.z = max(_max.z, pos.z);
     //}
     //// Unmap the vertex buffer
-    //_immediateContext->Unmap(_meshData.VertexBuffer, 0);
+    //_immediateContext->Unmap(_meshData->VertexBuffer, 0);
 
 
     // Get the vertex buffer description
