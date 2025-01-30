@@ -423,16 +423,12 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         // Box Collider
-        collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
-        _cubes[i].GetPhysicsModel()->SetCollider(collider);
-
-        // Sphere Collider
-        //collider = new SphereCollider(_cubes[i].GetTransform(), 2.0f);
+        //collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
         //_cubes[i].GetPhysicsModel()->SetCollider(collider);
 
-        // Testing AABB V Sphere
-        //collider = new BoxCollider(_cubes[0].GetTransform(), _cubes[0].GetAppearance());
-        //_cubes[0].GetPhysicsModel()->SetCollider(collider);
+        // Sphere Collider
+        collider = new SphereCollider(_cubes[i].GetTransform(), 2.0f);
+        _cubes[i].GetPhysicsModel()->SetCollider(collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -590,9 +586,6 @@ void DX11Framework::InitGameObjects()
         Mesh* mesh = new Mesh();
         mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
         mesh->SetMinAndMax(); // This is needed to determine the bounding box
-
-        //DebugPrintF("GO [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
-        //DebugPrintF("GO [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
 
         // Appearance
         Appearance* appearance = new Appearance(mesh);
@@ -785,6 +778,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     {
         // Allows for collision between cube 0 and 1
         _cubes[1].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[2].GetPhysicsModel()->GetCollider());
+        _cubes[2].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
 
         // Normalise Calculation
         Vector3 collisionNormal = _cubes[1].GetTransform()->GetPosition() - _cubes[2].GetTransform()->GetPosition();
@@ -803,11 +797,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         {
             // General Collisions
             float restitution = 0.5f;
-            float vj = collisionNormal * relativeVelocity;
-            float j = vj * (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
+            float dotProduct = (collisionNormal.x * relativeVelocity.x) + (collisionNormal.y * relativeVelocity.y) + (collisionNormal.z * relativeVelocity.z);
+            float vj = -(1 + restitution) * dotProduct;
+            float j = vj / (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
 
             _cubes[1].GetPhysicsModel()->ApplyImpulse(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
             _cubes[2].GetPhysicsModel()->ApplyImpulse(-(_cubes[2].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
+            DebugPrintF("Collided\n");
         }
     }
 

@@ -8,6 +8,7 @@ bool BoxCollider::CollidesWith(BoxCollider& other)
         _appearance->GetMesh()->GetMin().y <= other.GetAppearance()->GetMesh()->GetMax().y && _appearance->GetMesh()->GetMax().y >= other.GetAppearance()->GetMesh()->GetMin().y &&
         _appearance->GetMesh()->GetMin().z <= other.GetAppearance()->GetMesh()->GetMax().z && _appearance->GetMesh()->GetMax().z >= other.GetAppearance()->GetMesh()->GetMin().z)
     {
+        DebugPrintF("AABB vs AABB Collision\n");
         return true;
     }
     else
