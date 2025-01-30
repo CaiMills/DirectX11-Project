@@ -589,14 +589,15 @@ void DX11Framework::InitGameObjects()
         // Mesh
         Mesh* mesh = new Mesh();
         mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
+        mesh->SetMinAndMax(); // This is needed to determine the bounding box
+
+        DebugPrintF("GO [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
+        DebugPrintF("GO [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
 
         // Appearance
         Appearance* appearance = new Appearance(mesh);
         appearance->SetTexture(texture);
         _gameObject[i].SetAppearance(appearance);
-
-        DebugPrintF("GO [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
-        DebugPrintF("GO [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
 
         // Transform
         _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
