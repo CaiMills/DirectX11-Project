@@ -3,27 +3,27 @@ SamplerState bilinearSampler : register(s0);
 
 cbuffer ConstantBuffer : register(b0)
 {
-    //16bit
+    // 16 Bit
     float4x4 Projection;
     float4x4 View;
     float4x4 World;
     
-    //16bit
+    // 16 Bit
     float4 diffuseLight;
     float4 diffuseMaterial;
     float4 ambientLight;
     float4 ambientMaterial;
     
-    //16bit
+    // 16 Bit
     float4 specularLight;
     float4 specularMaterial;
     float3 cameraPosition;
     float specPower;
     
-    //3bit
+    // 3 Bit
     float3 lightDir;
     
-    //textures
+    // Textures
     uint hasTexture;
     uint hasSpecularMap;
 }
@@ -64,17 +64,17 @@ float4 PS_main(VS_Out input) : SV_TARGET
     float specIntensity = saturate(dot(vertexToCamera, reflectedDir));
     specIntensity = specIntensity * pow(specIntensity, specPower);
     
-    //diffuse
+    // Diffuse
     float4 diffuseAmount = saturate(dot(input.normal, normalisedLightDir));
     
-    //if there is a texture, then do the additional calculation to add the texture
+    // If there is a texture, then do the additional calculation to add the texture
     if (hasTexture == 1)
     {
         float4 texColor = diffuseTex.Sample(bilinearSampler, input.texCoord);
         float4 diffuse = diffuseAmount * (texColor * diffuseLight);
         float4 ambient = texColor * ambientLight;
         
-        //if there is a specular map texture, then do the additional calculation to add the specular calculation
+        // If there is a specular map texture, then do the additional calculation to add the specular calculation
         if (hasSpecularMap == 1)
         {
             float4 specTexColor = diffuseTex.Sample(bilinearSampler, input.texCoord);

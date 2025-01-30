@@ -12,11 +12,11 @@ private:
 public:
     RigidBodyModel(Transform* transform) : PhysicsModel(transform) 
     {
-        //Sets the Inertia Tensor to Identity Matrix by default
+        // Sets the Inertia Tensor to Identity Matrix by default
         XMMATRIX identity = XMMatrixIdentity();
         XMStoreFloat3x3(&_inertiaTensor, identity);
 
-        ////Circle
+        //// Circle
         //_inertiaTensor._11 = (2.0f / 5.0f) * _mass * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
         //_inertiaTensor._12 = 0;
         //_inertiaTensor._13 = 0;
@@ -29,7 +29,7 @@ public:
         //_inertiaTensor._32 = 0;
         //_inertiaTensor._33 = (2.0f / 5.0f) * _mass * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
 
-        ////Box 
+        //// Box 
         //_inertiaTensor._11 = (1.0f / 12.0f) * _mass * pow(_transform->GetScale().y / 2, 2) + pow(_transform->GetScale().z / 2, 2);
         //_inertiaTensor._12 = 0;
         //_inertiaTensor._13 = 0;

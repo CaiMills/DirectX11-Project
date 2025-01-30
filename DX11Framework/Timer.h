@@ -11,7 +11,7 @@ private:
 public:
 	Timer();
 
-	float GetDeltaTime(); //Request time since last frame
-	void Tick(); //Store time of last frame
+	float GetDeltaTime(); // Request time since last frame
+	void Tick(); // Store time of last frame
 };
 

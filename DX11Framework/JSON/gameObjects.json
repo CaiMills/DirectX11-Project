@@ -2,24 +2,22 @@
   "GameObjects": 
   [
     {
-      "File Path": "Models\\Test Models\\Made In 3ds Max\\star.obj",
+      "File Path": "Meshes\\Test Models\\Made In 3ds Max\\star.obj",
       "Type": "Star",
       "Color": "",
       "Specular": "",
       "Scale": [ 0.5, 0.5, 0.5 ],
       "Rotation": [ 0.0, 0.0, 0.0 ],
-      "Position": [ 0.0, 4.5, 0.0 ],
-      "Continuous Rotation": "false"
+      "Position": [ 0.0, 4.5, 0.0 ]
     },
     {
-      "File Path": "Models\\Test Models\\Made In Blender\\donut.obj",
+      "File Path": "Meshes\\Test Models\\Made In Blender\\donut.obj",
       "Type": "Donut",
       "Color": "Textures\\Test Textures\\asphalt_COLOR.dds",
       "Specular": "Textures\\Test Textures\\asphalt_SPEC.dds",
       "Scale": [ 0.8, 0.8, 0.8 ],
-      "Rotation": [ 1.0, 0.0, 0.0 ],
-      "Position": [ 0.0, 4.5, 0.0 ],
-      "Continuous Rotation": "true"
+      "Rotation": [ 0.0, 0.0, 0.0 ],
+      "Position": [ 0.0, 4.5, 0.0 ]
     }
   ],
   "version": "1.1"

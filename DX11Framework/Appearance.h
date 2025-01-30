@@ -2,27 +2,24 @@
 #include "Structures.h"
 #include "OBJLoader.h"
 #include "DDSTextureLoader.h"
+#include "Mesh.h"
 #include "Globals.h"
 
 class Appearance
 {
 private:
-	MeshData _meshData;
+	Mesh* _mesh;
 	ID3D11ShaderResourceView* _texture = nullptr;
-	Vector3 _max = Vector3();
-	Vector3 _min = Vector3();
 
 public:
-	Appearance(MeshData meshData);
+	Appearance(Mesh* mesh);
 	~Appearance();
 
-	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
-	void SetTexture(ID3D11ShaderResourceView* in) { _texture = in; }
-	bool HasTexture() const { return _texture ? true : false; }
+	Mesh* GetMesh() const { return _mesh; }
 
-	void SetMinAndMax();
-	Vector3 GetMin() const { return _min; }
-	Vector3 GetMax() const { return _max; }
+	ID3D11ShaderResourceView** GetTexture() { return &_texture; }
+	void SetTexture(ID3D11ShaderResourceView* texture) { _texture = texture; }
+	bool HasTexture() const { return _texture ? true : false; }
 
 	void Draw();
 };

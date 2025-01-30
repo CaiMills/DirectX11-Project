@@ -13,7 +13,7 @@ public:
 	virtual bool CollidesWith(BoxCollider& other) override;
 	virtual bool CollidesWith(SphereCollider& other) override;
 
-	Appearance* GetAppearance() { return _appearance; }
+	Appearance* GetAppearance() const { return _appearance; }
 };
 
 

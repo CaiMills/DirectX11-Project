@@ -14,31 +14,6 @@ Transform::~Transform()
 
 void Transform::Update(float deltaTime)
 {
-	//if (_continuousRotation)
-	//{
-	//	//Constant Rotation
-	//	static float rotationAngle = 0.0f;
-	//	rotationAngle += deltaTime;
-
-	//	// Calculate world matrix
-	//	XMMATRIX scale = XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z);
-	//	XMVECTOR rotation = XMVectorSet(rotationAngle, GetRotation().y, GetRotation().z, 1);
-	//	XMMATRIX position = XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
-
-	//	XMMATRIX orientation = XMMatrixRotationQuaternion(rotation);
-
-	//	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * orientation * position);
-	//}
-	//else
-	//{
-	//	// Calculate world matrix
-	//	XMMATRIX scale = XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z);
-	//	XMMATRIX orientation = XMMatrixRotationQuaternion(XMVectorSet(GetRotation().x, GetRotation().y, GetRotation().z, 1));
-	//	XMMATRIX position = XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
-
-	//	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * orientation * position);
-	//}
-
 	// Calculate world matrix
 	XMMATRIX scale = XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z);
 	XMMATRIX orientation = XMMatrixRotationQuaternion(XMVectorSet(GetRotation().x, GetRotation().y, GetRotation().z, 1));

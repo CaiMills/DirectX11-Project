@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "Timer.h"
 #include "Globals.h"
-#include "Geometry.h"
+#include "Mesh.h"
 
 //#include <wrl.h>
 
@@ -12,15 +12,15 @@ using namespace DirectX;
 
 class DX11Framework
 {
-	//2K
+	// 2K
 	//int _WindowWidth = 2560;
 	//int _WindowHeight = 1440;
 
-	//1080p
+	// 1080p
 	//int _WindowWidth = 1920;
 	//int _WindowHeight = 1080;
 
-	//768p
+	// 768p
 	int _WindowWidth = 1280;
 	int _WindowHeight = 768;
 
@@ -43,44 +43,44 @@ class DX11Framework
 	ID3D11Texture2D* _depthStencilBuffer;
 	ID3D11DepthStencilView* _depthStencilView;
 
-	//World
+	// World
 	XMFLOAT4X4 _worldMatrix;
 	XMFLOAT4X4 _View;
 	XMFLOAT4X4 _Projection;
 
-	//Diffuse Lighting
+	// Diffuse Lighting
 	XMFLOAT4 _diffuseLight;
 	XMFLOAT4 _diffuseMaterial;
 
-	//Ambient Lighting
+	// Ambient Lighting
 	XMFLOAT4 _ambientLight;
 	XMFLOAT4 _ambientMaterial;
 
-	//Specular Lighting
+	// Specular Lighting
 	XMFLOAT4 _specularLight;
 	XMFLOAT4 _specularMaterial;
 	XMFLOAT3 _cameraPosition;
 	float _specPower;
 
-	//Lighting
+	// Lighting
 	XMFLOAT3 _lightDir;
 	
-	//Timer
+	// Timer
 	Timer* _timer;
 
-	//Texturing
+	// Texturing
 	int _hasTexture;
 	int _hasSpecularMap;
 	ID3D11SamplerState* _bilinearSamplerState;
 
-	//Skybox
+	// Skybox
 	ID3D11InputLayout* _skyboxInputLayout;
 	ID3D11VertexShader* _skyboxVertexShader;
 	ID3D11PixelShader* _skyboxPixelShader;
 	ID3D11DepthStencilState* _skyboxDepthStencil;
 	XMFLOAT4X4 _skyboxMatrix;
 
-	//GameObjects
+	// GameObjects
 	GameObject* _skybox = new GameObject();
 	GameObject* _floor = new GameObject();
 	GameObject* _cubes = new GameObject[4];
@@ -88,7 +88,7 @@ class DX11Framework
 	vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
 
-	//Camera
+	// Camera
 	Camera* _camera = nullptr;
 	float _cameraOrbitRadius = 7.0f;
 	float _cameraOrbitRadiusMin = 2.0f;

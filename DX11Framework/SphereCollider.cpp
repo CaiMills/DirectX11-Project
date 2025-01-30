@@ -3,7 +3,7 @@
 
 bool SphereCollider::CollidesWith(SphereCollider& other)
 {
-	//Sphere Collision
+	// Sphere Collision
 	float distance = pow(GetPosition().x - other.GetPosition().x, 2) +
 		pow(GetPosition().y - other.GetPosition().y, 2) +
 		pow(GetPosition().z - other.GetPosition().z, 2);
@@ -21,11 +21,11 @@ bool SphereCollider::CollidesWith(SphereCollider& other)
 
 bool SphereCollider::CollidesWith(BoxCollider& other)
 {
-    //Sphere vs AABB Collision
+    // Sphere vs AABB Collision
     Vector3 closestPoint;
-    closestPoint.x = max(other.GetAppearance()->GetMin().x, min(GetPosition().x, other.GetAppearance()->GetMax().x));
-    closestPoint.y = max(other.GetAppearance()->GetMin().y, min(GetPosition().y, other.GetAppearance()->GetMax().y));
-    closestPoint.z = max(other.GetAppearance()->GetMin().z, min(GetPosition().z, other.GetAppearance()->GetMax().z));
+    closestPoint.x = max(other.GetAppearance()->GetMesh()->GetMin().x, min(GetPosition().x, other.GetAppearance()->GetMesh()->GetMax().x));
+    closestPoint.y = max(other.GetAppearance()->GetMesh()->GetMin().y, min(GetPosition().y, other.GetAppearance()->GetMesh()->GetMax().y));
+    closestPoint.z = max(other.GetAppearance()->GetMesh()->GetMin().z, min(GetPosition().z, other.GetAppearance()->GetMesh()->GetMax().z));
 
     float distance = sqrt(pow(closestPoint.x - GetPosition().x, 2) + 
         pow(closestPoint.y - GetPosition().y, 2) + 
@@ -40,4 +40,6 @@ bool SphereCollider::CollidesWith(BoxCollider& other)
     {
         return false;
     }
+
+    return false;
 }

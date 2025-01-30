@@ -191,8 +191,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 #endif
     ID3DBlob* vsBlob;
 
-    //Skybox
-    //Compile the vertex shader
+    // Skybox
+    // Compile the vertex shader
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -201,7 +201,7 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    //Create the vertex shader
+    // Create the vertex shader
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_skyboxVertexShader);
     if (FAILED(hr))
     {
@@ -209,8 +209,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    //Standard
-    //Compile the vertex shader
+    // Standard
+    // Compile the vertex shader
     hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -219,7 +219,7 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         return hr;
     }
 
-    //Create the vertex shader
+    // Create the vertex shader
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
     if (FAILED(hr))
     {
@@ -231,8 +231,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     ID3DBlob* psBlob;
 
-    //Skybox
-    //Compile the pixel shader
+    // Skybox
+    // Compile the pixel shader
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -240,12 +240,12 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         errorBlob->Release();
         return hr;
     }
-    //Create the pixel shader
+    // Create the pixel shader
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_skyboxPixelShader);
     if (FAILED(hr)) { return hr; }
 
-    //Standard
-    //Compile the pixel shader
+    // Standard
+    // Compile the pixel shader
     hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
     {
@@ -258,19 +258,19 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //Skybox
-    //Define the input layout
+    // Skybox
+    // Define the input layout
     D3D11_INPUT_ELEMENT_DESC skyboxInputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
     };
-    //Create the input layout
+    // Create the input layout
     //hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_skyboxInputLayout);
     //if (FAILED(hr)) { return hr; }
 
-    //Standard
-    //Define the input layout
+    // Standard
+    // Define the input layout
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -292,7 +292,7 @@ HRESULT DX11Framework::InitPipelineVariables()
 {
     HRESULT hr = S_OK;
 
-    //Input Assembler
+    // Input Assembler
     _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     _immediateContext->IASetInputLayout(_inputLayout);
 
@@ -324,7 +324,7 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     _immediateContext->OMSetDepthStencilState(_DSLessEqual, 0);
 
-    //Bilinear Sampler
+    // Bilinear Sampler
     D3D11_SAMPLER_DESC bilinearSampledesc = {};
     bilinearSampledesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     bilinearSampledesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -343,7 +343,7 @@ HRESULT DX11Framework::InitRunTimeData()
 {
     HRESULT hr = S_OK;
 
-    //Constant Buffer
+    // Constant Buffer
     D3D11_BUFFER_DESC constantBufferDesc = {};
     constantBufferDesc.ByteWidth = sizeof(ConstantBuffer);
     constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -363,72 +363,80 @@ HRESULT DX11Framework::InitRunTimeData()
 
     _camera = new Camera(eye, at, up, (float)_WindowWidth, (float)_WindowHeight, 0.01f, 200.0f);
 
-    //Lighting
+    // Lighting
     InitLighting();
 
-    //Initiate Scene
+    // Initiate Scene
     ID3D11ShaderResourceView* texture;
-    Geometry* geometry = new Geometry(); //This is to get a forwards reference to the geometry functions
+    Mesh* mesh = new Mesh();
+    Appearance* appearance;
+    Collider* collider;
 
-    //Skybox
-    Appearance* appearance = new Appearance(geometry->Cube(_device, true));
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
-    if (FAILED(hr)) { return hr; }
+    //// Skybox
+    //mesh->CreateCube(true);
+    //appearance = new Appearance(mesh);
+    //CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
+    //if (FAILED(hr)) { return hr; }
 
-    appearance->SetTexture(texture);
+    //appearance->SetTexture(texture);
 
-    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
-    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    dsDescSkybox.DepthEnable = true;
-    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    //D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    //dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    //dsDescSkybox.DepthEnable = true;
+    //dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
-    if (FAILED(hr)) { return hr; }
+    //hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
+    //if (FAILED(hr)) { return hr; }
 
-    _skybox->SetType("Skybox");
-    _skybox->SetAppearance(appearance);
+    //_skybox->SetType("Skybox");
+    //_skybox->SetAppearance(appearance);
 
-    //Geometry
-    appearance = new Appearance(geometry->Plane(_device));
+    // Geometry
+    mesh->CreatePlane();
+    appearance = new Appearance(mesh);
     CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &texture);
     appearance->SetTexture(texture);
 
     _floor->SetType("Floor");
     _floor->SetAppearance(appearance);
     _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
-    _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
-    _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(40.0f), 0.0f, 0.0f)); //It wont work without the XMConvertToRadians
+    _floor->GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
+    _floor->GetTransform()->SetRotation(Vector3(0.0f, 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
 
     _gameObjects.push_back(_floor);
 
-    //Collider
-    Collider* collider;
-
-    //Cubes
+    // Cubes
     for (auto i = 0; i < 4; i++)
     {
-        appearance = new Appearance(geometry->Cube(_device, false));
+        mesh->CreateCube(false);
+        appearance = new Appearance(mesh);
+
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);
         appearance->SetTexture(texture);
+        _cubes[i].SetAppearance(appearance);
+
+        //DebugPrintF("Cube [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
+        //DebugPrintF("Cube [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
 
         _cubes[i].SetType("Cube " + i);
-        _cubes[i].SetAppearance(appearance);
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
+        // Box Collider
         collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
         _cubes[i].GetPhysicsModel()->SetCollider(collider);
 
+        // Sphere Collider
         //collider = new SphereCollider(_cubes[i].GetTransform(), 2.0f);
         //_cubes[i].GetPhysicsModel()->SetCollider(collider);
 
-        //Testing AABB V Sphere
+        // Testing AABB V Sphere
         //collider = new BoxCollider(_cubes[0].GetTransform(), _cubes[0].GetAppearance());
         //_cubes[0].GetPhysicsModel()->SetCollider(collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
-    //GameObjects
+    // GameObjects
     InitGameObjects();
 }
 
@@ -441,6 +449,7 @@ DX11Framework::~DX11Framework()
        delete go;
     }
     if (_immediateContext) { _immediateContext->Release(); }
+
     if (_device) { _device->Release(); }
     if (_dxgiDevice) { _dxgiDevice->Release(); }
     if (_dxgiFactory) { _dxgiFactory->Release(); }
@@ -451,6 +460,7 @@ DX11Framework::~DX11Framework()
     if (_constantBuffer) { _constantBuffer->Release(); }
     if (_depthStencilBuffer) { _depthStencilBuffer->Release(); }
     if (_depthStencilView) { _depthStencilView->Release(); }
+
     if (_vertexShader) { _vertexShader->Release(); }
     if (_pixelShader) { _pixelShader->Release(); }
     if (_inputLayout) { _inputLayout->Release(); }
@@ -465,12 +475,12 @@ DX11Framework::~DX11Framework()
 /// </summary>
 void DX11Framework::InitLighting()
 {
-    //Json Parser
+    // Json Parser
     json jFile;
 
     std::ifstream fileOpen("JSON/Lighting.json");
 
-    //validates to see if the file has been opened
+    // Validates to see if the file has been opened
     if (!fileOpen.is_open() || fileOpen.fail())
     {
         std::cerr << "Error: file could not be opened." << std::endl;
@@ -488,7 +498,7 @@ void DX11Framework::InitLighting()
     {
         lightingData ld;
         json& lightsDesc = fileData.at(i);
-        ld.lightFile = lightsDesc["Type"]; // ← gets a string
+        ld.lightFile = lightsDesc["Type"]; //← gets a string
         ld.light.x = lightsDesc["Light"][0];
         ld.light.y = lightsDesc["Light"][1];
         ld.light.z = lightsDesc["Light"][2];
@@ -538,7 +548,7 @@ void DX11Framework::InitGameObjects()
     jFile = json::parse(fileOpen);
 
     std::string v = jFile["version"].get<std::string>();
-    json& fileData = jFile["GameObjects"]; //← gets an array
+    json& fileData = jFile["GameObjects"];
     int size = fileData.size();
     gameObjectData g;
 
@@ -558,41 +568,43 @@ void DX11Framework::InitGameObjects()
         g.position.x = gameObjectDesc["Position"][0];
         g.position.y = gameObjectDesc["Position"][1];
         g.position.z = gameObjectDesc["Position"][2];
-        g.continuousRotation = gameObjectDesc["Continuous Rotation"];
 
-        _gameObjectDataList.push_back(g); //Adds the gameobject to the list
+        _gameObjectDataList.push_back(g); // Adds the gameobject to the list
     }
 
     for (int i = 0; i < _gameObjectDataList.size(); i++)
     {
-        //Type
+        // Type
         _gameObject[i].SetType(_gameObjectDataList.at(i).type);
 
-        //Texture
-        ID3D11ShaderResourceView* _texture;
-        std::wstring colorTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).specularTexture.c_str()).GetString(); //converts it to a wstring, so that it can be converted to a texture
-        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
+        // Texture
+        ID3D11ShaderResourceView* texture;
+        std::wstring colorTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).specularTexture.c_str()).GetString(); // Converts it to a wstring, so that it can be converted to a texture
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &texture);
 
-        //Specular Texture
+        // Specular Texture
         std::wstring specTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).colorTexture.c_str()).GetString();
-        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &texture);
 
-        //Appearance
-        Appearance* _appearance = new Appearance(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false));
-        _appearance->SetTexture(_texture);
-        _gameObject[i].SetAppearance(_appearance);
+        // Mesh
+        Mesh* mesh = new Mesh();
+        mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
+        mesh->SetMinAndMax(); // This is needed to determine the bounding box
 
-        //Transform
+        //DebugPrintF("GO [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
+        //DebugPrintF("GO [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
+
+        // Appearance
+        Appearance* appearance = new Appearance(mesh);
+        appearance->SetTexture(texture);
+        _gameObject[i].SetAppearance(appearance);
+
+        // Transform
         _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
         _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));
-        
-        //Continuous Rotation
-        bool continuousRotation = false;
-        if (_gameObjectDataList.at(i).continuousRotation == "true") { continuousRotation = true; }
-        _gameObject[i].GetTransform()->ContinousRotation(continuousRotation);
 
-        //Adds it a different list with all gameObjects
+        // Adds it a different list with all gameObjects
         _gameObjects.push_back(&_gameObject[i]); 
     }
 }
@@ -601,7 +613,7 @@ void DX11Framework::Update()
 {
     _timer->Tick();
 
-    //Static initializes this value only once    
+    // Static initializes this value only once    
     static ULONGLONG frameStart = GetTickCount64();
 
     ULONGLONG frameNow = GetTickCount64();
@@ -614,13 +626,13 @@ void DX11Framework::Update()
     while (accumulator >= FPS60)
     {
         PhysicsUpdates(0.016);
-        accumulator -= 0.016; //resets the accumulator counter
+        accumulator -= 0.016; // resets the accumulator counter
     }
 
     const double alpha = accumulator / 0.016;
     RendererUpdates(alpha);
 
-    //Defines the world position
+    // Defines the world position
     XMStoreFloat4x4(&_worldMatrix, XMMatrixIdentity());
 
     _cbData.cameraPosition = _camera->GetEye();
@@ -646,22 +658,22 @@ void DX11Framework::RendererUpdates(float deltaTime)
     _camera->Update();
 
 #pragma region CameraMovement
-    //W - Fowards
+    // W - Fowards
     if (GetAsyncKeyState(0x57) & 0X0001)
     {
         _cameraOrbitRadius = max(_cameraOrbitRadiusMin, _cameraOrbitRadius - (_cameraSpeed * 0.2f));
     }
-    //S - Backwards
+    // S - Backwards
     if (GetAsyncKeyState(0x53) & 0X0001)
     {
         _cameraOrbitRadius = min(_cameraOrbitRadiusMax, _cameraOrbitRadius + (_cameraSpeed * 0.2f));
     }
-    //A - Left
+    // A - Left
     if (GetAsyncKeyState(0x41) & 0X0001)
     {
         _cameraOrbitAngleXZ += _cameraSpeed;
     }
-    //D - Right
+    // D - Right
     if (GetAsyncKeyState(0x44) & 0X0001)
     {
         _cameraOrbitAngleXZ -= _cameraSpeed;
@@ -672,37 +684,37 @@ void DX11Framework::RendererUpdates(float deltaTime)
 void DX11Framework::PhysicsUpdates(float deltaTime)
 {
 #pragma region GOMovementControls
-    //NUMPAD 8 - Fowards
+    // NUMPAD 8 - Fowards
     if (GetAsyncKeyState(0x68) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
         _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
     }
-    //NUMPAD 2 - Backwards
+    // NUMPAD 2 - Backwards
     if (GetAsyncKeyState(0x62) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
         _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
     }
-    //NUMPAD 4 - Left
+    // NUMPAD 4 - Left
     if (GetAsyncKeyState(0x64) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
         _cubes[1].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
     }
-    //NUMPAD 6 - Right
+    // NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
-        _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
-        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        //_cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
-    //NUMPAD 9 - Up
+    // NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
         _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
     }
-    //NUMPAD 3 - Down
+    // NUMPAD 3 - Down
     if (GetAsyncKeyState(0x63) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
@@ -711,37 +723,37 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
 #pragma region GOVelocityControls
-    //UP ARROW - Fowards Constant Velocity
+    // UP ARROW - Fowards Constant Velocity
     if (GetAsyncKeyState(0x26) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
     }
-    //DOWN ARROW - Backwards Constant Velocity
+    // DOWN ARROW - Backwards Constant Velocity
     if (GetAsyncKeyState(0x28) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
     }
-    //LEFT ARROW - Left Constant Velocity
+    // LEFT ARROW - Left Constant Velocity
     if (GetAsyncKeyState(0x25) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
     }
-    //RIGHT ARROW - Right Constant Velocity
+    // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
     }
-    //PAGE UP - Up Constant Velocity
+    // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
     }
-    //PAGE DOWN - Down Constant Velocity
+    // PAGE DOWN - Down Constant Velocity
     if (GetAsyncKeyState(0x21) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
@@ -750,17 +762,17 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
 #pragma region GeneralGOControls
-    //END / NUMPAD 1 - Rotation Right
+    // END / NUMPAD 1 - Rotation Right
     if (GetAsyncKeyState(0x23) & 0X0001 || GetAsyncKeyState(0x67) & 0X0001)
     {
         //NEED TO ADD
     }
-    //HOME / NUMPAD 7 - Rotation Left
+    // HOME / NUMPAD 7 - Rotation Left
     if (GetAsyncKeyState(0x24) & 0X0001 || GetAsyncKeyState(0x61) & 0X0001)
     {
         //NEED TO ADD
     }
-    //INSERT / NUMPAD 0 - Stop All Velocity
+    // INSERT / NUMPAD 0 - Stop All Velocity
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
@@ -768,38 +780,38 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     }
 #pragma endregion
 
-    //Collisions
-    if (_cubes[0].GetPhysicsModel()->IsCollideable() && _cubes[1].GetPhysicsModel()->IsCollideable())
+    // Collisions
+    if (_cubes[1].GetPhysicsModel()->IsCollideable() && _cubes[2].GetPhysicsModel()->IsCollideable())
     {
-        //Allows for collision between cube 0 and 1
-        _cubes[0].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
+        // Allows for collision between cube 0 and 1
+        _cubes[1].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[2].GetPhysicsModel()->GetCollider());
 
-        //Normalise Calculation
-        Vector3 collisionNormal = _cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
+        // Normalise Calculation
+        Vector3 collisionNormal = _cubes[1].GetTransform()->GetPosition() - _cubes[2].GetTransform()->GetPosition();
 
-        //Sphere Collisions
+        // Sphere Collisions
         //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
             //_cubes[1].GetPhysicsModel()->GetCollider()->GetRadius();
 
         //collisionNormal = collisionNormal * depth * _cubes[0].GetPhysicsModel()->GetInverseMass() * _cubes[1].GetPhysicsModel()->GetInverseMass();
 
-        //Velocity Calculation
-        Vector3 relativeVelocity = _cubes[0].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
+        // Velocity Calculation
+        Vector3 relativeVelocity = _cubes[1].GetPhysicsModel()->GetVelocity() - _cubes[2].GetPhysicsModel()->GetVelocity();
 
-        //Checks if objects are approaching each other
+        // Checks if objects are approaching each other
         if (collisionNormal * relativeVelocity < 0.0f)
         {
-            //General Collisions
-            //float restitution = 0.5f;
-            //float vj = collisionNormal * relativeVelocity;
-            //float j = vj * (_cubes[0].GetPhysicsModel()->GetInverseMass() + _cubes[1].GetPhysicsModel()->GetInverseMass());
+            // General Collisions
+            float restitution = 0.5f;
+            float vj = collisionNormal * relativeVelocity;
+            float j = vj * (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
 
-            //_cubes[0].GetPhysicsModel()->ApplyImpulse(_cubes[0].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
-            //_cubes[1].GetPhysicsModel()->ApplyImpulse(-(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
+            _cubes[1].GetPhysicsModel()->ApplyImpulse(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
+            _cubes[2].GetPhysicsModel()->ApplyImpulse(-(_cubes[2].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
         }
     }
 
-    //Update objects
+    // Update objects
     for (GameObject* go : _gameObjects)
     {
         go->Update(deltaTime);
@@ -809,13 +821,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 void DX11Framework::Keybinds()
 {
 #pragma region ChangeStates
-    //Sets it to fill state on F1 press 
+    // Sets it to fill state on F1 press 
     if (GetAsyncKeyState(VK_F1) & 0x0001)
     {
         _immediateContext->RSSetState(_fillState);
     }
 
-    //Sets it to wireframe state on F2 press 
+    // Sets it to wireframe state on F2 press 
     if (GetAsyncKeyState(VK_F2) & 0x0001)
     {
         _immediateContext->RSSetState(_wireframeState);
@@ -825,20 +837,20 @@ void DX11Framework::Keybinds()
 
 void DX11Framework::Draw()
 {    
-    //Present unbinds render target, so rebind and clear at start of each frame
+    // Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
-    //Vertex and Pixel Shader, Set Shader
+    // Vertex and Pixel Shader, Set Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
 
-    //Camera
+    // Camera
     XMFLOAT4X4 tempView = _camera->GetView();
     XMFLOAT4X4 tempProjection = _camera->GetProjection();
 
@@ -848,24 +860,27 @@ void DX11Framework::Draw()
     _cbData.View = XMMatrixTranspose(view);
     _cbData.Projection = XMMatrixTranspose(projection);
 
-    //Store this frames data in constant buffer struct
+    // Store this frames data in constant buffer struct
     _cbData.World = XMMatrixTranspose(XMLoadFloat4x4(&_worldMatrix));
 
-    //Loads Game Objects
+    // Loads Game Objects
     for (auto gameObject : _gameObjects)
     {
         gameObject->Draw();
     }
 
-    ////Skybox
-    //Input Assembler
+    //// Write constant buffer data onto GPU
+    //D3D11_MAPPED_SUBRESOURCE mappedSubresource;
+
+    //// Skybox
+    //// Input Assembler
     //_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     //_immediateContext->IASetInputLayout(_skyboxInputLayout);
 
-    ////Changes the Stencil State to the Skybox one
+    //// Changes the Stencil State to the Skybox one
     //_immediateContext->OMSetDepthStencilState((_skyboxDepthStencil), 0);
 
-    ////Vertex and Pixel Shader, Set Shader
+    //// Vertex and Pixel Shader, Set Shader
     //_immediateContext->VSSetShader(_skyboxVertexShader, nullptr, 0);
     //_immediateContext->PSSetShader(_skyboxPixelShader, nullptr, 0);
 
@@ -874,8 +889,8 @@ void DX11Framework::Draw()
     //memcpy(mappedSubresource.pData, &_cbData, sizeof(_cbData));
     //_immediateContext->Unmap(_constantBuffer, 0);
 
-    //_skybox->Draw(_immediateContext);
+    //_skybox->Draw();
     
-    //Present back buffer to screen
+    // Present back buffer to screen
     _swapChain->Present(0, 0);
 }

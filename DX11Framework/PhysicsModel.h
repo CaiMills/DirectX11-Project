@@ -15,7 +15,6 @@ protected:
 	bool _constVelocity = false;
 	Vector3 _acceleration = Vector3();
 	bool _constAccelerate = false;
-	Vector3 _force; //not sure if this one is needed currently
 	Vector3 _netForce = Vector3();
 
 public:
