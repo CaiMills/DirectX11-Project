@@ -8,11 +8,6 @@ bool BoxCollider::CollidesWith(BoxCollider& other)
         _appearance->GetMesh()->GetMin().y <= other.GetAppearance()->GetMesh()->GetMax().y && _appearance->GetMesh()->GetMax().y >= other.GetAppearance()->GetMesh()->GetMin().y &&
         _appearance->GetMesh()->GetMin().z <= other.GetAppearance()->GetMesh()->GetMax().z && _appearance->GetMesh()->GetMax().z >= other.GetAppearance()->GetMesh()->GetMin().z)
     {
-        //DebugPrintF("AABB vs AABB Collision\n");
-        //DebugPrintF("This Object's Min x is %f, Min y is %f, Min z is %f\n", _appearance->GetMin().x, _appearance->GetMin().y, _appearance->GetMin().z);
-        //DebugPrintF("This Object's Max x is %f, Max y is %f, Max z is %f\n", _appearance->GetMax().x, _appearance->GetMax().y, _appearance->GetMax().z);
-        //DebugPrintF("The Other Object's Min x is %f, Min y is %f, Min z is %f\n", other.GetAppearance()->GetMin().x, other.GetAppearance()->GetMin().y, other.GetAppearance()->GetMin().z);
-        //DebugPrintF("The Other Object's Max x is %f, Max y is %f, Max z is %f\n", other.GetAppearance()->GetMax().x, other.GetAppearance()->GetMax().y, other.GetAppearance()->GetMax().z);
         return true;
     }
     else

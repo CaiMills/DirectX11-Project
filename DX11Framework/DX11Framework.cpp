@@ -415,8 +415,8 @@ HRESULT DX11Framework::InitRunTimeData()
         appearance->SetTexture(texture);
         _cubes[i].SetAppearance(appearance);
 
-        DebugPrintF("Cube [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
-        DebugPrintF("Cube [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
+        //DebugPrintF("Cube [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
+        //DebugPrintF("Cube [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
 
         _cubes[i].SetType("Cube " + i);
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
@@ -591,8 +591,8 @@ void DX11Framework::InitGameObjects()
         mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
         mesh->SetMinAndMax(); // This is needed to determine the bounding box
 
-        DebugPrintF("GO [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
-        DebugPrintF("GO [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
+        //DebugPrintF("GO [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
+        //DebugPrintF("GO [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
 
         // Appearance
         Appearance* appearance = new Appearance(mesh);
@@ -705,8 +705,8 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     // NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
-        _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
-        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        //_cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     // NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
@@ -744,8 +744,8 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
@@ -781,13 +781,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
     // Collisions
-    if (_cubes[0].GetPhysicsModel()->IsCollideable() && _cubes[1].GetPhysicsModel()->IsCollideable())
+    if (_cubes[1].GetPhysicsModel()->IsCollideable() && _cubes[2].GetPhysicsModel()->IsCollideable())
     {
         // Allows for collision between cube 0 and 1
-        _cubes[0].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
+        _cubes[1].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[2].GetPhysicsModel()->GetCollider());
 
         // Normalise Calculation
-        Vector3 collisionNormal = _cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
+        Vector3 collisionNormal = _cubes[1].GetTransform()->GetPosition() - _cubes[2].GetTransform()->GetPosition();
 
         // Sphere Collisions
         //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
@@ -796,18 +796,18 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         //collisionNormal = collisionNormal * depth * _cubes[0].GetPhysicsModel()->GetInverseMass() * _cubes[1].GetPhysicsModel()->GetInverseMass();
 
         // Velocity Calculation
-        Vector3 relativeVelocity = _cubes[0].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
+        Vector3 relativeVelocity = _cubes[1].GetPhysicsModel()->GetVelocity() - _cubes[2].GetPhysicsModel()->GetVelocity();
 
         // Checks if objects are approaching each other
         if (collisionNormal * relativeVelocity < 0.0f)
         {
             // General Collisions
-            //float restitution = 0.5f;
-            //float vj = collisionNormal * relativeVelocity;
-            //float j = vj * (_cubes[0].GetPhysicsModel()->GetInverseMass() + _cubes[1].GetPhysicsModel()->GetInverseMass());
+            float restitution = 0.5f;
+            float vj = collisionNormal * relativeVelocity;
+            float j = vj * (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
 
-            //_cubes[0].GetPhysicsModel()->ApplyImpulse(_cubes[0].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
-            //_cubes[1].GetPhysicsModel()->ApplyImpulse(-(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
+            _cubes[1].GetPhysicsModel()->ApplyImpulse(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
+            _cubes[2].GetPhysicsModel()->ApplyImpulse(-(_cubes[2].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
         }
     }
 
