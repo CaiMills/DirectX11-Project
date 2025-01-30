@@ -738,7 +738,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
         //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0.1, 0, 0), false);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
@@ -795,12 +795,21 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         // Checks if objects are approaching each other
         if (collisionNormal * relativeVelocity < 0.0f)
         {
-            // General Collisions
             float restitution = 0.5f;
-            float dotProduct = (collisionNormal.x * relativeVelocity.x) + (collisionNormal.y * relativeVelocity.y) + (collisionNormal.z * relativeVelocity.z);
-            float vj = -(1 + restitution) * dotProduct;
-            float j = vj / (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
 
+            //Coefficient of Restitution
+            float e = _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude() - _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude();
+
+            //Dot Product of Relative Velocity and Collision Normal
+            float dotProduct = (collisionNormal.x * relativeVelocity.x) + (collisionNormal.y * relativeVelocity.y) + (collisionNormal.z * relativeVelocity.z);
+
+            // Total Velocity of Collision = Coefficient of Restitution * Dot Product
+            float vj = -(1 + e) * dotProduct;
+
+            // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
+            float j = vj / (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
+            
+            // Linear Velocity
             _cubes[1].GetPhysicsModel()->ApplyImpulse(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
             _cubes[2].GetPhysicsModel()->ApplyImpulse(-(_cubes[2].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
             DebugPrintF("Collided\n");
