@@ -738,7 +738,8 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
         //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0.1, 0, 0), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        _cubes[2].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
@@ -781,7 +782,14 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         _cubes[2].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
 
         // Normalise Calculation
-        Vector3 collisionNormal = _cubes[1].GetTransform()->GetPosition() - _cubes[2].GetTransform()->GetPosition();
+        Vector3 collisionNormal = _cubes[2].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
+        collisionNormal = Vector3(collisionNormal.x / collisionNormal.Magnitude(), collisionNormal.y / collisionNormal.Magnitude(), collisionNormal.z / collisionNormal.Magnitude());
+
+        // Velocity Calculation
+        Vector3 relativeVelocity = _cubes[2].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
+
+        //Dot Product of Relative Velocity and Collision Normal
+        float dotProduct = (collisionNormal.x * relativeVelocity.x) + (collisionNormal.y * relativeVelocity.y) + (collisionNormal.z * relativeVelocity.z);
 
         // Sphere Collisions
         //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
@@ -789,30 +797,29 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 
         //collisionNormal = collisionNormal * depth * _cubes[0].GetPhysicsModel()->GetInverseMass() * _cubes[1].GetPhysicsModel()->GetInverseMass();
 
-        // Velocity Calculation
-        Vector3 relativeVelocity = _cubes[1].GetPhysicsModel()->GetVelocity() - _cubes[2].GetPhysicsModel()->GetVelocity();
-
         // Checks if objects are approaching each other
-        if (collisionNormal * relativeVelocity < 0.0f)
+        if (dotProduct < 0.0f)
         {
-            float restitution = 0.5f;
+            float restitution = 0.8f;
 
             //Coefficient of Restitution
-            float e = _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude() - _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude();
-
-            //Dot Product of Relative Velocity and Collision Normal
-            float dotProduct = (collisionNormal.x * relativeVelocity.x) + (collisionNormal.y * relativeVelocity.y) + (collisionNormal.z * relativeVelocity.z);
+            //float e = _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude() - _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude();
 
             // Total Velocity of Collision = Coefficient of Restitution * Dot Product
-            float vj = -(1 + e) * dotProduct;
+            float vj = -(1.0f + restitution) * dotProduct;
 
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
-            
+
             // Linear Velocity
-            _cubes[1].GetPhysicsModel()->ApplyImpulse(_cubes[1].GetPhysicsModel()->GetInverseMass() * j * collisionNormal);
-            _cubes[2].GetPhysicsModel()->ApplyImpulse(-(_cubes[2].GetPhysicsModel()->GetInverseMass() * j * collisionNormal)); //reversed
+            _cubes[1].GetPhysicsModel()->ApplyImpulse(j* collisionNormal);
+            _cubes[2].GetPhysicsModel()->ApplyImpulse(-j * collisionNormal); //reversed
+
             DebugPrintF("Collided\n");
+        }
+        else if (dotProduct >= 0.0f)
+        {
+
         }
     }
 
