@@ -1,8 +1,8 @@
 #pragma once
+#include "Globals.h"
 #include "GameObject.h"
 #include "Camera.h"
 #include "Timer.h"
-#include "Globals.h"
 #include "Mesh.h"
 
 //#include <wrl.h>

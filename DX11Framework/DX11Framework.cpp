@@ -783,13 +783,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 
         // Normalise Calculation
         Vector3 collisionNormal = _cubes[2].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
-        collisionNormal = Vector3(collisionNormal.x / collisionNormal.Magnitude(), collisionNormal.y / collisionNormal.Magnitude(), collisionNormal.z / collisionNormal.Magnitude());
+        collisionNormal = _maths->Normalise(collisionNormal);
 
         // Velocity Calculation
         Vector3 relativeVelocity = _cubes[2].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
 
         //Dot Product of Relative Velocity and Collision Normal
-        float dotProduct = (collisionNormal.x * relativeVelocity.x) + (collisionNormal.y * relativeVelocity.y) + (collisionNormal.z * relativeVelocity.z);
+        float dotProduct = _maths->Dot(collisionNormal, relativeVelocity);
 
         // Sphere Collisions
         //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
@@ -816,10 +816,6 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
             _cubes[2].GetPhysicsModel()->ApplyImpulse(-j * collisionNormal); //reversed
 
             DebugPrintF("Collided\n");
-        }
-        else if (dotProduct >= 0.0f)
-        {
-
         }
     }
 
