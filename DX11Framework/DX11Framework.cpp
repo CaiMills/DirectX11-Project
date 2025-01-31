@@ -777,7 +777,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     // Collisions
     if (_cubes[1].GetPhysicsModel()->IsCollideable() && _cubes[2].GetPhysicsModel()->IsCollideable())
     {
-        // Allows for collision between cube 0 and 1
+        // Allows for collision between cube 1 and 2
         _cubes[1].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[2].GetPhysicsModel()->GetCollider());
         _cubes[2].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
 
@@ -791,7 +791,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         //Dot Product of Relative Velocity and Collision Normal
         float dotProduct = _maths->Dot(collisionNormal, relativeVelocity);
 
-        // Sphere Collisions
+        // Sphere Collisions (should work, but unable to get reference to Radius as the collider is abstract, therefore will not always have a GetRadius() function)
         //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
             //_cubes[1].GetPhysicsModel()->GetCollider()->GetRadius();
 
@@ -801,9 +801,6 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         if (dotProduct < 0.0f)
         {
             float restitution = 0.8f;
-
-            //Coefficient of Restitution
-            //float e = _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude() - _cubes[2].GetPhysicsModel()->GetVelocity().Magnitude();
 
             // Total Velocity of Collision = Coefficient of Restitution * Dot Product
             float vj = -(1.0f + restitution) * dotProduct;
