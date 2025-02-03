@@ -45,4 +45,6 @@ public:
 
     void AddRelativeForce(Vector3 force, Vector3 point) override;
     //void CalculateAngularVelocity();
+
+    virtual void Update(float deltaTime) override;
 };

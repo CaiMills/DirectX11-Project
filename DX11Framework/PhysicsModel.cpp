@@ -26,6 +26,10 @@ void PhysicsModel::Update(float deltaTime)
 {
 	Vector3 position = _transform->GetPosition();
 
+	if (_mass == 0)
+	{
+		return;
+	}
 	if (_simulateGravity)
 	{
 		_netForce += GravityForce();
@@ -39,7 +43,6 @@ void PhysicsModel::Update(float deltaTime)
 		_velocity += _acceleration * deltaTime;
 		position += _velocity * deltaTime;
 	}
-
 	_acceleration += _netForce / _mass;
 	_velocity += _acceleration * deltaTime;
 	position += _velocity * deltaTime;

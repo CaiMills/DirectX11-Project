@@ -21,22 +21,24 @@ public:
 	PhysicsModel(Transform* transform);
 	~PhysicsModel();
 
+	// Collider Functionality
 	bool IsCollideable() const { return _collider != nullptr; }
 	void SetCollider(Collider* collider) { _collider = collider; }
 	Collider* GetCollider() const { return _collider; }
 
+	// Mass Functionality
+	virtual void SetMass(float mass) = 0;
+	float GetMass() const { return _mass; }
+	float GetInverseMass() { if (_mass == 0) return 0; return 1.0f / _mass; }
+
+	// Set Forces
 	Vector3 GravityForce();
 	void SetVelocity(Vector3 velocity, bool constVelocity) { _velocity = velocity, _constVelocity = constVelocity; }
 	Vector3 GetVelocity() const { return _velocity; }
 	void SetAcceleration(Vector3 acceleration, bool constAccelerate) { _acceleration = acceleration, _constAccelerate = constAccelerate; }
 	Vector3 GetAcceleration() const { return _acceleration; }
-	float GetMass() const { return _mass; }
-	float GetInverseMass() const 
-	{ 
-		if (_mass > 0) return 1 / _mass;
-		else return 0;
-	}
 
+	// Apply Forces
 	virtual void AddForce(Vector3 force) { _netForce += force; }
 	virtual void ApplyImpulse(Vector3 impulse) { _velocity += impulse; }
 	virtual void AddRelativeForce(Vector3 force, Vector3 point) = 0;

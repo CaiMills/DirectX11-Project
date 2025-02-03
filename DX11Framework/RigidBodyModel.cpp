@@ -16,6 +16,16 @@ void RigidBodyModel::AddRelativeForce(Vector3 force, Vector3 point)
 
 //void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
 //{
+// 	if (_mass == 0)
+//{
+	//return;
+//}
 	//XMFLOAT3X3 angularAcceleration = XMMatrixInverse(_inertiaTensor) * XMVector3Transform(_torque);
 	//_angularVelocity += angularAcceleration * deltaTime;
 //}
+
+void RigidBodyModel::Update(float deltaTime)
+{
+	// Linear F=MA 
+	PhysicsModel::Update(deltaTime);
+}
