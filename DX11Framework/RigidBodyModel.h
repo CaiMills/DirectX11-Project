@@ -12,6 +12,8 @@ private:
 public:
     RigidBodyModel(Transform* transform) : PhysicsModel(transform) 
     {
+        _mass = 1.0f;
+
         // Sets the Inertia Tensor to Identity Matrix by default
         XMMATRIX identity = XMMatrixIdentity();
         XMStoreFloat3x3(&_inertiaTensor, identity);

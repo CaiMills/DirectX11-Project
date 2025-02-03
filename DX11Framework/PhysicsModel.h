@@ -9,7 +9,7 @@ class PhysicsModel abstract
 protected:
 	Transform* _transform;
 	Collider* _collider = nullptr;
-	float _mass = 1.0f;
+	float _mass;
 	bool _simulateGravity = false;
 
 	Vector3 _velocity = Vector3();
