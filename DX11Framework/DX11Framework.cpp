@@ -638,6 +638,8 @@ void DX11Framework::Update()
 
 void DX11Framework::ResolveCollisions()
 {
+    CollisionManifold manifold;
+
     Transform* objATransform = _cubes[1].GetTransform();
     Transform* objBTransform = _cubes[2].GetTransform();
 
@@ -645,11 +647,10 @@ void DX11Framework::ResolveCollisions()
     PhysicsModel* objB = _cubes[2].GetPhysicsModel();
 
     if (objA->IsCollideable() && objB->IsCollideable() &&
-        objA->GetCollider()->CollidesWith(*objB->GetCollider()))
+        objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold))
     {
         // Normalise Calculation
-        Vector3 collisionNormal = _cubes[2].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
-        collisionNormal = _maths->Normalise(collisionNormal);
+        Vector3 collisionNormal = manifold.collisionNormal;
 
         // Velocity Calculation
         Vector3 relativeVelocity = _cubes[2].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
@@ -678,6 +679,8 @@ void DX11Framework::ResolveCollisions()
             DebugPrintF("Collided\n");
         }
     }
+    // Resets the manifold for the next collision
+    manifold = CollisionManifold();
 }
 
 void DX11Framework::RendererUpdates(float deltaTime)
@@ -801,16 +804,6 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
 #pragma region GeneralGOControls
-    // END / NUMPAD 1 - Rotation Right
-    if (GetAsyncKeyState(0x23) & 0X0001 || GetAsyncKeyState(0x67) & 0X0001)
-    {
-        //NEED TO ADD
-    }
-    // HOME / NUMPAD 7 - Rotation Left
-    if (GetAsyncKeyState(0x24) & 0X0001 || GetAsyncKeyState(0x61) & 0X0001)
-    {
-        //NEED TO ADD
-    }
     // INSERT / NUMPAD 0 - Stop All Velocity
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {

@@ -1,5 +1,7 @@
 #pragma once
 #include <windows.h>
+#include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
+#include <atlstr.h> // to use CString.
 #include <cstring>
 #include <d3d11.h>
 #include <d3d11_4.h>
@@ -9,8 +11,6 @@
 #include "JSON\json.hpp"
 #include <string>
 #include <locale>
-#include <codecvt> // Needed for older compilers (deprecated in C++17, but useful here)
-#include <atlstr.h> // to use CString.
 #include "Vector3.h"
 #include <cstring>
 #include "Debug.h"
@@ -64,6 +64,19 @@ struct MeshData
 	UINT VBStride;
 	UINT VBOffset;
 	UINT IndexCount;
+};
+
+struct ContactPoint
+{
+	Vector3 Position;
+	float penetrationDepth;
+};
+
+struct CollisionManifold
+{
+	int contactPointCount = 0;
+	ContactPoint points[4];
+	Vector3 collisionNormal;
 };
 
 // Mask namespace for shorthand

@@ -43,6 +43,7 @@ public:
         //_inertiaTensor._33 = (1.0f / 12.0f) * _mass * pow(_transform->GetScale().x / 2, 2) + pow(_transform->GetScale().y / 2, 2);
     };
 
+    void SetMass(float mass) override { _mass = mass; };
     void AddRelativeForce(Vector3 force, Vector3 point) override;
     //void CalculateAngularVelocity();
 

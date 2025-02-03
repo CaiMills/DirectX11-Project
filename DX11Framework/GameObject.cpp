@@ -4,7 +4,7 @@ GameObject::GameObject()
 {
 	_appearance = nullptr;
 	_transform = new Transform();
-	_physicsModel = new ParticleModel(_transform);
+	_physicsModel = new RigidBodyModel(_transform);
 }
 
 GameObject::~GameObject()
