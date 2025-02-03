@@ -115,5 +115,6 @@ public:
 	void InitLighting();
 	void InitGameObjects();
 	void Update();
+	void ResolveCollisions();
 	void Draw();
 };

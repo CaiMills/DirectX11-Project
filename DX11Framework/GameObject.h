@@ -20,8 +20,8 @@ public:
 	GameObject();
 	~GameObject();
 
-	void SetAppearance(Appearance* appearance) { _appearance = appearance; }
 	void SetType(string type) { _type = type; }
+	void SetAppearance(Appearance* appearance) { _appearance = appearance; }
 
 	string GetType() const { return _type; }
 	Appearance* GetAppearance() { return _appearance; }

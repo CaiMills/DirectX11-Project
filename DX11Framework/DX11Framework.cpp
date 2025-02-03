@@ -632,7 +632,52 @@ void DX11Framework::Update()
     _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
+    ResolveCollisions();
     Keybinds();
+}
+
+void DX11Framework::ResolveCollisions()
+{
+    Transform* objATransform = _cubes[1].GetTransform();
+    Transform* objBTransform = _cubes[2].GetTransform();
+
+    PhysicsModel* objA = _cubes[1].GetPhysicsModel();
+    PhysicsModel* objB = _cubes[2].GetPhysicsModel();
+
+    if (objA->IsCollideable() && objB->IsCollideable() &&
+        objA->GetCollider()->CollidesWith(*objB->GetCollider()))
+    {
+        // Normalise Calculation
+        Vector3 collisionNormal = _cubes[2].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
+        collisionNormal = _maths->Normalise(collisionNormal);
+
+        // Velocity Calculation
+        Vector3 relativeVelocity = _cubes[2].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
+
+        //Dot Product of Relative Velocity and Collision Normal
+        float dotProduct = _maths->Dot(collisionNormal, relativeVelocity);
+
+        if (dotProduct < 0.0f)
+        {
+            float restitution = 0.2f;
+
+            float invMassA = objA->GetInverseMass();
+            float invMassB = objB->GetInverseMass();
+            float invMassSum = invMassA + invMassB;
+
+            // Total Velocity of Collision = Coefficient of Restitution * Dot Product
+            float vj = -(1.0f + restitution) * dotProduct;
+
+            // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
+            float j = vj / invMassSum;
+
+            // Linear Velocity
+            objA->ApplyImpulse(invMassA * j * collisionNormal);
+            objB->ApplyImpulse(-(invMassB * j * collisionNormal)); //reversed
+
+            DebugPrintF("Collided\n");
+        }
+    }
 }
 
 void DX11Framework::RendererUpdates(float deltaTime)
@@ -773,48 +818,6 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
     }
 #pragma endregion
-
-    // Collisions
-    if (_cubes[1].GetPhysicsModel()->IsCollideable() && _cubes[2].GetPhysicsModel()->IsCollideable())
-    {
-        // Allows for collision between cube 1 and 2
-        _cubes[1].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[2].GetPhysicsModel()->GetCollider());
-        _cubes[2].GetPhysicsModel()->GetCollider()->CollidesWith(*_cubes[1].GetPhysicsModel()->GetCollider());
-
-        // Normalise Calculation
-        Vector3 collisionNormal = _cubes[2].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition();
-        collisionNormal = _maths->Normalise(collisionNormal);
-
-        // Velocity Calculation
-        Vector3 relativeVelocity = _cubes[2].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
-
-        //Dot Product of Relative Velocity and Collision Normal
-        float dotProduct = _maths->Dot(collisionNormal, relativeVelocity);
-
-        // Sphere Collisions (should work, but unable to get reference to Radius as the collider is abstract, therefore will not always have a GetRadius() function)
-        //float depth = (_cubes[0].GetTransform()->GetPosition() - _cubes[1].GetTransform()->GetPosition()) - _cubes[0].GetPhysicsModel()->GetCollider()->GetRadius() -
-            //_cubes[1].GetPhysicsModel()->GetCollider()->GetRadius();
-
-        //collisionNormal = collisionNormal * depth * _cubes[0].GetPhysicsModel()->GetInverseMass() * _cubes[1].GetPhysicsModel()->GetInverseMass();
-
-        // Checks if objects are approaching each other
-        if (dotProduct < 0.0f)
-        {
-            float restitution = 0.8f;
-
-            // Total Velocity of Collision = Coefficient of Restitution * Dot Product
-            float vj = -(1.0f + restitution) * dotProduct;
-
-            // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
-            float j = vj / (_cubes[1].GetPhysicsModel()->GetInverseMass() + _cubes[2].GetPhysicsModel()->GetInverseMass());
-
-            // Linear Velocity
-            _cubes[1].GetPhysicsModel()->ApplyImpulse(j* collisionNormal);
-            _cubes[2].GetPhysicsModel()->ApplyImpulse(-j * collisionNormal); //reversed
-
-            DebugPrintF("Collided\n");
-        }
-    }
 
     // Update objects
     for (GameObject* go : _gameObjects)

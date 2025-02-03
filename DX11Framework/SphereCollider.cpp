@@ -3,7 +3,7 @@
 
 bool SphereCollider::CollidesWith(SphereCollider& other)
 {
-	// Sphere Collision
+	// Sphere Collision ( it may need to be put into a sqrt())
 	float distance = pow(GetPosition().x - other.GetPosition().x, 2) +
 		pow(GetPosition().y - other.GetPosition().y, 2) +
 		pow(GetPosition().z - other.GetPosition().z, 2);
