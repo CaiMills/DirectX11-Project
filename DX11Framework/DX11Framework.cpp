@@ -427,7 +427,7 @@ HRESULT DX11Framework::InitRunTimeData()
         //_cubes[i].GetPhysicsModel()->SetCollider(collider);
 
         // Sphere Collider
-        collider = new SphereCollider(_cubes[i].GetTransform(), 2.0f);
+        collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
         _cubes[i].GetPhysicsModel()->SetCollider(collider);
 
         _gameObjects.push_back(&_cubes[i]);
@@ -650,31 +650,33 @@ void DX11Framework::ResolveCollisions()
         objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold))
     {
         // Normalise Calculation
-        Vector3 collisionNormal = manifold.collisionNormal;
+        Vector3 collisionNormal = _cubes[1].GetTransform()->GetPosition() - _cubes[2].GetTransform()->GetPosition();
+        collisionNormal.Normalize();
+
+        //Vector3 collisionNormal = manifold.collisionNormal; //This does not work for some reason
 
         // Velocity Calculation
-        Vector3 relativeVelocity = _cubes[2].GetPhysicsModel()->GetVelocity() - _cubes[1].GetPhysicsModel()->GetVelocity();
+        Vector3 relativeVelocity = _cubes[1].GetPhysicsModel()->GetVelocity() - _cubes[2].GetPhysicsModel()->GetVelocity();
 
-        //Dot Product of Relative Velocity and Collision Normal
-        float dotProduct = _maths->Dot(collisionNormal, relativeVelocity);
+        // Inverse Mass
+        float invMassA = objA->GetInverseMass();
+        float invMassB = objB->GetInverseMass();
+        float invMassSum = invMassA + invMassB;
 
-        if (dotProduct < 0.0f)
+        if (collisionNormal * relativeVelocity < 0.0f)
         {
+            // This currently isnt used (-1 + restitution)
             float restitution = 0.2f;
 
-            float invMassA = objA->GetInverseMass();
-            float invMassB = objB->GetInverseMass();
-            float invMassSum = invMassA + invMassB;
-
             // Total Velocity of Collision = Coefficient of Restitution * Dot Product
-            float vj = -(1.0f + restitution) * dotProduct;
+            float vj = collisionNormal * relativeVelocity;
 
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
 
             // Linear Velocity
-            objA->ApplyImpulse(invMassA * j * collisionNormal);
-            objB->ApplyImpulse(-(invMassB * j * collisionNormal)); //reversed
+            objA->ApplyImpulse(-(invMassA * j * collisionNormal));
+            objB->ApplyImpulse(invMassB * j * collisionNormal); //reversed
 
             DebugPrintF("Collided\n");
         }
