@@ -392,7 +392,7 @@ HRESULT DX11Framework::InitRunTimeData()
     //_skybox->SetAppearance(appearance);
 
     // Geometry
-    mesh->CreatePlane();
+    mesh->SetMeshData(mesh->CreatePlane());
     appearance = new Appearance(mesh);
     CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &texture);
     appearance->SetTexture(texture);
@@ -408,7 +408,7 @@ HRESULT DX11Framework::InitRunTimeData()
     // Cubes
     for (auto i = 0; i < 4; i++)
     {
-        mesh->CreateCube(false);
+        mesh->SetMeshData(mesh->CreateCube(false));
         appearance = new Appearance(mesh);
 
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);

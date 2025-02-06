@@ -137,7 +137,6 @@
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="DX11Framework.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -175,7 +174,6 @@
     <ClInclude Include="DX11Framework.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />
-    <ClInclude Include="Maths.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="ParticleModel.h" />
     <ClInclude Include="PhysicsModel.h" />
