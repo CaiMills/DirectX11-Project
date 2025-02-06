@@ -23,7 +23,8 @@ public:
 
 	void SetRotation(Vector3 rotation) { _orientation = MakeQFromEulerAngles(rotation.x, rotation.y, rotation.z); }
 	Vector3 GetRotation() const { return MakeEulerAnglesFromQ(_orientation); }
-	Quaternion GetOrientation(Quaternion orientation) { _orientation = orientation; }
+	void SetOrientation(Quaternion orientation) { _orientation = orientation; }
+	Quaternion GetOrientation() const { return _orientation; }
 
 	XMMATRIX GetWorldMatrix() const { return XMLoadFloat4x4(&_world); }
 

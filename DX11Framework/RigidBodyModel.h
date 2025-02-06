@@ -6,48 +6,18 @@ class RigidBodyModel : public PhysicsModel
 private:
     Vector3 _torque = Vector3();
     XMFLOAT3X3 _inertiaTensor;
-    float _angularDamping = 0.99f;
+    float _angularDamping = 0.99f; // 1 means it will never stop rotating, 0 means it will stop instantly
     Vector3 _angularVelocity = Vector3();
+    Transform* _transform = nullptr;
 
 public:
-    RigidBodyModel(Transform* transform) : PhysicsModel(transform) 
-    {
-        _mass = 1.0f;
+    RigidBodyModel(Transform* transform) : PhysicsModel(transform) {};
 
-        // Sets the Inertia Tensor to Identity Matrix by default
-        XMMATRIX identity = XMMatrixIdentity();
-        XMStoreFloat3x3(&_inertiaTensor, identity);
+    void SetMass(float mass) override { _mass = mass; }
+    Transform* GetTransform() { return _transform; }
 
-        //// Circle
-        //_inertiaTensor._11 = (2.0f / 5.0f) * _mass * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
-        //_inertiaTensor._12 = 0;
-        //_inertiaTensor._13 = 0;
-
-        //_inertiaTensor._21 = 0;
-        //_inertiaTensor._22 = (2.0f / 5.0f) * _mass * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
-        //_inertiaTensor._23 = 0;
-
-        //_inertiaTensor._31 = 0;
-        //_inertiaTensor._32 = 0;
-        //_inertiaTensor._33 = (2.0f / 5.0f) * _mass * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
-
-        //// Box 
-        //_inertiaTensor._11 = (1.0f / 12.0f) * _mass * pow(_transform->GetScale().y / 2, 2) + pow(_transform->GetScale().z / 2, 2);
-        //_inertiaTensor._12 = 0;
-        //_inertiaTensor._13 = 0;
-
-        //_inertiaTensor._21 = 0;
-        //_inertiaTensor._22 = (1.0f / 12.0f) * _mass * pow(_transform->GetScale().x / 2, 2) + pow(_transform->GetScale().z / 2, 2);
-        //_inertiaTensor._23 = 0;
-
-        //_inertiaTensor._31 = 0;
-        //_inertiaTensor._32 = 0;
-        //_inertiaTensor._33 = (1.0f / 12.0f) * _mass * pow(_transform->GetScale().x / 2, 2) + pow(_transform->GetScale().y / 2, 2);
-    };
-
-    void SetMass(float mass) override { _mass = mass; };
     void AddRelativeForce(Vector3 force, Vector3 point) override;
-    //void CalculateAngularVelocity();
+    void CalculateAngularVelocity();
 
     virtual void Update(float deltaTime) override;
 };
