@@ -408,7 +408,8 @@ HRESULT DX11Framework::InitRunTimeData()
     // Cubes
     for (auto i = 0; i < 4; i++)
     {
-        mesh->SetMeshData(mesh->CreateCube(false));
+        mesh = new Mesh();
+        mesh->SetMeshData(mesh->CreateCube());
         appearance = new Appearance(mesh);
 
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);

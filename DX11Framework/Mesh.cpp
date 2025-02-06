@@ -7,7 +7,7 @@ Mesh::Mesh()
 
 Mesh::Mesh(MeshData* meshData) : _meshData(meshData)
 {
-    SetMinAndMax();
+
 }
 
 Mesh::~Mesh()
@@ -16,7 +16,120 @@ Mesh::~Mesh()
     _vertexBuffer = nullptr;
 }
 
-MeshData* Mesh::CreateCube(bool inverted)
+MeshData* Mesh::CreateCube()
+{
+    D3D11_BUFFER_DESC bufferDesc;
+    D3D11_SUBRESOURCE_DATA InitData;
+
+    SimpleVertex CubeVertices[] =
+    {
+        // Top face
+        // Position                       // Normal                       // Texture Coords
+        { XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT2(0.0f, 0.0f)},
+
+        // Front face
+        // Position                       // Normal                       // Texture Coords                 
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT2(0.0f, 0.0f)},
+
+        // Left face
+        // Position                       // Normal                       // Texture Coords
+        { XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT3(1.0f, 1.0f, -1.0f),    XMFLOAT2(0.0f, 0.0f)},
+
+        // Right face
+        // Position                       // Normal                       // Texture Coords                     
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT3(-1.0f, 1.0f, -1.0f),   XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 0.0f)},
+
+        // Back face
+        // Position                       // Normal                       // Texture Coords
+        { XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT3(1.0f, 1.0f, 1.0f),     XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT3(-1.0f, 1.0f, 1.0f),    XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT2(0.0f, 0.0f)},
+
+        // Bottom face
+        // Position                       // Normal                       // Texture Coords                
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT3(-1.0f, -1.0f, -1.0f),  XMFLOAT2(1.0f, 0.0f)},
+        { XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT3(1.0f, -1.0f, -1.0f),   XMFLOAT2(1.0f, 1.0f)},
+        { XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT3(1.0f, -1.0f, 1.0f),    XMFLOAT2(0.0f, 1.0f)},
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 0.0f)},
+    };
+
+    // Cube Vertex Initialization
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(SimpleVertex) * 24;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = CubeVertices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    WORD CubeIndices[] =
+    {
+        // Top
+        0, 1, 3,
+        3, 1, 2,
+
+        // Front
+        6, 4, 5,
+        7, 4, 6,
+
+        // Right
+        8, 9, 11,
+        11, 9, 10,
+
+        // Left
+        14, 12, 13,
+        15, 12, 14,
+
+        // Back
+        18, 16, 17,
+        19, 16, 18,
+
+        // Bottom
+        22, 20, 21,
+        23, 20, 22
+    };
+
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(WORD) * 36;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = CubeIndices;
+
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+
+    // Creates the Mesh
+    _meshData->IndexBuffer = _indexBuffer;
+    _meshData->VertexBuffer = _vertexBuffer;
+    _meshData->IndexCount = 36;
+    _meshData->VBOffset = 0;
+    _meshData->VBStride = sizeof(SimpleVertex);
+
+    return _meshData;
+}
+
+MeshData* Mesh::CreateInvertedCube()
 {
     D3D11_BUFFER_DESC bufferDesc;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -82,90 +195,45 @@ MeshData* Mesh::CreateCube(bool inverted)
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    if (_isInverted)
+    WORD CubeIndices[] =
     {
-        WORD CubeIndices[] =
-        {
-            // Top
-            3, 1, 0,
-            2, 1, 3,
-
-            // Front
-            5, 4, 6,
-            6, 4, 7,
-
-            // Right
-            11, 9, 8,
-            10, 9, 11,
-
-            // Left
-            13, 12, 14,
-            14, 12, 15,
-
-            // Back
-            17, 16, 18,
-            18, 16, 19,
-
-            // Bottom
-            21, 20, 22,
-            22, 20, 23
-        };
-
-        // Cube Index Initialization
-        // ByteWidth gets the length of the indices and reserves the correct amount of data for it to be loaded
-        bufferDesc.ByteWidth = sizeof(SimpleVertex);
-        // Immutable means unchangable, meaning that this data cant be altered during runtime
-        bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        // This tells the GPU that its specifically an index buffer, and so it uses the correct specifications for indicies
-        bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        bufferDesc.CPUAccessFlags = 0;
-
-        ZeroMemory(&InitData, sizeof(InitData));
-        InitData.pSysMem = CubeIndices;
-
-        _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
-    }
-    else if (!_isInverted)
-    {
-        WORD CubeIndices[] =
-        {
         // Top
-        0, 1, 3,
-        3, 1, 2,
+        3, 1, 0,
+        2, 1, 3,
 
         // Front
-        6, 4, 5,
-        7, 4, 6,
+        5, 4, 6,
+        6, 4, 7,
 
         // Right
-        8, 9, 11,
-        11, 9, 10,
+        11, 9, 8,
+        10, 9, 11,
 
         // Left
-        14, 12, 13,
-        15, 12, 14,
+        13, 12, 14,
+        14, 12, 15,
 
         // Back
-        18, 16, 17,
-        19, 16, 18,
+        17, 16, 18,
+        18, 16, 19,
 
         // Bottom
-        22, 20, 21,
-        23, 20, 22
-        };
+        21, 20, 22,
+        22, 20, 23
+    };
 
-        ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 
-        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        bufferDesc.ByteWidth = sizeof(WORD) * 36;
-        bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(WORD) * 36;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
 
-        ZeroMemory(&InitData, sizeof(InitData));
-        InitData.pSysMem = CubeIndices;
+    ZeroMemory(&InitData, sizeof(InitData));
+    InitData.pSysMem = CubeIndices;
 
-        _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
-    }
+    _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
+
     // Creates the Mesh
     _meshData->IndexBuffer = _indexBuffer;
     _meshData->VertexBuffer = _vertexBuffer;

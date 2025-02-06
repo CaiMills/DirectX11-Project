@@ -15,7 +15,6 @@ private:
 	ID3D11Buffer* _indexBuffer = nullptr;
 	Vector3 _max = Vector3();
 	Vector3 _min = Vector3();
-	bool _isInverted = false;
 
 public:
 	// Two constructors, in case the mesh data already exists from an external file
@@ -26,7 +25,8 @@ public:
 	void SetMeshData(MeshData* meshData) { _meshData = meshData; }
 	MeshData* GetMeshData() const { return _meshData; }
 
-	MeshData* CreateCube(bool inverted);
+	MeshData* CreateCube();
+	MeshData* CreateInvertedCube();
 	MeshData* CreatePyramid();
 	MeshData* CreatePlane();
 
