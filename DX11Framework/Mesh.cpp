@@ -369,6 +369,7 @@ MeshData* Mesh::CreatePlane()
     return _meshData;
 }
 
+// This currently doesnt work
 void Mesh::SetMinAndMax()
 {
     //// Write constant buffer data onto GPU
