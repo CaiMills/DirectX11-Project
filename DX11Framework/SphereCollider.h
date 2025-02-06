@@ -13,6 +13,6 @@ public:
 	virtual bool CollidesWith(BoxCollider& other, CollisionManifold& out) override;
 	virtual bool CollidesWith(PlaneCollider& other, CollisionManifold& out) override;
 
-	float GetRadius() const { return _radius; }
+	virtual float GetRadius() override { return _radius; }
 };
 

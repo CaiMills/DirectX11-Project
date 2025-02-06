@@ -19,6 +19,8 @@ public:
 	virtual bool CollidesWith(BoxCollider& other, CollisionManifold& out) = 0;
 	virtual bool CollidesWith(PlaneCollider& other, CollisionManifold& out) = 0;
 
+	virtual float GetRadius() = 0;
+
 	Vector3 GetPosition() const { return _transform->GetPosition(); }
 };
 
