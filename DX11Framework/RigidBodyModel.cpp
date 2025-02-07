@@ -72,9 +72,9 @@ void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
     XMVECTOR angularAcceleration = XMVector3Transform(torqueVector, inertiaMatrix);
 
     // Calculates the Angular Velocity
-    //Vector3 angularVelocity = angularVelocity + Vector3(XMVectorGetX(angularAcceleration), XMVectorGetY(angularAcceleration), XMVectorGetZ(angularAcceleration)) * deltaTime;
+    Vector3 angularVelocity = angularVelocity + Vector3(XMVectorGetX(angularAcceleration), XMVectorGetY(angularAcceleration), XMVectorGetZ(angularAcceleration));
 
-    //// New Orientation is Calculation (Not sure its meant to placed here)
+    //// New Orientation is Calculation (Not sure its meant to be placed here)
     //Quaternion currentOrientation = GetTransform()->GetOrientation();
     //Quaternion newOrientation = currentOrientation + deltaTime / 2 * angularVelocity * currentOrientation;
     //if (newOrientation.Magnitude() != 0)
