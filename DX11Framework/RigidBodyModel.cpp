@@ -7,7 +7,7 @@ RigidBodyModel::RigidBodyModel(Transform* transform) : PhysicsModel(transform)
 
     // Sets the Inertia Tensor to Identity Matrix by default
     XMMATRIX identity = XMMatrixIdentity();
-    _inertiaTensor = XMStoreFloat3x3(&_inertiaTensor, XMMatrixIdentity());
+    XMStoreFloat3x3(&_inertiaTensor, XMMatrixIdentity());
 
     // If the object has a circle collider, as otherwise the radius will be default 0
     if (GetCollider()->GetRadius() > 0.0f)
@@ -67,13 +67,19 @@ void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
     XMVECTOR torqueVector = XMLoadFloat3(&XMFLOAT3(_torque.x, _torque.y, _torque.z));
     XMVECTOR angularAcceleration = XMVector3Transform(torqueVector, inertiaMatrix);
 
-    // Calculates the Angular Velocity, whilst also accounting for dampening overtime
+    // Calculates the Angular Velocity
 	Vector3 angularVelocity = angularVelocity + Vector3(XMVectorGetX(angularAcceleration), XMVectorGetY(angularAcceleration), XMVectorGetZ(angularAcceleration)) * deltaTime;
-    angularVelocity *= pow(_angularDamping, deltaTime);
 
     // New Orientation is Calculation (Not sure its meant to placed here)
-    Quaternion newOrientation = GetTransform()->GetOrientation() + deltaTime / 2 * angularVelocity * GetTransform()->GetOrientation();
-    GetTransform()->SetOrientation(newOrientation);
+    Quaternion currentOrientation = GetTransform()->GetOrientation();
+    Quaternion newOrientation = currentOrientation + deltaTime / 2 * angularVelocity * currentOrientation;
+    if (newOrientation.Magnitude() != 0)
+    {
+        newOrientation = newOrientation / newOrientation.Magnitude();
+        GetTransform()->SetOrientation(newOrientation);
+    }
+    // Dampens the Angular Velocity overtime
+    angularVelocity *= pow(_angularDamping, deltaTime);
 }
 
 void RigidBodyModel::Update(float deltaTime)
