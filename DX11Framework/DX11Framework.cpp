@@ -675,20 +675,26 @@ void DX11Framework::ResolveCollisions()
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
 
-            // This only applies if both objects has a sphere collider
-            float depth = 0.0f;
+            //// This only applies if both objects has a sphere collider
+            //if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
+            //{
+            //    float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
+            //    float depth = (objATransform->GetPosition() - objBTransform->GetPosition()) - radiiSum;
 
-            if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
+            //    // Linear Velocity
+            //    objA->ApplyImpulse(-(invMassA * j * collisionNormal * depth));
+            //    objB->ApplyImpulse(invMassB * j * collisionNormal * depth); //reversed
+
+            //    DebugPrintF("Collided\n");
+            //}
+            //else
             {
-                float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
-                depth = (objATransform - objBTransform) - radiiSum;
+                // Linear Velocity
+                objA->ApplyImpulse(-(invMassA * j * collisionNormal));
+                objB->ApplyImpulse(invMassB * j * collisionNormal); //reversed
+
+                DebugPrintF("Collided\n");
             }
-
-            // Linear Velocity
-            objA->ApplyImpulse(-(invMassA * j * collisionNormal * depth));
-            objB->ApplyImpulse(invMassB * j * collisionNormal * depth); //reversed
-
-            DebugPrintF("Collided\n");
         }
     }
     // Resets the manifold for the next collision

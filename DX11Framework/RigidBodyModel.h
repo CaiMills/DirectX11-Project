@@ -11,7 +11,7 @@ private:
     Transform* _transform = nullptr;
 
 public:
-    RigidBodyModel(Transform* transform) : PhysicsModel(transform) {};
+    RigidBodyModel(Transform* transform);
 
     void SetMass(float mass) override { _mass = mass; }
     Transform* GetTransform() { return _transform; }
