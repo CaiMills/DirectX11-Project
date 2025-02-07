@@ -66,12 +66,12 @@ void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
     {
         return;
     }
-    //// Converts Inertia Tensor into a ,atrix which is effected by the Torque variable, which is converted to a Vector
-    //XMMATRIX inertiaMatrix = XMMatrixInverse(nullptr , XMLoadFloat3x3(&_inertiaTensor));
-    //XMVECTOR torqueVector = XMLoadFloat3(&XMFLOAT3(_torque.x, _torque.y, _torque.z));
-    //XMVECTOR angularAcceleration = XMVector3Transform(torqueVector, inertiaMatrix);
+    // Converts Inertia Tensor into a ,atrix which is effected by the Torque variable, which is converted to a Vector
+    XMVECTOR torqueVector = XMVectorSet(_torque.x, _torque.y, _torque.z, 1.0f);
+    XMMATRIX inertiaMatrix = XMMatrixInverse(nullptr , XMLoadFloat3x3(&_inertiaTensor));
+    XMVECTOR angularAcceleration = XMVector3Transform(torqueVector, inertiaMatrix);
 
-    //// Calculates the Angular Velocity
+    // Calculates the Angular Velocity
     //Vector3 angularVelocity = angularVelocity + Vector3(XMVectorGetX(angularAcceleration), XMVectorGetY(angularAcceleration), XMVectorGetZ(angularAcceleration)) * deltaTime;
 
     //// New Orientation is Calculation (Not sure its meant to placed here)
