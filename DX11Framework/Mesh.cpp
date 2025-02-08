@@ -179,8 +179,6 @@ MeshData* Mesh::CreateInvertedCube()
         { XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT3(-1.0f, -1.0f, 1.0f),   XMFLOAT2(0.0f, 0.0f)},
     };
 
-    SetMinAndMax();
-
     // Cube Vertex Initialization
     ZeroMemory(&bufferDesc, sizeof(bufferDesc));
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
