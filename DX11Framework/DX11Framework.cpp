@@ -306,7 +306,8 @@ HRESULT DX11Framework::InitPipelineVariables()
     dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-    _device->CreateDepthStencilState(&dssDesc, &_DSLessEqual);
+    hr = _device->CreateDepthStencilState(&dssDesc, &_DSLessEqual);
+    if (FAILED(hr)) { return hr; }
 
     // Skybox Depth Stencil State
     D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
@@ -314,7 +315,8 @@ HRESULT DX11Framework::InitPipelineVariables()
     dsDescSkybox.DepthEnable = true;
     dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
-    _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
+    if (FAILED(hr)) { return hr; }
 
     // Rasterizer
     // Wireframe State
@@ -323,6 +325,7 @@ HRESULT DX11Framework::InitPipelineVariables()
     cmdesc.FillMode = D3D11_FILL_WIREFRAME;
     cmdesc.CullMode = D3D11_CULL_NONE;
     hr = _device->CreateRasterizerState(&cmdesc, &_wireframeState);
+    if (FAILED(hr)) { return hr; }
 
     // Fill State
     ZeroMemory(&cmdesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -330,6 +333,7 @@ HRESULT DX11Framework::InitPipelineVariables()
     cmdesc.CullMode = D3D11_CULL_BACK;
     cmdesc.FrontCounterClockwise = true;
     hr = _device->CreateRasterizerState(&cmdesc, &_fillState);
+    if (FAILED(hr)) { return hr; }
 
     cmdesc.FrontCounterClockwise = false;
     hr = _device->CreateRasterizerState(&cmdesc, &_fillState);
