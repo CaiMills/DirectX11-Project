@@ -179,6 +179,8 @@ HRESULT DX11Framework::CreateSwapChainAndFrameBuffer()
 HRESULT DX11Framework::InitShadersAndInputLayout()
 {
     HRESULT hr = S_OK;
+    ID3DBlob* vsBlob;
+    ID3DBlob* psBlob;
     ID3DBlob* errorBlob;
 
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -189,7 +191,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     // the release configuration of this program.
     dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
-    ID3DBlob* vsBlob;
 
     // Skybox
     // Compile the vertex shader
@@ -200,7 +201,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         errorBlob->Release();
         return hr;
     }
-
     // Create the vertex shader
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_skyboxVertexShader);
     if (FAILED(hr))
@@ -208,30 +208,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
         vsBlob->Release();
         return hr;
     }
-
-    // Standard
-    // Compile the vertex shader
-    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-
-    // Create the vertex shader
-    hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
-    if (FAILED(hr))
-    {
-        vsBlob->Release();
-        return hr;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ID3DBlob* psBlob;
-
-    // Skybox
     // Compile the pixel shader
     hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
@@ -242,23 +218,12 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     }
     // Create the pixel shader
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_skyboxPixelShader);
-    if (FAILED(hr)) { return hr; }
-
-    // Standard
-    // Compile the pixel shader
-    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
     if (FAILED(hr))
     {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
+        psBlob->Release();
         return hr;
     }
-    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
-    if (FAILED(hr)) { return hr; }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Skybox
     // Define the input layout
     D3D11_INPUT_ELEMENT_DESC skyboxInputElementDesc[] =
     {
@@ -269,7 +234,40 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     //hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_skyboxInputLayout);
     //if (FAILED(hr)) { return hr; }
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     // Standard
+    // Compile the vertex shader
+    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+    // Create the vertex shader
+    hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
+    if (FAILED(hr))
+    {
+        vsBlob->Release();
+        return hr;
+    }
+    // Compile the pixel shader
+    hr = D3DCompileFromFile(L"SimpleShaders.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+    // Create the pixel shader
+    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
+    if (FAILED(hr))
+    {
+        psBlob->Release();
+        return hr;
+    }
+
     // Define the input layout
     D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
     {
@@ -280,6 +278,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     //Create the input layout
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
     if (FAILED(hr)) { return hr; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     vsBlob->Release();
     psBlob->Release();
