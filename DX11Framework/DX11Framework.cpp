@@ -656,11 +656,11 @@ void DX11Framework::ResolveCollisions()
 {
     CollisionManifold manifold;
 
-    Transform* objATransform = _cubes[1].GetTransform();
-    Transform* objBTransform = _cubes[2].GetTransform();
+    Transform* objATransform = _cubes[0].GetTransform();
+    Transform* objBTransform = _cubes[1].GetTransform();
 
-    PhysicsModel* objA = _cubes[1].GetPhysicsModel();
-    PhysicsModel* objB = _cubes[2].GetPhysicsModel();
+    PhysicsModel* objA = _cubes[0].GetPhysicsModel();
+    PhysicsModel* objB = _cubes[1].GetPhysicsModel();
 
     if (objA->IsCollideable() && objB->IsCollideable() &&
         objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold))
@@ -818,9 +818,8 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
-        _cubes[2].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
@@ -842,6 +841,12 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
+    }
+    // Q - Apply Relative Force
+    if (GetAsyncKeyState(0x51) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
+    {
+        _cubes[0].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
+        _cubes[1].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
     }
 #pragma endregion
 
@@ -907,7 +912,6 @@ void DX11Framework::Draw()
     {
         gameObject->Draw();
     }
-
     // Skybox
     // Sets the Skybox Input Assembler and Stencil State
     _immediateContext->IASetInputLayout(_skyboxInputLayout);
