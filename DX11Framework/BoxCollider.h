@@ -14,6 +14,8 @@ public:
 	virtual bool CollidesWith(SphereCollider& other, CollisionManifold& out) override;
 	virtual bool CollidesWith(PlaneCollider& other, CollisionManifold& out) override;
 
+	virtual float GetRadius() override { return 0.0f; }
+
 	Appearance* GetAppearance() const { return _appearance; }
 };
 

@@ -4,6 +4,7 @@
 #include "PhysicsModel.h"
 #include "ParticleModel.h"
 #include "RigidBodyModel.h"
+#include "StaticBody.h"
 #include "Transform.h"
 
 using namespace std;
@@ -22,6 +23,7 @@ public:
 
 	void SetType(string type) { _type = type; }
 	void SetAppearance(Appearance* appearance) { _appearance = appearance; }
+	void SetPhysicsModel(PhysicsModel* physicsModel) { _physicsModel = physicsModel; }
 
 	string GetType() const { return _type; }
 	Appearance* GetAppearance() { return _appearance; }
