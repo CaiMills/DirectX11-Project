@@ -911,6 +911,6 @@ void DX11Framework::Draw()
 
     _skybox->Draw();
 
-    //Present back buffer to screen
+    // Present back buffer to screen
     _swapChain->Present(0, 0);
 }
