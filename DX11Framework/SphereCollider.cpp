@@ -1,5 +1,6 @@
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "PlaneCollider.h"
 
 bool SphereCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 {

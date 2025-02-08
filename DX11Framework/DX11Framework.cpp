@@ -428,7 +428,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
     _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(40.0f), 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
 
-    // Sphere Collider Initialisation
+    // Plane Collider Initialisation
     _collider = new PlaneCollider(_floor->GetTransform());
     _floor->GetPhysicsModel()->SetCollider(_collider);
 
@@ -452,7 +452,7 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].SetAppearance(_appearance);
 
         // Transform Initialisation
-        _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
+        _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 2.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         // Physics Model Initialisation
@@ -460,12 +460,12 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].SetPhysicsModel(_physicsModel);
 
         // Box Collider Initialisation
-        //collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
-        //_cubes[i].GetPhysicsModel()->SetCollider(collider);
+        _collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
          
         // Sphere Collider Initialisation
-        _collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
-        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        //_collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
+        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -677,11 +677,11 @@ void DX11Framework::ResolveCollisions()
 {
     CollisionManifold manifold;
 
-    Transform* objATransform = _cubes[0].GetTransform();
-    Transform* objBTransform = _cubes[1].GetTransform();
+    Transform* objATransform = _cubes[1].GetTransform();
+    Transform* objBTransform = _cubes[2].GetTransform();
 
-    PhysicsModel* objA = _cubes[0].GetPhysicsModel();
-    PhysicsModel* objB = _cubes[1].GetPhysicsModel();
+    PhysicsModel* objA = _cubes[1].GetPhysicsModel();
+    PhysicsModel* objB = _cubes[2].GetPhysicsModel();
 
     if (objA->IsCollideable() && objB->IsCollideable() &&
         objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold))
@@ -711,18 +711,24 @@ void DX11Framework::ResolveCollisions()
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
 
-            // This only applies if both objects has a sphere collider
-            float depth = 0.0f;
+            //// This only applies if both objects has a sphere collider
+            //if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
+            //{
+            //    float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
+            //    float depth = (objATransform->GetPosition() - objBTransform->GetPosition()) - radiiSum;
 
-            if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
-            {
-                float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
-                depth = (objATransform - objBTransform) - radiiSum;
-            }
+            //    // Linear Velocity
+            //    objA->ApplyImpulse(-(invMassA * j * collisionNormal * depth));
+            //    objB->ApplyImpulse(invMassB * j * collisionNormal * depth); //reversed
+
+            //    DebugPrintF("Collided\n");
+            //}
+            //else
+
 
             // Linear Velocity
-            objA->ApplyImpulse(-(invMassA * j * collisionNormal * depth));
-            objB->ApplyImpulse(invMassB * j * collisionNormal * depth); //reversed
+            objA->ApplyImpulse(-(invMassA * j * collisionNormal));
+            objB->ApplyImpulse(invMassB * j * collisionNormal); //reversed
 
             DebugPrintF("Collided\n");
         }
@@ -796,6 +802,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     {
         //_cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
         _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        //_cubes[2].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     // NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
@@ -833,8 +840,9 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
         _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        //_cubes[2].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
