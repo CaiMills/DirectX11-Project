@@ -212,7 +212,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreateVertexShader(vsBlobSkybox->GetBufferPointer(), vsBlobSkybox->GetBufferSize(), nullptr, &_skyboxVertexShader);
     if (FAILED(hr))
     {
-        vsBlobSkybox->Release();
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
         return hr;
     }
     // Compile the pixel shader
@@ -227,7 +228,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreatePixelShader(psBlobSkybox->GetBufferPointer(), psBlobSkybox->GetBufferSize(), nullptr, &_skyboxPixelShader);
     if (FAILED(hr))
     {
-        psBlobSkybox->Release();
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
         return hr;
     }
     // Create the input layout
@@ -259,7 +261,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_vertexShader);
     if (FAILED(hr))
     {
-        vsBlob->Release();
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
         return hr;
     }
     // Compile the pixel shader
@@ -274,7 +277,8 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_pixelShader);
     if (FAILED(hr))
     {
-        psBlob->Release();
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
         return hr;
     }
     //Create the input layout
@@ -283,10 +287,10 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    vsBlob->Release();
-    psBlob->Release();
     vsBlobSkybox->Release();
     psBlobSkybox->Release();
+    vsBlob->Release();
+    psBlob->Release();
     errorBlob->Release();
 
     return hr;
