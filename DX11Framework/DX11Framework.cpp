@@ -387,63 +387,85 @@ HRESULT DX11Framework::InitRunTimeData()
     InitLighting();
 
     // Initiate Scene
-    ID3D11ShaderResourceView* texture;
-    Mesh* mesh = new Mesh();
-    Appearance* appearance;
-    Collider* collider;
+    ID3D11ShaderResourceView* _texture;
+    Mesh* _mesh = new Mesh();
+    Appearance* _appearance;
+    PhysicsModel* _physicsModel;
+    Collider* _collider;
 
     // Skybox
-    mesh = new Mesh();
-    mesh->SetMeshData(mesh->CreateInvertedCube());
-    appearance = new Appearance(mesh);
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &texture);
-    if (FAILED(hr)) { return hr; }
-    appearance->SetTexture(texture);
+    // Mesh Initialisation
+    _mesh = new Mesh();
+    _mesh->SetMeshData(_mesh->CreateInvertedCube());
+    _appearance = new Appearance(_mesh);
 
+    // Texture Initialisation
+    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
+    if (FAILED(hr)) { return hr; }
+    _appearance->SetTexture(_texture);
+
+    // Set Type and Appearance
     _skybox->SetType("Skybox");
-    _skybox->SetAppearance(appearance);
+    _skybox->SetAppearance(_appearance);
 
-    // Geometry
-    mesh = new Mesh();
-    mesh->SetMeshData(mesh->CreatePlane());
-    appearance = new Appearance(mesh);
-    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &texture);
+    // Floor
+    // Mesh Initialisation
+    _mesh = new Mesh();
+    _mesh->SetMeshData(_mesh->CreatePlane());
+    _appearance = new Appearance(_mesh);
+
+    // Texture Initialisation
+    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
     if (FAILED(hr)) { return hr; }
-    appearance->SetTexture(texture);
+    _appearance->SetTexture(_texture);
 
+    // Set Type and Appearance
     _floor->SetType("Floor");
-    _floor->SetAppearance(appearance);
+    _floor->SetAppearance(_appearance);
+
+    // Transform Initialisation
     _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
     _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
     _floor->GetTransform()->SetRotation(Vector3(XMConvertToRadians(40.0f), 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
+
+    // Sphere Collider Initialisation
+    _collider = new PlaneCollider(_floor->GetTransform());
+    _floor->GetPhysicsModel()->SetCollider(_collider);
 
     _gameObjects.push_back(_floor);
 
     // Cubes
     for (auto i = 0; i < 4; i++)
     {
-        mesh = new Mesh();
-        mesh->SetMeshData(mesh->CreateCube());
-        appearance = new Appearance(mesh);
-        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &texture);
-        if (FAILED(hr)) { return hr; }
-        appearance->SetTexture(texture);
+        // Mesh Initialisation
+        _mesh = new Mesh();
+        _mesh->SetMeshData(_mesh->CreateCube());
+        _appearance = new Appearance(_mesh);
 
+        // Texture Initialisation
+        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
+        if (FAILED(hr)) { return hr; }
+        _appearance->SetTexture(_texture);
+
+        // Set Type and Appearance
         _cubes[i].SetType("Cube " + i);
-        _cubes[i].SetAppearance(appearance);
+        _cubes[i].SetAppearance(_appearance);
+
+        // Transform Initialisation
         _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 1.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
-        //DebugPrintF("Cube [i]: Max x is % f, Max y is % f, Max z is % f\n", mesh->GetMax().x, mesh->GetMax().y, mesh->GetMax().z);
-        //DebugPrintF("Cube [i]: Min x is % f, Min y is % f, Min z is % f\n", mesh->GetMin().x, mesh->GetMin().y, mesh->GetMin().z);
+        // Physics Model Initialisation
+        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform());
+        _cubes[i].SetPhysicsModel(_physicsModel);
 
-        // Box Collider
+        // Box Collider Initialisation
         //collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
         //_cubes[i].GetPhysicsModel()->SetCollider(collider);
-
-        // Sphere Collider
-        collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
-        _cubes[i].GetPhysicsModel()->SetCollider(collider);
+         
+        // Sphere Collider Initialisation
+        _collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
+        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -586,29 +608,28 @@ void DX11Framework::InitGameObjects()
 
     for (int i = 0; i < _gameObjectDataList.size(); i++)
     {
-        // Type
+        // Type Initialisation
         _gameObject[i].SetType(_gameObjectDataList.at(i).type);
 
-        // Texture
-        ID3D11ShaderResourceView* texture;
+        // Texture Initialisation
+        ID3D11ShaderResourceView* _texture;
         std::wstring colorTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).specularTexture.c_str()).GetString(); // Converts it to a wstring, so that it can be converted to a texture
-        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &texture);
+        CreateDDSTextureFromFile(_device, colorTexFilePath.c_str(), nullptr, &_texture);
 
-        // Specular Texture
+        // Specular Texture Initialisation
         std::wstring specTexFilePath = static_cast<CString>(_gameObjectDataList.at(i).colorTexture.c_str()).GetString();
-        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &texture);
+        CreateDDSTextureFromFile(_device, specTexFilePath.c_str(), nullptr, &_texture);
 
-        // Mesh
-        Mesh* mesh = new Mesh();
-        mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
-        mesh->SetMinAndMax(); // This is needed to determine the bounding box
+        // Mesh Initialisation
+        Mesh* _mesh = new Mesh(); 
+        _mesh->SetMeshData(new MeshData(OBJLoader::Load(_gameObjectDataList.at(i).objFilePath, _device, false)));
 
-        // Appearance
-        Appearance* appearance = new Appearance(mesh);
-        appearance->SetTexture(texture);
-        _gameObject[i].SetAppearance(appearance);
-
-        // Transform
+        // Appearance Initialisation
+        Appearance* _appearance = new Appearance(_mesh);
+        _appearance->SetTexture(_texture);
+        _gameObject[i].SetAppearance(_appearance);
+        
+        // Transform Initialisation
         _gameObject[i].GetTransform()->SetScale(Vector3(_gameObjectDataList.at(i).scale.x, _gameObjectDataList.at(i).scale.y, _gameObjectDataList.at(i).scale.z));
         _gameObject[i].GetTransform()->SetRotation(Vector3(_gameObjectDataList.at(i).rotation.x, _gameObjectDataList.at(i).rotation.y, _gameObjectDataList.at(i).rotation.z));
         _gameObject[i].GetTransform()->SetPosition(Vector3(_gameObjectDataList.at(i).position.x, _gameObjectDataList.at(i).position.y, _gameObjectDataList.at(i).position.z));

@@ -2,6 +2,8 @@
 
 RigidBodyModel::RigidBodyModel(Transform* transform) : PhysicsModel(transform)
 {
+    _simulateGravity = true;
+
     _transform = transform;
     _mass = 1.0f;
 
