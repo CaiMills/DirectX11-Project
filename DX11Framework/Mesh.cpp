@@ -78,20 +78,7 @@ MeshData* Mesh::CreateCube()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
-    // Find the min and max variables
-    for (size_t i = 0; i < 24; i++)
-    {
-        XMFLOAT3& pos = CubeVertices[i].Position;
-
-        //Update min and max values
-        _min.x = min(_min.x, pos.x);
-        _min.y = min(_min.y, pos.y);
-        _min.z = min(_min.z, pos.z);
-
-        _max.x = max(_max.x, pos.x);
-        _max.y = max(_max.y, pos.y);
-        _max.z = max(_max.z, pos.z);
-    }
+    SetMinAndMax(CubeVertices, 24);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -382,8 +369,20 @@ MeshData* Mesh::CreatePlane()
     return _meshData;
 }
 
-// This currently doesnt work
-void Mesh::SetMinAndMax()
+void Mesh::SetMinAndMax(SimpleVertex* vertices, int vertexCount)
 {
+    // Find the min and max variables
+    for (size_t i = 0; i < vertexCount; i++)
+    {
+        XMFLOAT3& pos = vertices[i].Position;
 
+        //Update min and max values
+        _min.x = min(_min.x, pos.x);
+        _min.y = min(_min.y, pos.y);
+        _min.z = min(_min.z, pos.z);
+
+        _max.x = max(_max.x, pos.x);
+        _max.y = max(_max.y, pos.y);
+        _max.z = max(_max.z, pos.z);
+    }
 }

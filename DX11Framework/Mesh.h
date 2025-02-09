@@ -30,7 +30,7 @@ public:
 	MeshData* CreatePyramid();
 	MeshData* CreatePlane();
 
-	void SetMinAndMax();
+	void SetMinAndMax(SimpleVertex* vertices, int vertexCount);
 	Vector3 GetMin() const { return _min; }
 	Vector3 GetMax() const { return _max; }
 };
