@@ -4,14 +4,16 @@
 
 bool BoxCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
 {
+    //// AABB vs AABB Collision
     Vector3 distance = GetPosition() - other.GetPosition();
 
     Vector3 objAExtents = GetAppearance()->GetMesh()->GetExtents();
     Vector3 objBExtents = other.GetAppearance()->GetMesh()->GetExtents();
-    Vector3 halfExtents = objAExtents / 2 + objBExtents / 2;
+    Vector3 halfExtents = (objAExtents / 2) + (objBExtents / 2);
 
     if (distance.x <= halfExtents.x && distance.y <= halfExtents.y && distance.z <= halfExtents.z)
     {
+        //Need to add Manifold Stuff
         return true;
     }
 
