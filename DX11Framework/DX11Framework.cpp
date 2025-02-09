@@ -442,9 +442,6 @@ HRESULT DX11Framework::InitRunTimeData()
         _mesh->SetMeshData(_mesh->CreateCube());
         _appearance = new Appearance(_mesh);
 
-        DebugPrintF("Max X = %f, Max Y = %f, Max Z = %f\n", _mesh->GetMax().x, _mesh->GetMax().y, _mesh->GetMax().z);
-        DebugPrintF("Min X = %f, Min Y = %f, Min Z = %f\n", _mesh->GetMin().x, _mesh->GetMin().y, _mesh->GetMin().z);
-
         // Texture Initialisation
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
         if (FAILED(hr)) { return hr; }
@@ -459,7 +456,7 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         // Physics Model Initialisation
-        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform());
+        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
         _cubes[i].SetPhysicsModel(_physicsModel);
 
         // Box Collider Initialisation
