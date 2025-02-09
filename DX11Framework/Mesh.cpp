@@ -1,15 +1,5 @@
 #include "Mesh.h"
 
-Mesh::Mesh()
-{
-
-}
-
-Mesh::Mesh(MeshData* meshData) : _meshData(meshData)
-{
-
-}
-
 Mesh::~Mesh()
 {
     _indexBuffer = nullptr;
@@ -193,6 +183,8 @@ MeshData* Mesh::CreateInvertedCube()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
+    SetMinAndMax(CubeVertices, 24);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     WORD CubeIndices[] =
@@ -274,6 +266,8 @@ MeshData* Mesh::CreatePyramid()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
+    SetMinAndMax(PyramidVertices, 5);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     WORD PyramidIndices[] =
@@ -341,6 +335,8 @@ MeshData* Mesh::CreatePlane()
     InitData.pSysMem = planeVertices;
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
+
+    SetMinAndMax(planeVertices, 4);
 
     // Create plane index buffer
     WORD planeIndices[] =
