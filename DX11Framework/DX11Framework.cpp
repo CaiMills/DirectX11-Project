@@ -442,6 +442,9 @@ HRESULT DX11Framework::InitRunTimeData()
         _mesh->SetMeshData(_mesh->CreateCube());
         _appearance = new Appearance(_mesh);
 
+        DebugPrintF("Max X = %f, Max Y = %f, Max Z = %f\n", _mesh->GetMax().x, _mesh->GetMax().y, _mesh->GetMax().z);
+        DebugPrintF("Min X = %f, Min Y = %f, Min Z = %f\n", _mesh->GetMin().x, _mesh->GetMin().y, _mesh->GetMin().z);
+
         // Texture Initialisation
         CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
         if (FAILED(hr)) { return hr; }
