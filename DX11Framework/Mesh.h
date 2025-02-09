@@ -15,6 +15,7 @@ private:
 	ID3D11Buffer* _indexBuffer = nullptr;
 	Vector3 _max = Vector3();
 	Vector3 _min = Vector3();
+	Vector3 _extents = Vector3();
 
 public:
 	// Two constructors, in case the mesh data already exists from an external file
@@ -30,8 +31,11 @@ public:
 	MeshData* CreatePyramid();
 	MeshData* CreatePlane();
 
-	void SetMinAndMax(SimpleVertex* vertices, int vertexCount);
+	void CalculateMinAndMax(SimpleVertex* vertices, int vertexCount);
 	Vector3 GetMin() const { return _min; }
 	Vector3 GetMax() const { return _max; }
+
+	void CalculateExtents(Vector3 min, Vector3 max);
+	Vector3 GetExtents() const { return _extents; }
 };
 

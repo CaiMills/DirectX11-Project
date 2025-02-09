@@ -68,7 +68,7 @@ MeshData* Mesh::CreateCube()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
-    SetMinAndMax(CubeVertices, 24);
+    CalculateMinAndMax(CubeVertices, 24);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -183,7 +183,7 @@ MeshData* Mesh::CreateInvertedCube()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
-    SetMinAndMax(CubeVertices, 24);
+    CalculateMinAndMax(CubeVertices, 24);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -266,7 +266,7 @@ MeshData* Mesh::CreatePyramid()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
-    SetMinAndMax(PyramidVertices, 5);
+    CalculateMinAndMax(PyramidVertices, 5);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -336,7 +336,7 @@ MeshData* Mesh::CreatePlane()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
-    SetMinAndMax(planeVertices, 4);
+    CalculateMinAndMax(planeVertices, 4);
 
     // Create plane index buffer
     WORD planeIndices[] =
@@ -365,9 +365,9 @@ MeshData* Mesh::CreatePlane()
     return _meshData;
 }
 
-void Mesh::SetMinAndMax(SimpleVertex* vertices, int vertexCount)
+void Mesh::CalculateMinAndMax(SimpleVertex* vertices, int vertexCount)
 {
-    // Find the min and max variables
+    // Find the min and max values
     for (size_t i = 0; i < vertexCount; i++)
     {
         XMFLOAT3& pos = vertices[i].Position;
@@ -381,4 +381,13 @@ void Mesh::SetMinAndMax(SimpleVertex* vertices, int vertexCount)
         _max.y = max(_max.y, pos.y);
         _max.z = max(_max.z, pos.z);
     }
+    CalculateExtents(_min, _max);
+}
+
+void Mesh::CalculateExtents(Vector3 min, Vector3 max)
+{
+    // Find the extent values, these represent the full lengths of each axis
+    _extents.x = max.x - min.x;
+    _extents.y = max.y - min.y;
+    _extents.z = max.z - min.z;
 }
