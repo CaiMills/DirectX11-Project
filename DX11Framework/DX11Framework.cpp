@@ -460,12 +460,12 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].SetPhysicsModel(_physicsModel);
 
         // Box Collider Initialisation
-        _collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
-        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new BoxCollider(_cubes[1].GetTransform(), _cubes[1].GetAppearance());
+        _cubes[1].GetPhysicsModel()->SetCollider(_collider);
          
         // Sphere Collider Initialisation
-        //_collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
-        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new SphereCollider(_cubes[2].GetTransform(), 1.0f);
+        _cubes[2].GetPhysicsModel()->SetCollider(_collider);
 
         _gameObjects.push_back(&_cubes[i]);
     }

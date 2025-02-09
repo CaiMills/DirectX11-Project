@@ -22,24 +22,20 @@ bool SphereCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 
 bool SphereCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
 {
-    //// Sphere vs AABB Collision (OUTDATED)
-    //Vector3 closestPoint;
-    //closestPoint.x = max(other.GetAppearance()->GetMesh()->GetMin().x, min(GetPosition().x, other.GetAppearance()->GetMesh()->GetMax().x));
-    //closestPoint.y = max(other.GetAppearance()->GetMesh()->GetMin().y, min(GetPosition().y, other.GetAppearance()->GetMesh()->GetMax().y));
-    //closestPoint.z = max(other.GetAppearance()->GetMesh()->GetMin().z, min(GetPosition().z, other.GetAppearance()->GetMesh()->GetMax().z));
+    ////// Sphere vs AABB Collision
+    //Vector3 boxMin = GetAppearance()->GetMesh()->GetMin();
+    //Vector3 boxMax = GetAppearance()->GetMesh()->GetMax();
 
-    //float distance = sqrt(pow(closestPoint.x - GetPosition().x, 2) + 
-    //    pow(closestPoint.y - GetPosition().y, 2) + 
-    //    pow(closestPoint.z - GetPosition().z, 2));
+    //Vector3 clampedPoint;
+    //clampedPoint.x = max(boxMin.x, min(other.GetPosition().x, boxMax.x));
+    //clampedPoint.y = max(boxMin.y, min(other.GetPosition().y, boxMax.y));
+    //clampedPoint.z = max(boxMin.z, min(other.GetPosition().z, boxMax.z));
 
-    //if (distance < GetRadius())
+    //Vector3 distance = clampedPoint - other.GetPosition();
+
+    //if (distance.Magnitude() < other.GetRadius())
     //{
-    //    DebugPrintF("Sphere vs AABB Collision\n");
     //    return true;
-    //}
-    //else
-    //{
-    //    return false;
     //}
 
     return false;
