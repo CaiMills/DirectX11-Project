@@ -22,21 +22,26 @@ bool SphereCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 
 bool SphereCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
 {
-    ////// Sphere vs AABB Collision
-    //Vector3 boxMin = GetAppearance()->GetMesh()->GetMin();
-    //Vector3 boxMax = GetAppearance()->GetMesh()->GetMax();
+    // DOESNT WORK CURRENTLY
+    // Sphere vs AABB Collision
+    Vector3 boxMin = other.GetAppearance()->GetMesh()->GetMin();
+    Vector3 boxMax = other.GetAppearance()->GetMesh()->GetMax();
 
-    //Vector3 clampedPoint;
-    //clampedPoint.x = max(boxMin.x, min(other.GetPosition().x, boxMax.x));
-    //clampedPoint.y = max(boxMin.y, min(other.GetPosition().y, boxMax.y));
-    //clampedPoint.z = max(boxMin.z, min(other.GetPosition().z, boxMax.z));
+    Vector3 boxExtents = other.GetAppearance()->GetMesh()->GetExtents();
+    Vector3 halfExtents = boxExtents / 2;
 
-    //Vector3 distance = clampedPoint - other.GetPosition();
+    Vector3 clampedPoint;
+    clampedPoint.x = max(boxMin.x, min(GetPosition().x, boxMax.x));
+    clampedPoint.y = max(boxMin.y, min(GetPosition().y, boxMax.y));
+    clampedPoint.z = max(boxMin.z, min(GetPosition().z, boxMax.z));
 
-    //if (distance.Magnitude() < other.GetRadius())
-    //{
-    //    return true;
-    //}
+    Vector3 distance = clampedPoint - GetPosition();
+
+    if (distance.Magnitude() <= GetRadius())
+    {
+        DebugPrintF("Inside Circle");
+        return true;
+    }
 
     return false;
 }

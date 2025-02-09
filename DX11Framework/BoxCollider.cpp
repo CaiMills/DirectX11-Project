@@ -7,9 +7,9 @@ bool BoxCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
     //// AABB vs AABB Collision
     Vector3 distance = GetPosition() - other.GetPosition();
 
-    Vector3 objAExtents = GetAppearance()->GetMesh()->GetExtents();
-    Vector3 objBExtents = other.GetAppearance()->GetMesh()->GetExtents();
-    Vector3 halfExtents = (objAExtents / 2) + (objBExtents / 2);
+    Vector3 boxAExtents = GetAppearance()->GetMesh()->GetExtents();
+    Vector3 boxBExtents = other.GetAppearance()->GetMesh()->GetExtents();
+    Vector3 halfExtents = (boxAExtents / 2) + (boxBExtents / 2);
 
     if (distance.x <= halfExtents.x && distance.y <= halfExtents.y && distance.z <= halfExtents.z)
     {
@@ -22,9 +22,13 @@ bool BoxCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
 
 bool BoxCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 {
+    // DOESNT WORK CURRENTLY
     // AABB vs Sphere Collision
     Vector3 boxMin = GetAppearance()->GetMesh()->GetMin();
     Vector3 boxMax = GetAppearance()->GetMesh()->GetMax();
+
+    Vector3 boxExtents = GetAppearance()->GetMesh()->GetExtents();
+    Vector3 halfExtents = boxExtents / 2;
 
     Vector3 clampedPoint;
     clampedPoint.x = max(boxMin.x, min(other.GetPosition().x, boxMax.x));
@@ -33,11 +37,12 @@ bool BoxCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 
     Vector3 distance = clampedPoint - other.GetPosition();
 
-    if (distance.Magnitude() < other.GetRadius())
+    if (distance.Magnitude() <= other.GetRadius())
     {
+        DebugPrintF("Inside Circle");
         return true;
     }
-
+    
     return false;
 }
 

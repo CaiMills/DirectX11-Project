@@ -4,7 +4,7 @@
 class PlaneCollider : public Collider
 {
 public:
-	PlaneCollider(Transform* transform) : Collider(transform) {};
+	PlaneCollider(Transform* transform, Appearance* appearance) : Collider(transform, appearance) {};
 
 	virtual bool CollidesWith(Collider& other, CollisionManifold& out) override { return other.CollidesWith(*this, out); }
 	virtual bool CollidesWith(SphereCollider& other, CollisionManifold& out) override;

@@ -7,7 +7,7 @@ class BoxCollider : public Collider
 	Appearance* _appearance;
 
 public:
-	BoxCollider(Transform* transform, Appearance* appearance) : Collider(transform) { _appearance = appearance; }
+	BoxCollider(Transform* transform, Appearance* appearance) : Collider(transform, appearance) {};
 
 	virtual bool CollidesWith(Collider& other, CollisionManifold& out) override { return other.CollidesWith(*this, out); }
 	virtual bool CollidesWith(BoxCollider& other, CollisionManifold& out) override;
@@ -15,8 +15,6 @@ public:
 	virtual bool CollidesWith(PlaneCollider& other, CollisionManifold& out) override;
 
 	virtual float GetRadius() override { return 0.0f; }
-
-	Appearance* GetAppearance() const { return _appearance; }
 };
 
 
