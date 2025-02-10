@@ -16,12 +16,6 @@ PhysicsModel::~PhysicsModel()
 	_constAccelerate = false;
 }
 
-Vector3 PhysicsModel::GravityForce()
-{
-	float gravity = -9.81f * _mass;
-	return Vector3(0, gravity, 0);
-}
-
 void PhysicsModel::Update(float deltaTime)
 {
 	Vector3 position = _transform->GetPosition();

@@ -2,9 +2,12 @@
 
 RigidBodyModel::RigidBodyModel(Transform* transform, Appearance* appearance) : PhysicsModel(transform)
 {
-    //_simulateGravity = true;
+    _mass = GetMass();
+    if (_mass == 0.0f)
+    {
+        _mass = 0.1f;
+    }
 
-    _mass = 1.0f;
     _transform = transform;
     _appearance = appearance;
 
