@@ -6,15 +6,13 @@ bool PlaneCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 {
     // Plane vs Sphere Collision
     Vector3 distance = GetPosition() - other.GetPosition();
-    float distanceToSphereCenter = distance.Magnitude() - this->GetPosition().Magnitude();
-    float penetrationDepth = other.GetRadius() - distanceToSphereCenter;
+    GetPosition().Normalize();
+    other.GetPosition().Normalize();
+    float dotProduct = (GetPosition().x * other.GetPosition().x) + (GetPosition().y * other.GetPosition().y) + (GetPosition().z * other.GetPosition().z);
+    float penetrationDepth = other.GetRadius() - dotProduct;
 
-    if (penetrationDepth > 0) {
-        out.collisionNormal = distance;
-        out.collisionNormal.Normalize();
-        out.contactPointCount = 1;
-        out.points[0].Position = GetPosition() + (out.collisionNormal * GetRadius());
-        out.points[0].penetrationDepth = fabs(distanceToSphereCenter - other.GetRadius());
+    if (penetrationDepth > 0) 
+    {
         return true;
     }
 

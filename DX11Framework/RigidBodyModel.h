@@ -17,6 +17,7 @@ public:
     void SetMass(float mass) override { _mass = mass; }
     Transform* GetTransform() { return _transform; }
 
+    void SetInertiaTensor();
     void AddRelativeForce(Vector3 force, Vector3 point) override;
     void CalculateAngularVelocity(float deltaTime);
 
