@@ -677,7 +677,7 @@ void DX11Framework::Update()
 
 void DX11Framework::ResolveCollisions()
 {
-    // Floor
+    //// Floor
     //for (auto& go : _gameObjects)
     //{
     //    // Regular Collision
@@ -696,45 +696,13 @@ void DX11Framework::ResolveCollisions()
     //        Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
     //        collisionNormal.Normalize();
 
-    //        //Vector3 collisionNormal = manifold.collisionNormal; //This does not work for some reason
-
     //        // Velocity Calculation
     //        Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
 
-    //        // Inverse Mass
-    //        float invMassA = objA->GetInverseMass();
-    //        float invMassB = objB->GetInverseMass();
-    //        float invMassSum = invMassA + invMassB;
-
     //        if (collisionNormal * relativeVelocity < 0.0f)
     //        {
-    //            // This currently isnt used (-1 + restitution)
-    //            float restitution = 0.2f;
-
-    //            // Total Velocity of Collision = Coefficient of Restitution * Dot Product
-    //            float vj = collisionNormal * relativeVelocity;
-
-    //            // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
-    //            float j = vj / invMassSum;
-
-    //            //// This only applies if both objects has a sphere collider
-    //            //if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
-    //            //{
-    //            //    float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
-    //            //    float depth = (objATransform->GetPosition() - objBTransform->GetPosition()) - radiiSum;
-
-    //            //    // Linear Velocity
-    //            //    objA->ApplyImpulse(-(invMassA * j * collisionNormal * depth));
-    //            //    objB->ApplyImpulse(invMassB * j * collisionNormal * depth); //reversed
-
-    //            //    DebugPrintF("Collided\n");
-    //            //}
-    //            //else
-
-
     //            // Linear Velocity
-    //            objA->ApplyImpulse(-(invMassA * j * collisionNormal));
-    //            objB->ApplyImpulse(invMassB * j * collisionNormal); //reversed
+    //            objB->ApplyImpulse(Vector3(0, 9.81f * objB->GetMass(), 0)); //reversed
 
     //            DebugPrintF("Collided\n");
     //        }
