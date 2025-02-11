@@ -10,7 +10,7 @@ protected:
 	Transform* _transform;
 	Collider* _collider = nullptr;
 	float _mass = 0.0f;
-	bool _simulateGravity = true;
+	bool _simulateGravity = false;
 
 	Vector3 _velocity = Vector3();
 	bool _constVelocity = false;
