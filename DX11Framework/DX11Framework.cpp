@@ -461,12 +461,12 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetMass(1.0f);
 
         // Sphere Collider Initialisation
-        //_collider = new SphereCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance(), 1.0f);
-        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new SphereCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance(), 1.0f);
+        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        _collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
-        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new BoxCollider(_cubes[1].GetTransform(), _cubes[1].GetAppearance());
+        _cubes[1].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -506,9 +506,6 @@ DX11Framework::~DX11Framework()
     if (_skyboxDepthStencil) { _skyboxDepthStencil->Release(); }
 }
 
-/// <summary>
-/// A json loader that specifically loads the lighting data
-/// </summary>
 void DX11Framework::InitLighting()
 {
     // Json Parser
@@ -567,9 +564,6 @@ void DX11Framework::InitLighting()
     fileOpen.close();
 }
 
-/// <summary>
-/// A json loader that specifically loads the Game Object data
-/// </summary>
 void DX11Framework::InitGameObjects()
 {
     json jFile;
@@ -825,37 +819,37 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x68) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
     }
     // NUMPAD 2 - Backwards
     if (GetAsyncKeyState(0x62) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
     }
     // NUMPAD 4 - Left
     if (GetAsyncKeyState(0x64) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
     }
     // NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     // NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
     }
     // NUMPAD 3 - Down
     if (GetAsyncKeyState(0x63) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
-        _cubes[1].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
+        //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
     }
 #pragma endregion
 
@@ -867,37 +861,37 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x26) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
     }
     // DOWN ARROW - Backwards Constant Velocity
     if (GetAsyncKeyState(0x28) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
     }
     // LEFT ARROW - Left Constant Velocity
     if (GetAsyncKeyState(0x25) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
     }
     // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
     }
     // PAGE DOWN - Down Constant Velocity
     if (GetAsyncKeyState(0x21) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
     }
 #pragma endregion
 
@@ -906,13 +900,13 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
+        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
     }
     // Q - Apply Relative Force
     if (GetAsyncKeyState(0x51) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
-        _cubes[1].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
+        //_cubes[1].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
     }
 #pragma endregion
 
