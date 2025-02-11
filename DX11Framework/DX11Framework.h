@@ -117,6 +117,7 @@ public:
 	void InitLighting();
 	void InitGameObjects();
 	void Update();
-	void ResolveCollisions();
+	void CollisionManager();
+	void ResolveCollisions(GameObject* obj1, GameObject* obj2);
 	void Draw();
 };

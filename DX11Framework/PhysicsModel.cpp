@@ -9,11 +9,6 @@ PhysicsModel::~PhysicsModel()
 {
 	_transform = nullptr;
 	_collider = nullptr;
-
-	_velocity = Vector3();
-	_acceleration = Vector3();
-	_constVelocity = false;
-	_constAccelerate = false;
 }
 
 void PhysicsModel::Update(float deltaTime)
@@ -28,7 +23,7 @@ void PhysicsModel::Update(float deltaTime)
 	{
 		_netForce += GravityForce();
 	}
-	if (_constVelocity)
+	if (!_constVelocity)
 	{
 		position += _velocity * deltaTime;
 	}

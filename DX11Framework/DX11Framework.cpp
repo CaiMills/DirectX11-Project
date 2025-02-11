@@ -461,12 +461,12 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetMass(1.0f);
 
         // Sphere Collider Initialisation
-        _collider = new SphereCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance(), 1.0f);
-        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        //_collider = new SphereCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance(), 1.0f);
+        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        //_collider = new BoxCollider(_cubes[1].GetTransform(), _cubes[1].GetAppearance());
-        //_cubes[1].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -671,57 +671,65 @@ void DX11Framework::Update()
     _cbData.specPower = 10;
     _cbData.lightDir = XMFLOAT3(0.0f, 0.5f, -1.0f);
 
-    ResolveCollisions();
+    CollisionManager();
     Keybinds();
 }
 
-void DX11Framework::ResolveCollisions()
+void DX11Framework::CollisionManager()
 {
-    //// Floor
-    //for (auto& go : _gameObjects)
-    //{
-    //    // Regular Collision
-    //    CollisionManifold manifold;
+    for (auto& go : _gameObjects)
+    {
+        //// Floor
+        //CollisionManifold manifold;
 
-    //    Transform* objATransform = _floor->GetTransform();
-    //    Transform* objBTransform = go->GetTransform();
+        //Transform* objATransform = _floor->GetTransform();
+        //Transform* objBTransform = go->GetTransform();
 
-    //    PhysicsModel* objA = _floor->GetPhysicsModel();
-    //    PhysicsModel* objB = go->GetPhysicsModel();
+        //PhysicsModel* objA = _floor->GetPhysicsModel();
+        //PhysicsModel* objB = go->GetPhysicsModel();
 
-    //    if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold) ||
-    //        objA->IsCollideable() && objB->IsCollideable() && objB->GetCollider()->CollidesWith(*objA->GetCollider(), manifold))
-    //    {
-    //        // Normalise Calculation
-    //        Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
-    //        collisionNormal.Normalize();
+        //if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold) ||
+        //    objA->IsCollideable() && objB->IsCollideable() && objB->GetCollider()->CollidesWith(*objA->GetCollider(), manifold))
+        //{
+        //    // Normalise Calculation
+        //    Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
+        //    collisionNormal.Normalize();
 
-    //        // Velocity Calculation
-    //        Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
+        //    // Velocity Calculation
+        //    Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
 
-    //        if (collisionNormal * relativeVelocity < 0.0f)
-    //        {
-    //            // Linear Velocity
-    //            objB->ApplyImpulse(Vector3(0, 9.81f * objB->GetMass(), 0)); //reversed
+        //    if (collisionNormal * relativeVelocity < 0.0f)
+        //    {
+        //        // Linear Velocity
+        //        objB->ApplyImpulse(Vector3(0, 9.81f * objB->GetMass(), 0)); //reversed
 
-    //            DebugPrintF("Collided\n");
-    //        }
-    //    }
-    //    // Resets the manifold for the next collision
-    //    manifold = CollisionManifold();
-    //}
+        //        DebugPrintF("Collided\n");
+        //    }
+        //}
+        //// Resets the manifold for the next collision
+        //manifold = CollisionManifold();
+    }
 
-    // Regular Collision
+    // Cube Collisions
+    ResolveCollisions(&_cubes[0], &_cubes[1]);
+    ResolveCollisions(&_cubes[0], &_cubes[2]);
+    ResolveCollisions(&_cubes[0], &_cubes[3]);
+    ResolveCollisions(&_cubes[1], &_cubes[2]);
+    ResolveCollisions(&_cubes[1], &_cubes[3]);
+    ResolveCollisions(&_cubes[2], &_cubes[3]);
+}
+
+void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
+{
     CollisionManifold manifold;
 
-    Transform* objATransform = _cubes[1].GetTransform();
-    Transform* objBTransform = _cubes[2].GetTransform();
+    Transform* objATransform = obj1->GetTransform();
+    Transform* objBTransform = obj2->GetTransform();
 
-    PhysicsModel* objA = _cubes[1].GetPhysicsModel();
-    PhysicsModel* objB = _cubes[2].GetPhysicsModel();
+    PhysicsModel* objA = obj1->GetPhysicsModel();
+    PhysicsModel* objB = obj2->GetPhysicsModel();
 
-    if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold) ||
-        objA->IsCollideable() && objB->IsCollideable() && objB->GetCollider()->CollidesWith(*objA->GetCollider(), manifold))
+    if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold))
     {
         // Normalise Calculation
         Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
@@ -748,7 +756,7 @@ void DX11Framework::ResolveCollisions()
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
 
-            //// This only applies if both objects has a sphere collider
+            //// This only applies if both objects has a sphere collider (DOESNT WORK YET)
             //if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
             //{
             //    float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
@@ -762,12 +770,9 @@ void DX11Framework::ResolveCollisions()
             //}
             //else
 
-
             // Linear Velocity
             objA->ApplyImpulse(-(invMassA * j * collisionNormal));
             objB->ApplyImpulse(invMassB * j * collisionNormal); //reversed
-
-            DebugPrintF("Collided\n");
         }
     }
     // Resets the manifold for the next collision
@@ -837,9 +842,8 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     // NUMPAD 6 - Right
     if (GetAsyncKeyState(0x66) & 0X0001)
     {
-        //_cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
+        _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
         _cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
-        //_cubes[2].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
     // NUMPAD 9 - Up
     if (GetAsyncKeyState(0x69) & 0X0001)
@@ -856,42 +860,44 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
 #pragma endregion
 
 #pragma region GOVelocityControls
+
+    // Note - Currently, Collision DOESNT work if the velocity is set as constant
+
     // UP ARROW - Fowards Constant Velocity
     if (GetAsyncKeyState(0x26) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
     }
     // DOWN ARROW - Backwards Constant Velocity
     if (GetAsyncKeyState(0x28) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
     }
     // LEFT ARROW - Left Constant Velocity
     if (GetAsyncKeyState(0x25) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
     }
     // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
-        //_cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
-        //_cubes[2].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), false);
+        _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
     }
     // PAGE DOWN - Down Constant Velocity
     if (GetAsyncKeyState(0x21) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
     }
 #pragma endregion
 
@@ -900,7 +906,7 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
-        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), false);
+        _cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
     }
     // Q - Apply Relative Force
     if (GetAsyncKeyState(0x51) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
