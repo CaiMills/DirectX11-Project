@@ -465,8 +465,8 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        _collider = new BoxCollider(_cubes[1].GetTransform(), _cubes[1].GetAppearance());
-        _cubes[1].GetPhysicsModel()->SetCollider(_collider);
+        //_collider = new BoxCollider(_cubes[1].GetTransform(), _cubes[1].GetAppearance());
+        //_cubes[1].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -673,35 +673,35 @@ void DX11Framework::CollisionManager()
 {
     for (auto& go : _gameObjects)
     {
-        //// Floor
-        //CollisionManifold manifold;
+        // Floor
+        CollisionManifold manifold;
 
-        //Transform* objATransform = _floor->GetTransform();
-        //Transform* objBTransform = go->GetTransform();
+        Transform* objATransform = _floor->GetTransform();
+        Transform* objBTransform = go->GetTransform();
 
-        //PhysicsModel* objA = _floor->GetPhysicsModel();
-        //PhysicsModel* objB = go->GetPhysicsModel();
+        PhysicsModel* objA = _floor->GetPhysicsModel();
+        PhysicsModel* objB = go->GetPhysicsModel();
 
-        //if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold) ||
-        //    objA->IsCollideable() && objB->IsCollideable() && objB->GetCollider()->CollidesWith(*objA->GetCollider(), manifold))
-        //{
-        //    // Normalise Calculation
-        //    Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
-        //    collisionNormal.Normalize();
+        if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold) ||
+            objA->IsCollideable() && objB->IsCollideable() && objB->GetCollider()->CollidesWith(*objA->GetCollider(), manifold))
+        {
+            // Normalise Calculation
+            Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
+            collisionNormal.Normalize();
 
-        //    // Velocity Calculation
-        //    Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
+            // Velocity Calculation
+            Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
 
-        //    if (collisionNormal * relativeVelocity < 0.0f)
-        //    {
-        //        // Linear Velocity
-        //        objB->ApplyImpulse(Vector3(0, 9.81f * objB->GetMass(), 0)); //reversed
+            if (collisionNormal * relativeVelocity < 0.0f)
+            {
+                // Linear Velocity
+                objB->ApplyImpulse(Vector3(0, 9.81f * objB->GetMass(), 0)); //reversed
 
-        //        DebugPrintF("Collided\n");
-        //    }
-        //}
-        //// Resets the manifold for the next collision
-        //manifold = CollisionManifold();
+                DebugPrintF("Collided\n");
+            }
+        }
+        // Resets the manifold for the next collision
+        manifold = CollisionManifold();
     }
 
     // Cube Collisions

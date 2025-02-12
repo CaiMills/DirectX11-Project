@@ -5,13 +5,21 @@
 bool PlaneCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 {
     // Plane vs Sphere Collision
-    Vector3 distance = GetPosition() - other.GetPosition();
-    GetPosition().Normalize();
-    other.GetPosition().Normalize();
-    float dotProduct = (GetPosition().x * other.GetPosition().x) + (GetPosition().y * other.GetPosition().y) + (GetPosition().z * other.GetPosition().z);
-    float penetrationDepth = other.GetRadius() - dotProduct;
+    
+    // This counts as a collision if the object moves down, no matter how far away it is from the plane
+    //Vector3 distance = GetPosition() - other.GetPosition();
+    //GetPosition().Normalize();
+    //other.GetPosition().Normalize();
+    //float dotProduct = (GetPosition().x * other.GetPosition().x) + (GetPosition().y * other.GetPosition().y) + (GetPosition().z * other.GetPosition().z);
+    //float penetrationDepth = other.GetRadius() - dotProduct;
 
-    if (penetrationDepth > 0) 
+    Vector3 distance = GetPosition() - other.GetPosition();
+    Vector3 closestPoint;
+    closestPoint.x = other.GetPosition().x - distance.Magnitude();
+    closestPoint.y = other.GetPosition().y - distance.Magnitude();
+    closestPoint.z = other.GetPosition().z - distance.Magnitude();
+
+    if (closestPoint.Magnitude() > 0)
     {
         return true;
     }
