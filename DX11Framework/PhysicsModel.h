@@ -9,11 +9,11 @@ class PhysicsModel abstract
 protected:
 	Transform* _transform;
 	Collider* _collider = nullptr;
-	float _mass;
+	float _mass = 0.0f;
 	bool _simulateGravity = false;
 
 	Vector3 _velocity = Vector3();
-	bool _constVelocity = false;
+	bool _constVelocity = true;
 	Vector3 _acceleration = Vector3();
 	bool _constAccelerate = false;
 	Vector3 _netForce = Vector3();
@@ -33,7 +33,9 @@ public:
 	float GetInverseMass() { if (_mass == 0) return 0; return 1.0f / _mass; }
 
 	// Set Forces
-	Vector3 GravityForce();
+	Vector3 GravityForce() { return Vector3(0, -9.81f * _mass, 0); }
+	void SetGravityActive(bool isActive) { _simulateGravity = isActive; }
+
 	void SetVelocity(Vector3 velocity, bool constVelocity) { _velocity = velocity, _constVelocity = constVelocity; }
 	Vector3 GetVelocity() const { return _velocity; }
 	void SetAcceleration(Vector3 acceleration, bool constAccelerate) { _acceleration = acceleration, _constAccelerate = constAccelerate; }

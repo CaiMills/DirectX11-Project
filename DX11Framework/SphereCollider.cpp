@@ -1,5 +1,6 @@
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "PlaneCollider.h"
 
 bool SphereCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 {
@@ -21,25 +22,26 @@ bool SphereCollider::CollidesWith(SphereCollider& other, CollisionManifold& out)
 
 bool SphereCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
 {
-    //// Sphere vs AABB Collision (OUTDATED)
-    //Vector3 closestPoint;
-    //closestPoint.x = max(other.GetAppearance()->GetMesh()->GetMin().x, min(GetPosition().x, other.GetAppearance()->GetMesh()->GetMax().x));
-    //closestPoint.y = max(other.GetAppearance()->GetMesh()->GetMin().y, min(GetPosition().y, other.GetAppearance()->GetMesh()->GetMax().y));
-    //closestPoint.z = max(other.GetAppearance()->GetMesh()->GetMin().z, min(GetPosition().z, other.GetAppearance()->GetMesh()->GetMax().z));
+    // DOESNT WORK CURRENTLY
+    // Sphere vs AABB Collision
+    Vector3 boxMin = other.GetAppearance()->GetMesh()->GetMin();
+    Vector3 boxMax = other.GetAppearance()->GetMesh()->GetMax();
 
-    //float distance = sqrt(pow(closestPoint.x - GetPosition().x, 2) + 
-    //    pow(closestPoint.y - GetPosition().y, 2) + 
-    //    pow(closestPoint.z - GetPosition().z, 2));
+    Vector3 boxExtents = other.GetAppearance()->GetMesh()->GetExtents();
+    Vector3 halfExtents = boxExtents / 2;
 
-    //if (distance < GetRadius())
-    //{
-    //    DebugPrintF("Sphere vs AABB Collision\n");
-    //    return true;
-    //}
-    //else
-    //{
-    //    return false;
-    //}
+    Vector3 clampedPoint;
+    clampedPoint.x = max(boxMin.x, min(GetPosition().x, boxMax.x));
+    clampedPoint.y = max(boxMin.y, min(GetPosition().y, boxMax.y));
+    clampedPoint.z = max(boxMin.z, min(GetPosition().z, boxMax.z));
+
+    Vector3 distance = clampedPoint - GetPosition();
+
+    if (distance.Magnitude() <= GetRadius())
+    {
+        DebugPrintF("Inside Circle");
+        return true;
+    }
 
     return false;
 }

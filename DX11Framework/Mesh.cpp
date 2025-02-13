@@ -1,15 +1,5 @@
 #include "Mesh.h"
 
-Mesh::Mesh()
-{
-
-}
-
-Mesh::Mesh(MeshData* meshData) : _meshData(meshData)
-{
-
-}
-
 Mesh::~Mesh()
 {
     _indexBuffer = nullptr;
@@ -77,6 +67,8 @@ MeshData* Mesh::CreateCube()
     InitData.pSysMem = CubeVertices;
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
+
+    CalculateMinAndMax(CubeVertices, 24);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -191,6 +183,8 @@ MeshData* Mesh::CreateInvertedCube()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
+    CalculateMinAndMax(CubeVertices, 24);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     WORD CubeIndices[] =
@@ -272,6 +266,8 @@ MeshData* Mesh::CreatePyramid()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_indexBuffer);
 
+    CalculateMinAndMax(PyramidVertices, 5);
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     WORD PyramidIndices[] =
@@ -340,6 +336,8 @@ MeshData* Mesh::CreatePlane()
 
     _device->CreateBuffer(&bufferDesc, &InitData, &_vertexBuffer);
 
+    CalculateMinAndMax(planeVertices, 4);
+
     // Create plane index buffer
     WORD planeIndices[] =
     {
@@ -367,75 +365,10 @@ MeshData* Mesh::CreatePlane()
     return _meshData;
 }
 
-// This currently doesnt work
-void Mesh::SetMinAndMax()
+void Mesh::CalculateMinAndMax(SimpleVertex* vertices, int vertexCount)
 {
-    //// Write constant buffer data onto GPU
-    //D3D11_MAPPED_SUBRESOURCE mappedSubresource;
-
-    //HRESULT hr = _immediateContext->Map(_meshData->VertexBuffer, 0, D3D11_MAP_READ, 0, &mappedSubresource);
-    //if (FAILED(hr))
-    //{
-    //	printf("Failed to map vertex buffer. HRESULT: 0x%X\n", hr);
-    //	return;
-    //}
-    //SimpleVertex* vertices = static_cast<SimpleVertex*>(mappedSubresource.pData);
-
-    //for (size_t i = 0; i < _meshData->IndexCount; ++i)
-    //{
-    //	XMFLOAT3 pos = vertices[i].Position;
-    //
-    //	// Update min and max values
-    //	_min.x = min(_min.x, pos.x);
-    //	_min.y = min(_min.y, pos.y);
-    //	_min.z = min(_min.z, pos.z);
-
-    //	_max.x = max(_max.x, pos.x);
-    //	_max.y = max(_max.y, pos.y);
-    //	_max.z = max(_max.z, pos.z);
-    //}
-    //// Unmap the vertex buffer
-    //_immediateContext->Unmap(_meshData->VertexBuffer, 0);
-
-
-    // Get the vertex buffer description
-    D3D11_BUFFER_DESC vertexDesc;
-    _meshData->VertexBuffer->GetDesc(&vertexDesc);
-
-    // Create a staging buffer with the same size as the vertex buffer
-    // This is needed as the data has been created beforehand, meaning that its stored within the CPU, with this buffer allowing for access to the CPU data
-    D3D11_BUFFER_DESC stagingDesc = vertexDesc;
-    stagingDesc.Usage = D3D11_USAGE_STAGING;
-    stagingDesc.BindFlags = 0; // No binding
-    stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-
-    ID3D11Buffer* stagingBuffer = nullptr;
-    HRESULT hr = _device->CreateBuffer(&stagingDesc, nullptr, &stagingBuffer);
-    if (FAILED(hr))
-    {
-        printf("Failed to create staging buffer. HRESULT: 0x%X\n", hr);
-        return;
-    }
-
-    // Copy the vertex buffer data to the staging buffer
-    _immediateContext->CopyResource(stagingBuffer, _meshData->VertexBuffer);
-
-    // Map the staging buffer to access the vertex data
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    hr = _immediateContext->Map(stagingBuffer, 0, D3D11_MAP_READ, 0, &mappedResource);
-    if (FAILED(hr))
-    {
-        printf("Failed to map staging buffer. HRESULT: 0x%X\n", hr);
-        stagingBuffer->Release();
-        return;
-    }
-
-    // Access the vertex data
-    SimpleVertex* vertices = static_cast<SimpleVertex*>(mappedResource.pData);
-    size_t vertexCount = vertexDesc.ByteWidth / sizeof(SimpleVertex);
-
-    // Iterate through vertices to find the bounding box
-    for (size_t i = 0; i < vertexCount; ++i)
+    // Find the min and max values
+    for (size_t i = 0; i < vertexCount; i++)
     {
         XMFLOAT3& pos = vertices[i].Position;
 
@@ -448,8 +381,13 @@ void Mesh::SetMinAndMax()
         _max.y = max(_max.y, pos.y);
         _max.z = max(_max.z, pos.z);
     }
+    CalculateExtents(_min, _max);
+}
 
-    // Unmap the staging buffer and release it
-    _immediateContext->Unmap(stagingBuffer, 0);
-    stagingBuffer->Release();
+void Mesh::CalculateExtents(Vector3 min, Vector3 max)
+{
+    // Find the extent values, these represent the full lengths of each axis
+    _extents.x = max.x - min.x;
+    _extents.y = max.y - min.y;
+    _extents.z = max.z - min.z;
 }

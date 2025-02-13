@@ -9,13 +9,15 @@ private:
     float _angularDamping = 0.99f; // 1 means it will never stop rotating, 0 means it will stop instantly
     Vector3 _angularVelocity = Vector3();
     Transform* _transform = nullptr;
+    Appearance* _appearance = nullptr;
 
 public:
-    RigidBodyModel(Transform* transform);
+    RigidBodyModel(Transform* transform, Appearance* appearance);
 
     void SetMass(float mass) override { _mass = mass; }
     Transform* GetTransform() { return _transform; }
 
+    void SetInertiaTensor();
     void AddRelativeForce(Vector3 force, Vector3 point) override;
     void CalculateAngularVelocity(float deltaTime);
 

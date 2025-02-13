@@ -1,97 +1,104 @@
 #include "RigidBodyModel.h"
 
-RigidBodyModel::RigidBodyModel(Transform* transform) : PhysicsModel(transform)
+RigidBodyModel::RigidBodyModel(Transform* transform, Appearance* appearance) : PhysicsModel(transform)
 {
-    _simulateGravity = true;
+    _mass = GetMass();
+    if (_mass == 0.0f)
+    {
+        _mass = 0.1f;
+    }
 
     _transform = transform;
-    _mass = 1.0f;
+    _appearance = appearance;
 
     // Sets the Inertia Tensor to Identity Matrix by default
     XMMATRIX identity = XMMatrixIdentity();
     XMStoreFloat3x3(&_inertiaTensor, XMMatrixIdentity());
+}
 
-    // This is needed as the collider isnt set until later in initialisation
-    if (GetCollider() != nullptr)
+void RigidBodyModel::SetInertiaTensor()
+{
+    Collider* collider = GetCollider();
+    Mesh* mesh = _appearance->GetMesh();
+
+    // If the object has a circle collider, as otherwise the radius will be default 0
+    if (collider->GetRadius() > 0.0f)
     {
-        // If the object has a circle collider, as otherwise the radius will be default 0
-        if (GetCollider()->GetRadius() > 0.0f)
-        {
-            // Circle Matrix
-            _inertiaTensor._11 = (2.0f / 5.0f) * GetMass() * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
-            _inertiaTensor._12 = 0;
-            _inertiaTensor._13 = 0;
+        // Circle Matrix
+        _inertiaTensor._11 = (2.0f / 5.0f) * _mass * (collider->GetRadius() * collider->GetRadius());
+        _inertiaTensor._12 = 0;
+        _inertiaTensor._13 = 0;
 
-            _inertiaTensor._21 = 0;
-            _inertiaTensor._22 = (2.0f / 5.0f) * GetMass() * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
-            _inertiaTensor._23 = 0;
+        _inertiaTensor._21 = 0;
+        _inertiaTensor._22 = (2.0f / 5.0f) * _mass * (collider->GetRadius() * collider->GetRadius());
+        _inertiaTensor._23 = 0;
 
-            _inertiaTensor._31 = 0;
-            _inertiaTensor._32 = 0;
-            _inertiaTensor._33 = (2.0f / 5.0f) * GetMass() * (GetCollider()->GetRadius() * GetCollider()->GetRadius());
-        }
-        // If the object has a box collider...
-        else
-        {
-            // Box Matrix
-            _inertiaTensor._11 = (1.0f / 12.0f) * GetMass() * pow(_transform->GetScale().y / 2, 2) + pow(_transform->GetScale().z / 2, 2);
-            _inertiaTensor._12 = 0;
-            _inertiaTensor._13 = 0;
+        _inertiaTensor._31 = 0;
+        _inertiaTensor._32 = 0;
+        _inertiaTensor._33 = (2.0f / 5.0f) * _mass * (collider->GetRadius() * collider->GetRadius());
+    }
+    // If the object has a box collider...
+    else
+    {
+        // Box Matrix
+        _inertiaTensor._11 = (1.0f / 12.0f) * _mass * pow(mesh->GetExtents().y / 2, 2) + pow(mesh->GetExtents().z / 2, 2);
+        _inertiaTensor._12 = 0;
+        _inertiaTensor._13 = 0;
 
-            _inertiaTensor._21 = 0;
-            _inertiaTensor._22 = (1.0f / 12.0f) * GetMass() * pow(_transform->GetScale().x / 2, 2) + pow(_transform->GetScale().z / 2, 2);
-            _inertiaTensor._23 = 0;
+        _inertiaTensor._21 = 0;
+        _inertiaTensor._22 = (1.0f / 12.0f) * _mass * pow(mesh->GetExtents().x / 2, 2) + pow(mesh->GetExtents().z / 2, 2);
+        _inertiaTensor._23 = 0;
 
-            _inertiaTensor._31 = 0;
-            _inertiaTensor._32 = 0;
-            _inertiaTensor._33 = (1.0f / 12.0f) * GetMass() * pow(_transform->GetScale().x / 2, 2) + pow(_transform->GetScale().y / 2, 2);
-        }
+        _inertiaTensor._31 = 0;
+        _inertiaTensor._32 = 0;
+        _inertiaTensor._33 = (1.0f / 12.0f) * _mass * pow(mesh->GetExtents().x / 2, 2) + pow(mesh->GetExtents().y / 2, 2);
     }
 }
 
 void RigidBodyModel::AddRelativeForce(Vector3 force, Vector3 point)
 {
-	AddForce(force);
-	
-	Vector3 crossProduct;
-	crossProduct.x = (force.y * point.z) - (force.z * point.y);
-	crossProduct.y = (force.z * point.x) - (force.x * point.z);
-	crossProduct.z = (force.x * point.y) - (force.y * point.x);
-	
-    // Torque = The origin point of the applied force X force
-	_torque = crossProduct;
+	RigidBodyModel::AddForce(force);
+    _torque = force ^ point;
 }
 
 void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
 {
+    SetInertiaTensor();
+
     if (_mass == 0)
     {
         return;
     }
     // Converts Inertia Tensor into a ,atrix which is effected by the Torque variable, which is converted to a Vector
-    XMVECTOR torqueVector = XMVectorSet(_torque.x, _torque.y, _torque.z, 1.0f);
+    XMVECTOR torqueVector = XMVectorSet(_torque.x, _torque.y, _torque.z, 0.0f);
     XMMATRIX inertiaMatrix = XMMatrixInverse(nullptr , XMLoadFloat3x3(&_inertiaTensor));
-    XMVECTOR angularAcceleration = XMVector3Transform(torqueVector, inertiaMatrix);
+    XMVECTOR angularAccelerationVector = XMVector3Transform(torqueVector, inertiaMatrix);
+    XMFLOAT3 angularAcceleration;
+    XMStoreFloat3(&angularAcceleration, angularAccelerationVector);
 
     // Calculates the Angular Velocity
-    _angularVelocity += Vector3(XMVectorGetX(angularAcceleration), XMVectorGetY(angularAcceleration), XMVectorGetZ(angularAcceleration)) * deltaTime;
+    _angularVelocity += Vector3(angularAcceleration.x, angularAcceleration.y, angularAcceleration.z) * deltaTime;
 
-    // New Orientation is Calculation (Not sure its meant to be placed here)
+    // New Orientation is Calculation
     Quaternion orientation = GetTransform()->GetOrientation();
-    orientation += deltaTime / 2 * _angularVelocity * orientation;
-    if (orientation.Magnitude() != 0)
-    {
-        orientation = orientation / orientation.Magnitude();
-        GetTransform()->SetOrientation(orientation);
-    }
+    orientation += orientation * _angularVelocity * 0.5f * deltaTime;
+
     // Dampens the Angular Velocity overtime
     _angularVelocity *= pow(_angularDamping, deltaTime);
+
+    if (orientation.Magnitude() != 0)
+    {
+        orientation /= orientation.Magnitude();
+    }
+    GetTransform()->SetOrientation(orientation);
+
+    // Resets Torque for next calculation
+    _torque = Vector3();
 }
 
 void RigidBodyModel::Update(float deltaTime)
 {
-    CalculateAngularVelocity(deltaTime);
-
 	// Linear F=MA 
 	PhysicsModel::Update(deltaTime);
+    CalculateAngularVelocity(deltaTime);
 }
