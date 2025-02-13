@@ -10,7 +10,7 @@ protected:
 	Transform* _transform;
 	Collider* _collider = nullptr;
 	float _mass = 0.0f;
-	bool _simulateGravity = true;
+	bool _simulateGravity = false;
 
 	Vector3 _velocity = Vector3();
 	bool _constVelocity = true;
@@ -34,6 +34,8 @@ public:
 
 	// Set Forces
 	Vector3 GravityForce() { return Vector3(0, -9.81f * _mass, 0); }
+	void SetGravityActive(bool isActive) { _simulateGravity = isActive; }
+
 	void SetVelocity(Vector3 velocity, bool constVelocity) { _velocity = velocity, _constVelocity = constVelocity; }
 	Vector3 GetVelocity() const { return _velocity; }
 	void SetAcceleration(Vector3 acceleration, bool constAccelerate) { _acceleration = acceleration, _constAccelerate = constAccelerate; }

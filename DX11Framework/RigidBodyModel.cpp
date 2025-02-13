@@ -77,29 +77,35 @@ void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
         return;
     }
     // Converts Inertia Tensor into a ,atrix which is effected by the Torque variable, which is converted to a Vector
-    XMVECTOR torqueVector = XMVectorSet(_torque.x, _torque.y, _torque.z, 1.0f);
+    XMVECTOR torqueVector = XMVectorSet(_torque.x, _torque.y, _torque.z, 0.0f);
     XMMATRIX inertiaMatrix = XMMatrixInverse(nullptr , XMLoadFloat3x3(&_inertiaTensor));
-    XMVECTOR angularAcceleration = XMVector3Transform(torqueVector, inertiaMatrix);
+    XMVECTOR angularAccelerationVector = XMVector3Transform(torqueVector, inertiaMatrix);
+    XMFLOAT3 angularAcceleration;
+    XMStoreFloat3(&angularAcceleration, angularAccelerationVector);
 
     // Calculates the Angular Velocity
-    _angularVelocity += Vector3(XMVectorGetX(angularAcceleration), XMVectorGetY(angularAcceleration), XMVectorGetZ(angularAcceleration)) * deltaTime;
+    _angularVelocity += Vector3(angularAcceleration.x, angularAcceleration.y, angularAcceleration.z) * deltaTime;
 
     // New Orientation is Calculation
     Quaternion orientation = GetTransform()->GetOrientation();
-    orientation += deltaTime / 2 * _angularVelocity * orientation;
+    orientation += orientation * _angularVelocity * 0.5f * deltaTime;
+
+    // Dampens the Angular Velocity overtime
+    _angularVelocity *= pow(_angularDamping, deltaTime);
+
     if (orientation.Magnitude() != 0)
     {
         orientation = orientation / orientation.Magnitude();
-        GetTransform()->SetOrientation(orientation);
     }
-    // Dampens the Angular Velocity overtime
-    _angularVelocity *= pow(_angularDamping, deltaTime);
+    GetTransform()->SetOrientation(orientation);
+
+    // Resets Torque for next calculation
+    _torque = Vector3();
 }
 
 void RigidBodyModel::Update(float deltaTime)
 {
-    CalculateAngularVelocity(deltaTime);
-
 	// Linear F=MA 
 	PhysicsModel::Update(deltaTime);
+    CalculateAngularVelocity(deltaTime);
 }

@@ -676,28 +676,32 @@ void DX11Framework::CollisionManager()
         // Floor
         CollisionManifold manifold;
 
-        Transform* objATransform = _floor->GetTransform();
-        Transform* objBTransform = go->GetTransform();
+        Transform* floorTransform = _floor->GetTransform();
+        Transform* objATransform = go->GetTransform();
 
-        PhysicsModel* objA = _floor->GetPhysicsModel();
-        PhysicsModel* objB = go->GetPhysicsModel();
+        PhysicsModel* floor = _floor->GetPhysicsModel();
+        PhysicsModel* objA = go->GetPhysicsModel();
 
-        if (objA->IsCollideable() && objB->IsCollideable() && objA->GetCollider()->CollidesWith(*objB->GetCollider(), manifold) ||
-            objA->IsCollideable() && objB->IsCollideable() && objB->GetCollider()->CollidesWith(*objA->GetCollider(), manifold))
+        if (floor->IsCollideable() && objA->IsCollideable() && floor->GetCollider()->CollidesWith(*objA->GetCollider(), manifold) ||
+            floor->IsCollideable() && objA->IsCollideable() && objA->GetCollider()->CollidesWith(*floor->GetCollider(), manifold))
         {
             // Normalise Calculation
-            Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
+            Vector3 collisionNormal = floorTransform->GetPosition() - objATransform->GetPosition();
             collisionNormal.Normalize();
 
             // Velocity Calculation
-            Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
+            Vector3 relativeVelocity = floor->GetVelocity() - objA->GetVelocity();
 
             if (collisionNormal * relativeVelocity < 0.0f)
             {
-                // Linear Velocity
-                objB->ApplyImpulse(Vector3(0, 9.81f * objB->GetMass(), 0)); //reversed
+                // Stop Gravity
+                //objA->SetGravityActive(false);
 
                 DebugPrintF("Collided\n");
+            }
+            else
+            {
+                //objA->SetGravityActive(true);
             }
         }
         // Resets the manifold for the next collision
