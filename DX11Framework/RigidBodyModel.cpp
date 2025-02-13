@@ -57,15 +57,8 @@ void RigidBodyModel::SetInertiaTensor()
 
 void RigidBodyModel::AddRelativeForce(Vector3 force, Vector3 point)
 {
-	AddForce(force);
-	
-	Vector3 crossProduct;
-	crossProduct.x = (force.y * point.z) - (force.z * point.y);
-	crossProduct.y = (force.z * point.x) - (force.x * point.z);
-	crossProduct.z = (force.x * point.y) - (force.y * point.x);
-	
-    // Torque = The origin point of the applied force X force
-	_torque = crossProduct;
+	RigidBodyModel::AddForce(force);
+    _torque = force ^ point;
 }
 
 void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
@@ -95,7 +88,7 @@ void RigidBodyModel::CalculateAngularVelocity(float deltaTime)
 
     if (orientation.Magnitude() != 0)
     {
-        orientation = orientation / orientation.Magnitude();
+        orientation /= orientation.Magnitude();
     }
     GetTransform()->SetOrientation(orientation);
 
