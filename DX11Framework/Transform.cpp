@@ -16,7 +16,7 @@ void Transform::Update(float deltaTime)
 {
 	// Calculate world matrix
 	XMMATRIX scale = XMMatrixScaling(GetScale().x, GetScale().y, GetScale().z);
-	XMMATRIX orientation = XMMatrixRotationQuaternion(XMVectorSet(GetRotation().x, GetRotation().y, GetRotation().z, 1));
+	XMMATRIX orientation = XMMatrixRotationQuaternion(XMVectorSet(GetRotation().x, GetRotation().y, GetRotation().z, 1.0f));
 	XMMATRIX position = XMMatrixTranslation(GetPosition().x, GetPosition().y, GetPosition().z);
 
 	XMStoreFloat4x4(&_world, XMMatrixIdentity() * scale * orientation * position);
