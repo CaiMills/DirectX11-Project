@@ -9,7 +9,7 @@
 ## FreeCam Movement;
 - W: Fowards
 - S: Backwards
-# Features I have Implemented in the GDEV50038 Assignment;
+# Features I have Implemented;
 - [X] Advanced Lighting with;
 - Diffuse
 - Ambient
@@ -21,10 +21,10 @@
 - [X] OBJ Loading
 - [X] JSON Loading (Lighting)
 - [X] GameObject Class
-- [ ] JSON Loading (Game Objects)
+- [X] JSON Loading (Game Objects)
 - [X] Camera Class
 - [ ] Child Cameras (Debug, Third Person, Ect)
-- [ ] SkyBox
+- [X] SkyBox
 - [ ] Billboarding
 - [ ] Post-processing
 - [ ] Transparency
