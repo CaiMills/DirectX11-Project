@@ -424,13 +424,13 @@ HRESULT DX11Framework::InitRunTimeData()
     _floor->SetAppearance(_appearance);
 
     // Transform Initialisation
-    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.1f, 0.0f));
     _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
     _floor->GetTransform()->SetRotation(Vector3(90.0f, 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
 
     // Plane Collider Initialisation
-    _collider = new PlaneCollider(_floor->GetTransform(), _floor->GetAppearance());
-    _floor->GetPhysicsModel()->SetCollider(_collider);
+    //_collider = new BoxCollider(_floor->GetTransform());
+    //_floor->GetPhysicsModel()->SetCollider(_collider);
 
     _gameObjects.push_back(_floor);
 
@@ -456,21 +456,20 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         // Physics Model and Mass Initialisation
-        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform());
         _cubes[i].SetPhysicsModel(_physicsModel);
         _cubes[i].GetPhysicsModel()->SetMass(1.0f);
 
         // Sphere Collider Initialisation
-        _collider = new SphereCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance(), 1.0f);
+        _collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
         _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        _collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        _collider = new BoxCollider(_cubes[i].GetTransform());
         _cubes[i].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
     }
-
     // GameObjects
     InitGameObjects();
 }
@@ -651,8 +650,10 @@ void DX11Framework::Update()
 
     while (accumulator >= FPS60)
     {
-        PhysicsUpdates(0.016);
-        accumulator -= 0.016; // resets the accumulator counter
+        accumulator -= FPS60; // resets the accumulator counter
+
+        PhysicsUpdates(FPS60);
+        //DebugPrintF("DeltaTime is %f\n The number is %i\n", accumulator, 2);
     }
 
     const double alpha = accumulator / 0.016;
@@ -673,39 +674,7 @@ void DX11Framework::CollisionManager()
 {
     for (auto& go : _gameObjects)
     {
-        // Floor
-        CollisionManifold manifold;
-
-        Transform* floorTransform = _floor->GetTransform();
-        Transform* objATransform = go->GetTransform();
-
-        PhysicsModel* floor = _floor->GetPhysicsModel();
-        PhysicsModel* objA = go->GetPhysicsModel();
-
-        if (floor->IsCollideable() && objA->IsCollideable() && floor->GetCollider()->CollidesWith(*objA->GetCollider(), manifold) ||
-            floor->IsCollideable() && objA->IsCollideable() && objA->GetCollider()->CollidesWith(*floor->GetCollider(), manifold))
-        {
-            // Normalise Calculation
-            Vector3 collisionNormal = floorTransform->GetPosition() - objATransform->GetPosition();
-            collisionNormal.Normalize();
-
-            // Velocity Calculation
-            Vector3 relativeVelocity = floor->GetVelocity() - objA->GetVelocity();
-
-            if (collisionNormal * relativeVelocity < 0.0f)
-            {
-                // Stop Gravity
-                //objA->SetGravityActive(false);
-
-                DebugPrintF("Collided\n");
-            }
-            else
-            {
-                //objA->SetGravityActive(true);
-            }
-        }
-        // Resets the manifold for the next collision
-        manifold = CollisionManifold();
+        ResolveCollisions(go, _floor);
     }
 
     // Cube Collisions
@@ -793,23 +762,23 @@ void DX11Framework::RendererUpdates(float deltaTime)
     _camera->Update();
 
 #pragma region CameraMovement
-    // W - Fowards
-    if (GetAsyncKeyState(0x57) & 0X0001)
+    // I - Fowards
+    if (GetAsyncKeyState(0x49) & 0X0001)
     {
         _cameraOrbitRadius = max(_cameraOrbitRadiusMin, _cameraOrbitRadius - (_cameraSpeed * 0.2f));
     }
-    // S - Backwards
-    if (GetAsyncKeyState(0x53) & 0X0001)
+    // K - Backwards
+    if (GetAsyncKeyState(0x4B) & 0X0001)
     {
         _cameraOrbitRadius = min(_cameraOrbitRadiusMax, _cameraOrbitRadius + (_cameraSpeed * 0.2f));
     }
-    // A - Left
-    if (GetAsyncKeyState(0x41) & 0X0001)
+    // J - Left
+    if (GetAsyncKeyState(0x4A) & 0X0001)
     {
         _cameraOrbitAngleXZ += _cameraSpeed;
     }
-    // D - Right
-    if (GetAsyncKeyState(0x44) & 0X0001)
+    // L - Right
+    if (GetAsyncKeyState(0x4C) & 0X0001)
     {
         _cameraOrbitAngleXZ -= _cameraSpeed;
     }
@@ -819,38 +788,38 @@ void DX11Framework::RendererUpdates(float deltaTime)
 void DX11Framework::PhysicsUpdates(float deltaTime)
 {
 #pragma region GOMovementControls
-    // NUMPAD 8 - Fowards
-    if (GetAsyncKeyState(0x68) & 0X0001)
+    // W - Fowards
+    if (GetAsyncKeyState(0x57) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
         //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, 4.0f));
     }
-    // NUMPAD 2 - Backwards
-    if (GetAsyncKeyState(0x62) & 0X0001)
+    // S - Backwards
+    if (GetAsyncKeyState(0x53) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
         //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 0, -4.0f));
     }
-    // NUMPAD 4 - Left
-    if (GetAsyncKeyState(0x64) & 0X0001)
+    // A - Left
+    if (GetAsyncKeyState(0x41) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
         //_cubes[1].GetPhysicsModel()->AddForce(Vector3(-4.0f, 0, 0));
     }
-    // NUMPAD 6 - Right
-    if (GetAsyncKeyState(0x66) & 0X0001)
+    // D - Right
+    if (GetAsyncKeyState(0x44) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
         //_cubes[1].GetPhysicsModel()->AddForce(Vector3(4.0f, 0, 0));
     }
-    // NUMPAD 9 - Up
-    if (GetAsyncKeyState(0x69) & 0X0001)
+    // Z - Up
+    if (GetAsyncKeyState(0x5A) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
         //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, 4.0f, 0));
     }
-    // NUMPAD 3 - Down
-    if (GetAsyncKeyState(0x63) & 0X0001)
+    // X - Down
+    if (GetAsyncKeyState(0x58) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
         //_cubes[1].GetPhysicsModel()->AddForce(Vector3(0, -4.0f, 0));
@@ -865,37 +834,31 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x26) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 1), true);
     }
     // DOWN ARROW - Backwards Constant Velocity
     if (GetAsyncKeyState(0x28) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, -1), true);
     }
     // LEFT ARROW - Left Constant Velocity
     if (GetAsyncKeyState(0x25) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(-1, 0, 0), true);
     }
     // RIGHT ARROW - Right Constant Velocity
     if (GetAsyncKeyState(0x27) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(1, 0, 0), true);
     }
     // PAGE UP - Up Constant Velocity
     if (GetAsyncKeyState(0x22) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, -1, 0), true);
     }
     // PAGE DOWN - Down Constant Velocity
     if (GetAsyncKeyState(0x21) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 1, 0), true);
     }
 #pragma endregion
 
@@ -904,13 +867,11 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     if (GetAsyncKeyState(0x2D) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
-        //_cubes[1].GetPhysicsModel()->SetVelocity(Vector3(0, 0, 0), true);
     }
     // Q - Apply Relative Force
     if (GetAsyncKeyState(0x51) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
     {
         _cubes[0].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
-        //_cubes[1].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
     }
 #pragma endregion
 

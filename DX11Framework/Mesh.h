@@ -34,8 +34,5 @@ public:
 	void CalculateMinAndMax(SimpleVertex* vertices, int vertexCount);
 	Vector3 GetMin() const { return _min; }
 	Vector3 GetMax() const { return _max; }
-
-	void CalculateExtents(Vector3 min, Vector3 max);
-	Vector3 GetExtents() const { return _extents; }
 };
 

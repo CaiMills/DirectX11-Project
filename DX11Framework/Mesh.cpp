@@ -381,13 +381,4 @@ void Mesh::CalculateMinAndMax(SimpleVertex* vertices, int vertexCount)
         _max.y = max(_max.y, pos.y);
         _max.z = max(_max.z, pos.z);
     }
-    CalculateExtents(_min, _max);
-}
-
-void Mesh::CalculateExtents(Vector3 min, Vector3 max)
-{
-    // Find the extent values, these represent the full lengths of each axis
-    _extents.x = max.x - min.x;
-    _extents.y = max.y - min.y;
-    _extents.z = max.z - min.z;
 }

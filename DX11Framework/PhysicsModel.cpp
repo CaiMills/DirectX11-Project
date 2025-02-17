@@ -11,6 +11,35 @@ PhysicsModel::~PhysicsModel()
 	_collider = nullptr;
 }
 
+void PhysicsModel::DragForce()
+{
+	float width = _transform->GetScale().x;
+	float length = _transform->GetScale().y;
+	float crossSection = width * length;
+
+	float dragCoeffient;
+	float radius = GetCollider()->GetRadius();
+
+	// Circle Collider
+	if (radius > 0)
+	{
+		dragCoeffient = 1.05f;
+	}
+	// Box Collider
+	else
+	{
+		dragCoeffient = 0.47f;
+	}
+	_drag = dragCoeffient * crossSection * 0.5 * radius * (_velocity * _velocity);
+}
+
+void PhysicsModel::FrictionForce()
+{
+	float coefficient = 0.6f;
+
+	_frictionForce = coefficient * _netForce.Magnitude();
+}
+
 void PhysicsModel::Update(float deltaTime)
 {
 	Vector3 position = _transform->GetPosition();
