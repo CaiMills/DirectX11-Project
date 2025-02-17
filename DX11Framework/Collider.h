@@ -1,6 +1,5 @@
 #pragma once
 #include "Transform.h"
-#include "Appearance.h"
 
 //Foward Declaration
 class SphereCollider;
@@ -11,10 +10,9 @@ class Collider abstract
 {
 protected:
 	Transform* _transform;
-	Appearance* _appearance;
 
 public:
-	Collider(Transform* transform, Appearance* appearance) { _transform = transform, _appearance = appearance; }
+	Collider(Transform* transform) { _transform = transform; }
 
 	virtual bool CollidesWith(Collider& other, CollisionManifold& out) = 0;
 	virtual bool CollidesWith(SphereCollider& other, CollisionManifold& out) = 0;
@@ -24,6 +22,5 @@ public:
 	virtual float GetRadius() = 0;
 
 	Vector3 GetPosition() const { return _transform->GetPosition(); }
-	Appearance* GetAppearance() const { return _appearance; }
 };
 

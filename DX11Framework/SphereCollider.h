@@ -6,7 +6,7 @@ class SphereCollider : public Collider
 	float _radius = 1.0f;
 
 public:
-	SphereCollider(Transform* transform, Appearance* appearance, float radius) : Collider(transform, appearance) { _radius = radius; }
+	SphereCollider(Transform* transform, float radius) : Collider(transform) { _radius = radius; }
 
 	virtual bool CollidesWith(Collider& other, CollisionManifold& out) override { return other.CollidesWith(*this, out); }
 	virtual bool CollidesWith(SphereCollider& other, CollisionManifold& out) override;

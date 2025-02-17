@@ -1,13 +1,10 @@
 #pragma once
 #include "Collider.h"
-#include "Appearance.h"
 
 class BoxCollider : public Collider
 {
-	Appearance* _appearance;
-
 public:
-	BoxCollider(Transform* transform, Appearance* appearance) : Collider(transform, appearance) {};
+	BoxCollider(Transform* transform) : Collider(transform) {};
 
 	virtual bool CollidesWith(Collider& other, CollisionManifold& out) override { return other.CollidesWith(*this, out); }
 	virtual bool CollidesWith(BoxCollider& other, CollisionManifold& out) override;

@@ -429,7 +429,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _floor->GetTransform()->SetRotation(Vector3(90.0f, 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
 
     // Plane Collider Initialisation
-    _collider = new PlaneCollider(_floor->GetTransform(), _floor->GetAppearance());
+    _collider = new PlaneCollider(_floor->GetTransform());
     _floor->GetPhysicsModel()->SetCollider(_collider);
 
     _gameObjects.push_back(_floor);
@@ -456,16 +456,16 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         // Physics Model and Mass Initialisation
-        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        _physicsModel = new RigidBodyModel(_cubes[i].GetTransform());
         _cubes[i].SetPhysicsModel(_physicsModel);
         _cubes[i].GetPhysicsModel()->SetMass(1.0f);
 
         // Sphere Collider Initialisation
-        _collider = new SphereCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance(), 1.0f);
+        _collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
         _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        _collider = new BoxCollider(_cubes[i].GetTransform(), _cubes[i].GetAppearance());
+        _collider = new BoxCollider(_cubes[i].GetTransform());
         _cubes[i].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
