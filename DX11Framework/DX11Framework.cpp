@@ -424,12 +424,12 @@ HRESULT DX11Framework::InitRunTimeData()
     _floor->SetAppearance(_appearance);
 
     // Transform Initialisation
-    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+    _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.1f, 0.0f));
     _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
     _floor->GetTransform()->SetRotation(Vector3(90.0f, 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
 
     // Plane Collider Initialisation
-    _collider = new PlaneCollider(_floor->GetTransform());
+    _collider = new BoxCollider(_floor->GetTransform());
     _floor->GetPhysicsModel()->SetCollider(_collider);
 
     _gameObjects.push_back(_floor);
@@ -673,39 +673,7 @@ void DX11Framework::CollisionManager()
 {
     for (auto& go : _gameObjects)
     {
-        // Floor
-        CollisionManifold manifold;
-
-        Transform* floorTransform = _floor->GetTransform();
-        Transform* objATransform = go->GetTransform();
-
-        PhysicsModel* floor = _floor->GetPhysicsModel();
-        PhysicsModel* objA = go->GetPhysicsModel();
-
-        if (floor->IsCollideable() && objA->IsCollideable() && floor->GetCollider()->CollidesWith(*objA->GetCollider(), manifold) ||
-            floor->IsCollideable() && objA->IsCollideable() && objA->GetCollider()->CollidesWith(*floor->GetCollider(), manifold))
-        {
-            // Normalise Calculation
-            Vector3 collisionNormal = floorTransform->GetPosition() - objATransform->GetPosition();
-            collisionNormal.Normalize();
-
-            // Velocity Calculation
-            Vector3 relativeVelocity = floor->GetVelocity() - objA->GetVelocity();
-
-            if (collisionNormal * relativeVelocity < 0.0f)
-            {
-                // Stop Gravity
-                //objA->SetGravityActive(false);
-
-                DebugPrintF("Collided\n");
-            }
-            else
-            {
-                //objA->SetGravityActive(true);
-            }
-        }
-        // Resets the manifold for the next collision
-        manifold = CollisionManifold();
+        ResolveCollisions(go, _floor);
     }
 
     // Cube Collisions
@@ -767,6 +735,8 @@ void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
             //    DebugPrintF("Collided\n");
             //}
             //else
+
+            DebugPrintF("Ma Nuts");
 
             // Linear Velocity
             objA->ApplyImpulse(-(invMassA * j * collisionNormal));

@@ -22,5 +22,6 @@ public:
 	virtual float GetRadius() = 0;
 
 	Vector3 GetPosition() const { return _transform->GetPosition(); }
+	Vector3 GetExtents() const { return _transform->GetScale(); }
 };
 
