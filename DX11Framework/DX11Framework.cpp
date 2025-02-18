@@ -411,7 +411,7 @@ HRESULT DX11Framework::InitRunTimeData()
     // Floor
     // Mesh Initialisation
     _mesh = new Mesh();
-    _mesh->SetMeshData(_mesh->CreatePlane());
+    _mesh->SetMeshData(_mesh->CreateCube());
     _appearance = new Appearance(_mesh);
 
     // Texture Initialisation
@@ -425,12 +425,12 @@ HRESULT DX11Framework::InitRunTimeData()
 
     // Transform Initialisation
     _floor->GetTransform()->SetPosition(Vector3(0.0f, 0.1f, 0.0f));
-    _floor->GetTransform()->SetScale(Vector3(15.0f, 15.0f, 15.0f));
-    _floor->GetTransform()->SetRotation(Vector3(90.0f, 0.0f, 0.0f)); // It wont work without the XMConvertToRadians
+    _floor->GetTransform()->SetScale(Vector3(5.0f, 5.0f, 5.0f));
+    //_floor->GetTransform()->SetRotation(Vector3(90.0f, 0.0f, 0.0f));
 
     // Plane Collider Initialisation
-    //_collider = new BoxCollider(_floor->GetTransform());
-    //_floor->GetPhysicsModel()->SetCollider(_collider);
+    _collider = new BoxCollider(_floor->GetTransform());
+    _floor->GetPhysicsModel()->SetCollider(_collider);
 
     _gameObjects.push_back(_floor);
 
@@ -452,7 +452,7 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].SetAppearance(_appearance);
 
         // Transform Initialisation
-        _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 2.5f), 2.0f, 10.0f));
+        _cubes[i].GetTransform()->SetPosition(Vector3(-2.0f + (i * 4.5f), 2.0f, 10.0f));
         _cubes[i].GetTransform()->SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
         // Physics Model and Mass Initialisation
