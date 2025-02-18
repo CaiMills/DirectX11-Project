@@ -720,9 +720,11 @@ void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
 
+            // For Sphere Collision Depth
             if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
             {
                 float depth = (objATransform->GetPosition() - objBTransform->GetPosition()).Magnitude() - (objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius());
+                depth = max(0.0f, depth); // Clamps Variable
                 collisionNormal *= depth + invMassSum;
             }
             // Linear Velocity
