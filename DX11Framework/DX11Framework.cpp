@@ -461,12 +461,12 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetMass(1.0f);
 
         // Sphere Collider Initialisation
-        //_collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
-        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
+        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        _collider = new BoxCollider(_cubes[i].GetTransform());
-        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        //_collider = new BoxCollider(_cubes[i].GetTransform());
+        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -716,11 +716,16 @@ void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
             float restitution = 0.2f;
 
             // Total Velocity of Collision = Coefficient of Restitution * Dot Product
-            float vj = collisionNormal * relativeVelocity;
+            float vj = (collisionNormal * relativeVelocity) * (1.0f + restitution);
 
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
 
+            if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
+            {
+                float depth = (objATransform->GetPosition() - objBTransform->GetPosition()).Magnitude() - (objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius());
+                collisionNormal *= depth + invMassSum;
+            }
             // Linear Velocity
             objA->ApplyImpulse(-(invMassA * j * collisionNormal));
             objB->ApplyImpulse(invMassB * j * collisionNormal); //reversed
