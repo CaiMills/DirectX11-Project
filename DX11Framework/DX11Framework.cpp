@@ -465,8 +465,8 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
-        //_collider = new BoxCollider(_cubes[i].GetTransform());
-        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        _collider = new BoxCollider(_cubes[i].GetTransform());
+        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
          
         _gameObjects.push_back(&_cubes[i]);
     }
@@ -712,7 +712,6 @@ void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
 
         if (collisionNormal * relativeVelocity < 0.0f)
         {
-            // This currently isnt used (-1 + restitution)
             float restitution = 0.2f;
 
             // Total Velocity of Collision = Coefficient of Restitution * Dot Product
