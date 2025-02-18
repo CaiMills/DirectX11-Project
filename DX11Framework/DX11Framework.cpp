@@ -461,8 +461,8 @@ HRESULT DX11Framework::InitRunTimeData()
         _cubes[i].GetPhysicsModel()->SetMass(1.0f);
 
         // Sphere Collider Initialisation
-        _collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
-        _cubes[i].GetPhysicsModel()->SetCollider(_collider);
+        //_collider = new SphereCollider(_cubes[i].GetTransform(), 1.0f);
+        //_cubes[i].GetPhysicsModel()->SetCollider(_collider);
 
         // Box Collider Initialisation
         _collider = new BoxCollider(_cubes[i].GetTransform());
@@ -702,8 +702,6 @@ void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
         Vector3 collisionNormal = objATransform->GetPosition() - objBTransform->GetPosition();
         collisionNormal.Normalize();
 
-        //Vector3 collisionNormal = manifold.collisionNormal; //This does not work for some reason
-
         // Velocity Calculation
         Vector3 relativeVelocity = objA->GetVelocity() - objB->GetVelocity();
 
@@ -722,20 +720,6 @@ void DX11Framework::ResolveCollisions(GameObject* obj1, GameObject* obj2)
 
             // Conservation of Momentum (Impulse) = Divide the velocity of the impulse by the sum of the inverse masses of the objects
             float j = vj / invMassSum;
-
-            //// This only applies if both objects has a sphere collider (DOESNT WORK YET)
-            //if (objA->GetCollider()->GetRadius() > 0.0f && objB->GetCollider()->GetRadius() > 0.0f)
-            //{
-            //    float radiiSum = objA->GetCollider()->GetRadius() + objB->GetCollider()->GetRadius();
-            //    float depth = (objATransform->GetPosition() - objBTransform->GetPosition()) - radiiSum;
-
-            //    // Linear Velocity
-            //    objA->ApplyImpulse(-(invMassA * j * collisionNormal * depth));
-            //    objB->ApplyImpulse(invMassB * j * collisionNormal * depth); //reversed
-
-            //    DebugPrintF("Collided\n");
-            //}
-            //else
 
             // Linear Velocity
             objA->ApplyImpulse(-(invMassA * j * collisionNormal));

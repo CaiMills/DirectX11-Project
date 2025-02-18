@@ -13,7 +13,9 @@ bool BoxCollider::CollidesWith(BoxCollider& other, CollisionManifold& out)
 
     if (abs(distance.x) <= halfExtents.x && abs(distance.y) <= halfExtents.y && abs(distance.z) <= halfExtents.z)
     {
-        //Need to add Manifold Stuff
+        out.collisionNormal = distance;
+        out.collisionNormal.Normalize();
+        out.contactPointCount = 3;
         return true;
     }
 
