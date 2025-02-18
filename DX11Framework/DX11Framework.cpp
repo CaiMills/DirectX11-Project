@@ -863,6 +863,22 @@ void DX11Framework::PhysicsUpdates(float deltaTime)
     {
         _cubes[0].GetPhysicsModel()->AddRelativeForce(Vector3(0, 0, -1), Vector3(1, 0, -1));
     }
+    // G - Turn Gravity On
+    if (GetAsyncKeyState(0x47) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
+    {
+        for (auto& go : _gameObjects)
+        {
+            go->GetPhysicsModel()->SetGravityActive(true);
+        }
+    }
+    // H - Turn Gravity Off
+    if (GetAsyncKeyState(0x48) & 0X0001 || GetAsyncKeyState(0x60) & 0X0001)
+    {
+        for (auto& go : _gameObjects)
+        {
+            go->GetPhysicsModel()->SetGravityActive(false);
+        }
+    }
 #pragma endregion
 
     // Update objects

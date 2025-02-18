@@ -2,33 +2,26 @@
 ## View Mode;
 - F1: Solid/Fill
 - F2: Wireframe
-## Camera Switching;
-- 1: Static Camera 1
-- 2: Static Camera 2
-- 3: FreeCam
 ## FreeCam Movement;
+- I: Forwards
+- K: Backwards
+- J: Left
+- L: Right
+## Add Force;
 - W: Fowards
 - S: Backwards
-# Features I have Implemented;
-- [X] Advanced Lighting with;
-- Diffuse
-- Ambient
-- Specular
-- Specular Texture Maps
-- [X] Texturing;
-- Regular
-- Specular Map
-- [X] OBJ Loading
-- [X] JSON Loading (Lighting)
-- [X] GameObject Class
-- [X] JSON Loading (Game Objects)
-- [X] Camera Class
-- [ ] Child Cameras (Debug, Third Person, Ect)
-- [X] SkyBox
-- [ ] Billboarding
-- [ ] Post-processing
-- [ ] Transparency
-- [ ] Terrian
-- [ ] Procedural Terrain
-- [ ] Stencil Buffer
-
+- A: Left
+- D: Right
+- Z: Up
+- X: Down
+## Add Velocity
+- Arrow Up: Fowards
+- Arrow Down: Backwards
+- Arrow Left: Left
+- Arrow Right: Right
+- Page Up: Up
+- Page Down: Down
+## Other 
+- Q - Applies Quaternion Force 
+- G - Turn Gravity On
+- H - Turn Gravity Off
