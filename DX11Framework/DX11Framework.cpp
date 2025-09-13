@@ -92,11 +92,9 @@ HRESULT DX11Framework::CreateD3DDevice()
 #ifdef _DEBUG
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+
     hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT | createDeviceFlags, featureLevels, ARRAYSIZE(featureLevels), D3D11_SDK_VERSION, &baseDevice, nullptr, &baseDeviceContext);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    if (FAILED(hr)) { return hr; }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -109,10 +107,7 @@ HRESULT DX11Framework::CreateD3DDevice()
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     hr = _device->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&_dxgiDevice));
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    if (FAILED(hr)) { return hr; }
 
     IDXGIAdapter* dxgiAdapter;
     hr = _dxgiDevice->GetAdapter(&dxgiAdapter);
@@ -141,26 +136,21 @@ HRESULT DX11Framework::CreateSwapChainAndFrameBuffer()
     swapChainDesc.Flags = 0;
 
     hr = _dxgiFactory->CreateSwapChainForHwnd(_device, _windowHandle, &swapChainDesc, nullptr, nullptr, &_swapChain);
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    if (FAILED(hr)) { return hr; }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     ID3D11Texture2D* frameBuffer = nullptr;
 
     hr = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&frameBuffer));
-    if (FAILED(hr))
-    {
-        return hr;
-    }
+    if (FAILED(hr)) { return hr; }
 
     D3D11_RENDER_TARGET_VIEW_DESC framebufferDesc = {};
     framebufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; //sRGB render target enables hardware gamma correction
     framebufferDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
     hr = _device->CreateRenderTargetView(frameBuffer, &framebufferDesc, &_frameBufferView);
+    if (FAILED(hr)) { return hr; }
 
     D3D11_TEXTURE2D_DESC depthBufferDesc = {};
     frameBuffer->GetDesc(&depthBufferDesc);
@@ -168,8 +158,11 @@ HRESULT DX11Framework::CreateSwapChainAndFrameBuffer()
     depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-    _device->CreateTexture2D(&depthBufferDesc, nullptr, &_depthStencilBuffer);
-    _device->CreateDepthStencilView(_depthStencilBuffer, nullptr, &_depthStencilView);
+    hr = _device->CreateTexture2D(&depthBufferDesc, nullptr, &_depthStencilBuffer);
+    if (FAILED(hr)) { return hr; }
+
+    hr = _device->CreateDepthStencilView(_depthStencilBuffer, nullptr, &_depthStencilView);
+    if (FAILED(hr)) { return hr; }
 
     frameBuffer->Release(); //Release after depth buffer is created
 
@@ -189,52 +182,6 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     // the release configuration of this program.
     dwShaderFlags |= D3DCOMPILE_DEBUG;
 #endif
-
-    ID3DBlob* vsBlobSkybox;
-    ID3DBlob* psBlobSkybox;
-
-    // Skybox
-    // Define the input layout
-    D3D11_INPUT_ELEMENT_DESC skyboxInputElementDesc[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    };
-    // Compile the vertex shader
-    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlobSkybox, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-    // Create the vertex shader
-    hr = _device->CreateVertexShader(vsBlobSkybox->GetBufferPointer(), vsBlobSkybox->GetBufferSize(), nullptr, &_skyboxVertexShader);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-    // Compile the pixel shader
-    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlobSkybox, &errorBlob);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-    // Create the pixel shader
-    hr = _device->CreatePixelShader(psBlobSkybox->GetBufferPointer(), psBlobSkybox->GetBufferSize(), nullptr, &_skyboxPixelShader);
-    if (FAILED(hr))
-    {
-        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
-        errorBlob->Release();
-        return hr;
-    }
-    // Create the input layout
-    hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlobSkybox->GetBufferPointer(), vsBlobSkybox->GetBufferSize(), &_skyboxInputLayout);
-    if (FAILED(hr)) { return hr; }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -285,13 +232,58 @@ HRESULT DX11Framework::InitShadersAndInputLayout()
     hr = _device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_inputLayout);
     if (FAILED(hr)) { return hr; }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    vsBlobSkybox->Release();
-    psBlobSkybox->Release();
     vsBlob->Release();
     psBlob->Release();
-    errorBlob->Release();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Skybox
+    // Define the input layout
+    D3D11_INPUT_ELEMENT_DESC skyboxInputElementDesc[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    // Compile the vertex shader
+    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_main", "vs_5_0", dwShaderFlags, 0, &vsBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+    // Create the vertex shader
+    hr = _device->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &_skyboxVertexShader);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+    // Compile the pixel shader
+    hr = D3DCompileFromFile(L"SkyboxShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_main", "ps_5_0", dwShaderFlags, 0, &psBlob, &errorBlob);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+    // Create the pixel shader
+    hr = _device->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &_skyboxPixelShader);
+    if (FAILED(hr))
+    {
+        MessageBoxA(_windowHandle, (char*)errorBlob->GetBufferPointer(), nullptr, ERROR);
+        errorBlob->Release();
+        return hr;
+    }
+    // Create the input layout
+    hr = _device->CreateInputLayout(skyboxInputElementDesc, ARRAYSIZE(skyboxInputElementDesc), vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &_skyboxInputLayout);
+    if (FAILED(hr)) { return hr; }
+
+    vsBlob->Release();
+    psBlob->Release();
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return hr;
 }
@@ -313,15 +305,6 @@ HRESULT DX11Framework::InitPipelineVariables()
     hr = _device->CreateDepthStencilState(&dssDesc, &_DSLessEqual);
     if (FAILED(hr)) { return hr; }
 
-    // Skybox Depth Stencil State
-    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
-    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    dsDescSkybox.DepthEnable = true;
-    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
-    if (FAILED(hr)) { return hr; }
-
     // Rasterizer
     // Wireframe State
     D3D11_RASTERIZER_DESC cmdesc;
@@ -341,6 +324,7 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     cmdesc.FrontCounterClockwise = false;
     hr = _device->CreateRasterizerState(&cmdesc, &_fillState);
+    if (FAILED(hr)) { return hr; }
 
     _immediateContext->RSSetState(_fillState);
 
@@ -354,6 +338,16 @@ HRESULT DX11Framework::InitPipelineVariables()
     bilinearSampledesc.MinLOD = 0;
 
     hr = _device->CreateSamplerState(&bilinearSampledesc, &_bilinearSamplerState);
+    if (FAILED(hr)) { return hr; }
+
+    // Skybox 
+    // Skybox Depth Stencil State
+    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    dsDescSkybox.DepthEnable = true;
+    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
     if (FAILED(hr)) { return hr; }
 
     return S_OK;
@@ -400,7 +394,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _appearance = new Appearance(_mesh);
 
     // Texture Initialisation
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
     if (FAILED(hr)) { return hr; }
     _appearance->SetTexture(_texture);
 
@@ -415,7 +409,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _appearance = new Appearance(_mesh);
 
     // Texture Initialisation
-    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
     if (FAILED(hr)) { return hr; }
     _appearance->SetTexture(_texture);
 
@@ -443,7 +437,7 @@ HRESULT DX11Framework::InitRunTimeData()
         _appearance = new Appearance(_mesh);
 
         // Texture Initialisation
-        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
+        hr = CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
         if (FAILED(hr)) { return hr; }
         _appearance->SetTexture(_texture);
 
@@ -480,7 +474,7 @@ DX11Framework::~DX11Framework()
     if (_skybox) { delete _skybox; }
     for (auto& go : _gameObjects)
     {
-       delete go;
+        go->~GameObject();
     }
     if (_immediateContext) { _immediateContext->Release(); }
 
@@ -503,6 +497,7 @@ DX11Framework::~DX11Framework()
     if (_skyboxPixelShader) { _skyboxPixelShader->Release(); }
     if (_skyboxInputLayout) { _skyboxInputLayout->Release(); }
     if (_skyboxDepthStencil) { _skyboxDepthStencil->Release(); }
+	if (_skyboxRasterizerState) { _skyboxRasterizerState->Release(); }
 }
 
 void DX11Framework::InitLighting()
@@ -653,7 +648,6 @@ void DX11Framework::Update()
         accumulator -= FPS60; // resets the accumulator counter
 
         PhysicsUpdates(FPS60);
-        //DebugPrintF("DeltaTime is %f\n The number is %i\n", accumulator, 2);
     }
 
     const double alpha = accumulator / 0.016;
@@ -907,19 +901,19 @@ void DX11Framework::Keybinds()
 
 void DX11Framework::Draw()
 {    
-    // Sets the Standard Input Assembler and Stencil State
-    _immediateContext->IASetInputLayout(_inputLayout);
-    _immediateContext->OMSetDepthStencilState(_DSLessEqual, 0);
-
-    // Sets the Standard Vertex and Pixel Shader, and sets Shader
-    _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
-    _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
-
     // Present unbinds render target, so rebind and clear at start of each frame
     float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
     _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
     _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
     _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
+    // Sets the Standard Input Assembler and Stencil State
+    _immediateContext->IASetInputLayout(_inputLayout);
+    _immediateContext->OMSetDepthStencilState(_DSLessEqual, 0);
+
+    // Sets the Standard Vertex and Pixel Shader
+    _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
+    _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
     // Camera
     XMFLOAT4X4 tempView = _camera->GetView();
@@ -931,6 +925,7 @@ void DX11Framework::Draw()
     _cbData.View = XMMatrixTranspose(view);
     _cbData.Projection = XMMatrixTranspose(projection);
 
+	// Set the Buffers and the Sampler State
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
@@ -943,16 +938,17 @@ void DX11Framework::Draw()
     {
         gameObject->Draw();
     }
+
     // Skybox
-    // Sets the Skybox Input Assembler and Stencil State
-    _immediateContext->IASetInputLayout(_skyboxInputLayout);
-    _immediateContext->OMSetDepthStencilState(_skyboxDepthStencil, 0);
-    
-    // Vertex and Pixel Shader, Set Shader
+    // Sets the Vertex and Pixel Shader
     _immediateContext->VSSetShader(_skyboxVertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_skyboxPixelShader, nullptr, 0);
 
-    _skybox->Draw();
+    // Sets the Skybox Input Assembler and Stencil State
+    _immediateContext->IASetInputLayout(_skyboxInputLayout);
+    _immediateContext->OMSetDepthStencilState(_skyboxDepthStencil, 0);
+
+	_skybox->Draw();
 
     // Present back buffer to screen
     _swapChain->Present(0, 0);

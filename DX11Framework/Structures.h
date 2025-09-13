@@ -12,9 +12,9 @@
 #include <string>
 #include <locale>
 #include "Vector3.h"
-#include <cstring>
 #include "Debug.h"
 #include <vector>
+#include <utility> // for unique_ptr
 
 using namespace DirectX;
 

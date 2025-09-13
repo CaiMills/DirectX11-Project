@@ -73,21 +73,19 @@ class DX11Framework
 	int _hasSpecularMap;
 	ID3D11SamplerState* _bilinearSamplerState;
 
-
-
 	// Skybox
 	ID3D11InputLayout* _skyboxInputLayout;
 	ID3D11VertexShader* _skyboxVertexShader;
 	ID3D11PixelShader* _skyboxPixelShader;
 	ID3D11DepthStencilState* _skyboxDepthStencil;
-	XMFLOAT4X4 _skyboxMatrix;
+	ID3D11RasterizerState* _skyboxRasterizerState = nullptr;
 
 	// GameObjects
 	GameObject* _skybox = new GameObject();
 	GameObject* _floor = new GameObject();
 	GameObject* _cubes = new GameObject[4]();
 	std::vector<gameObjectData> _gameObjectDataList;
-	vector<GameObject*> _gameObjects;
+	std::vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
 
 	// Camera
