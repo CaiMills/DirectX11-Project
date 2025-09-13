@@ -403,7 +403,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _appearance = new Appearance(_mesh);
 
     // Texture Initialisation
-    CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\Free Assets Online\\spyro3Skybox.dds", nullptr, &_texture);
     if (FAILED(hr)) { return hr; }
     _appearance->SetTexture(_texture);
 
@@ -418,7 +418,7 @@ HRESULT DX11Framework::InitRunTimeData()
     _appearance = new Appearance(_mesh);
 
     // Texture Initialisation
-    CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
+    hr = CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\floor.dds", nullptr, &_texture);
     if (FAILED(hr)) { return hr; }
     _appearance->SetTexture(_texture);
 
@@ -446,7 +446,7 @@ HRESULT DX11Framework::InitRunTimeData()
         _appearance = new Appearance(_mesh);
 
         // Texture Initialisation
-        CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
+        hr = CreateDDSTextureFromFile(_device, L"Textures\\Test Textures\\stone.dds", nullptr, &_texture);
         if (FAILED(hr)) { return hr; }
         _appearance->SetTexture(_texture);
 
@@ -483,7 +483,7 @@ DX11Framework::~DX11Framework()
     if (_skybox) { delete _skybox; }
     for (auto& go : _gameObjects)
     {
-       delete go;
+        go->~GameObject();
     }
     if (_immediateContext) { _immediateContext->Release(); }
 
@@ -910,6 +910,12 @@ void DX11Framework::Keybinds()
 
 void DX11Framework::Draw()
 {    
+    // Present unbinds render target, so rebind and clear at start of each frame
+    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
+    _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
+    _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
+    _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
+
     // Sets the Standard Input Assembler and Stencil State
     _immediateContext->IASetInputLayout(_inputLayout);
     _immediateContext->OMSetDepthStencilState(_DSLessEqual, 0);
@@ -917,12 +923,6 @@ void DX11Framework::Draw()
     // Sets the Standard Vertex and Pixel Shader, and sets Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
-
-    // Present unbinds render target, so rebind and clear at start of each frame
-    float backgroundColor[4] = { 0.025f, 0.025f, 0.025f, 1.0f };
-    _immediateContext->OMSetRenderTargets(1, &_frameBufferView, _depthStencilView);
-    _immediateContext->ClearRenderTargetView(_frameBufferView, backgroundColor);
-    _immediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0.0f);
 
     // Camera
     XMFLOAT4X4 tempView = _camera->GetView();
@@ -934,6 +934,7 @@ void DX11Framework::Draw()
     _cbData.View = XMMatrixTranspose(view);
     _cbData.Projection = XMMatrixTranspose(projection);
 
+	// Set the Buffers and the Sampler State
     _immediateContext->VSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetConstantBuffers(0, 1, &_constantBuffer);
     _immediateContext->PSSetSamplers(0, 1, &_bilinearSamplerState);
@@ -946,6 +947,7 @@ void DX11Framework::Draw()
     {
         gameObject->Draw();
     }
+
     // Skybox
     // Sets the Skybox Input Assembler and Stencil State
     _immediateContext->IASetInputLayout(_skyboxInputLayout);
