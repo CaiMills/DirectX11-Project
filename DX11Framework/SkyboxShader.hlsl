@@ -7,25 +7,6 @@ cbuffer ConstantBuffer : register(b0)
     float4x4 Projection;
     float4x4 View;
     float4x4 World;
-    
-    // 16 Bit
-    float4 diffuseLight;
-    float4 diffuseMaterial;
-    float4 ambientLight;
-    float4 ambientMaterial;
-    
-    // 16 Bit
-    float4 specularLight;
-    float4 specularMaterial;
-    float3 cameraPosition;
-    float specPower;
-    
-    // 3 Bit
-    float3 lightDir;
-    
-    // Textures
-    uint hasTexture;
-    uint hasSpecularMap;
 }
 
 struct SkyboxVS_Out

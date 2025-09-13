@@ -316,15 +316,6 @@ HRESULT DX11Framework::InitPipelineVariables()
     hr = _device->CreateDepthStencilState(&dssDesc, &_DSLessEqual);
     if (FAILED(hr)) { return hr; }
 
-    // Skybox Depth Stencil State
-    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
-    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    dsDescSkybox.DepthEnable = true;
-    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-
-    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
-    if (FAILED(hr)) { return hr; }
-
     // Rasterizer
     // Wireframe State
     D3D11_RASTERIZER_DESC cmdesc;
@@ -344,6 +335,7 @@ HRESULT DX11Framework::InitPipelineVariables()
 
     cmdesc.FrontCounterClockwise = false;
     hr = _device->CreateRasterizerState(&cmdesc, &_fillState);
+    if (FAILED(hr)) { return hr; }
 
     _immediateContext->RSSetState(_fillState);
 
@@ -357,6 +349,16 @@ HRESULT DX11Framework::InitPipelineVariables()
     bilinearSampledesc.MinLOD = 0;
 
     hr = _device->CreateSamplerState(&bilinearSampledesc, &_bilinearSamplerState);
+    if (FAILED(hr)) { return hr; }
+
+    // Skybox 
+    // Skybox Depth Stencil State
+    D3D11_DEPTH_STENCIL_DESC dsDescSkybox = { };
+    dsDescSkybox.DepthEnable = true;
+    dsDescSkybox.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    dsDescSkybox.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+    hr = _device->CreateDepthStencilState(&dsDescSkybox, &_skyboxDepthStencil);
     if (FAILED(hr)) { return hr; }
 
     return S_OK;
@@ -506,6 +508,7 @@ DX11Framework::~DX11Framework()
     if (_skyboxPixelShader) { _skyboxPixelShader->Release(); }
     if (_skyboxInputLayout) { _skyboxInputLayout->Release(); }
     if (_skyboxDepthStencil) { _skyboxDepthStencil->Release(); }
+	if (_skyboxRasterizerState) { _skyboxRasterizerState->Release(); }
 }
 
 void DX11Framework::InitLighting()
@@ -656,7 +659,6 @@ void DX11Framework::Update()
         accumulator -= FPS60; // resets the accumulator counter
 
         PhysicsUpdates(FPS60);
-        //DebugPrintF("DeltaTime is %f\n The number is %i\n", accumulator, 2);
     }
 
     const double alpha = accumulator / 0.016;
@@ -920,7 +922,7 @@ void DX11Framework::Draw()
     _immediateContext->IASetInputLayout(_inputLayout);
     _immediateContext->OMSetDepthStencilState(_DSLessEqual, 0);
 
-    // Sets the Standard Vertex and Pixel Shader, and sets Shader
+    // Sets the Standard Vertex and Pixel Shader
     _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
@@ -953,11 +955,11 @@ void DX11Framework::Draw()
     _immediateContext->IASetInputLayout(_skyboxInputLayout);
     _immediateContext->OMSetDepthStencilState(_skyboxDepthStencil, 0);
     
-    // Vertex and Pixel Shader, Set Shader
+    // Sets the Vertex and Pixel Shader
     _immediateContext->VSSetShader(_skyboxVertexShader, nullptr, 0);
     _immediateContext->PSSetShader(_skyboxPixelShader, nullptr, 0);
 
-    _skybox->Draw();
+	_skybox->Draw();
 
     // Present back buffer to screen
     _swapChain->Present(0, 0);

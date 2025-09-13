@@ -2,8 +2,8 @@
 
 Mesh::~Mesh()
 {
-    _indexBuffer = nullptr;
-    _vertexBuffer = nullptr;
+    _indexBuffer->Release();
+    _vertexBuffer->Release();
 }
 
 MeshData* Mesh::CreateCube()

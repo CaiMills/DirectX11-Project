@@ -8,8 +8,8 @@ Appearance::Appearance(Mesh* mesh) : _mesh(mesh)
 Appearance::~Appearance()
 {
 	_texture = nullptr;
-	_mesh->GetMeshData()->IndexBuffer = nullptr;
-	_mesh->GetMeshData()->VertexBuffer = nullptr;
+	_mesh->GetMeshData()->IndexBuffer->Release();
+	_mesh->GetMeshData()->VertexBuffer->Release();
 }
 
 void Appearance::Draw()
