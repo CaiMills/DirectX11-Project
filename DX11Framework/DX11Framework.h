@@ -87,7 +87,7 @@ class DX11Framework
 	GameObject* _floor = new GameObject();
 	GameObject* _cubes = new GameObject[4]();
 	std::vector<gameObjectData> _gameObjectDataList;
-	vector<GameObject*> _gameObjects;
+	std::vector<GameObject*> _gameObjects;
 	GameObject* _gameObject = new GameObject[10];
 
 	// Camera
